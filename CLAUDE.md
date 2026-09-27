@@ -81,6 +81,8 @@ fallback is to switch to Opus 5.5 or wait for the reset.
   are needed at all, and **no brim** (he doesn't want to trim one off).
   Designs are parametric OpenSCAD in `hardware/`; the toolchain installs
   with `scripts/install-tools.sh` (OpenSCAD + OrcaSlicer, no root needed).
+- Cameras at night: turn the garage workbench light on just before taking a
+  picture (bench cam or printer cam), then back off. Don't leave it on.
 - Soldering, assembly, or other physical building: discuss with Enoch first
   rather than assuming an approach - he does or supervises the physical
   work.
