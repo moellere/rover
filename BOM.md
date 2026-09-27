@@ -41,13 +41,25 @@ Nothing has drawn from Claude's $100 budget yet.
 
 ## In progress: onboard camera (next milestone after cliff sensors)
 
-Goal: mount the spare ESP32-WROVER T-Camera on the rover so it has its own
-eyes, ahead of Phase 3 (house-wide roaming, where the fixed workbench camera
-won't help). See [JOURNAL.md](JOURNAL.md) for the reasoning.
+Goal: mount an existing TTGO T-Camera (ESP32-WROVER-B, OV2640, hostname
+`redcam`) on the rover so it has its own eyes, ahead of Phase 3 (house-wide
+roaming, where the fixed workbench camera won't help). It already runs a
+working ESPHome build - camera streaming (SXGA, ports 8080 stream / 8081
+snapshot), a 0.96" OLED status display, a PIR motion sensor, and a restart
+switch - currently deployed fixed/USB-powered elsewhere. See
+[JOURNAL.md](JOURNAL.md) for the reasoning.
+
+**Power plan (researched, not yet built):** the T-Camera has its own onboard
+IP5306 power-management chip whose battery JST connector expects a
+**single-cell 3.7V LiPo** - wiring the rover's 3S pack (9-12.6V) into that
+connector would damage the charge IC. Safe path instead: buck converter ->
+5.0V -> the board's **micro-USB input** (a documented, standard power path
+for this board), not the battery connector.
 
 | Item | Qty | Purpose | Est. cost | Status |
 |---|---|---|---|---|
-| LM2596 adjustable buck converter (e.g. [Addicore LM2596](https://www.addicore.com/products/lm2596-step-down-adjustable-dc-dc-switching-buck-converter)) | 1 | Own dedicated 12.6V-pack -> camera power path (4.5-40V in, 1.25-37V out adjustable, ~2-3A), so the ESP32 camera's WiFi/capture current spikes don't share the L298N's already-tight 0.5A 5V regulator with the D1 Mini | $0 - Enoch has these in inventory | Confirmed available - output voltage still needs setting to match the T-Camera's input spec (5V expected, not yet confirmed) |
+| LM2596 adjustable buck converter (e.g. [Addicore LM2596](https://www.addicore.com/products/lm2596-step-down-adjustable-dc-dc-switching-buck-converter)) | 1 | Battery pack -> 5.0V for the camera, isolated from the L298N's already-tight 0.5A regulator | $0 - Enoch has these in inventory | Confirmed available; output needs setting to 5.0V and verifying with a multimeter before connecting |
+| USB power delivery into the T-Camera: either a spliced spare USB cable, or a USB breakout/screw-terminal adapter | 1 | Get the buck converter's 5V output into the T-Camera's micro-USB power input without touching its LiPo/JST charge circuit | $0 if a spare cable is used; ~$1-2 for a breakout adapter otherwise | **Decision pending** - Enoch choosing between splicing a cable (destructive, free) vs. a breakout adapter (clean, small cost) |
 | 3D-printed camera mount | 1 | Attaches the T-Camera to the chassis at a useful angle | $0 (PETG on hand, printer available) | Not yet designed |
 
 ## How to keep this current

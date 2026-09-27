@@ -27,8 +27,12 @@ yet installed; the guard logic for both is already live in firmware and will
 activate automatically once wired (see [BOM.md](BOM.md) for exact status).
 Home Assistant's connection to the device is stale and unused for control
 (see the 2026-09-27 entry) - a future cleanup item, not a blocker. Next
-milestone picked (see below): mount the spare ESP32-WROVER T-Camera on the
-rover for onboard vision, pending confirmation of its power requirements.
+milestone (see below): mount the existing TTGO T-Camera (hostname `redcam`)
+on the rover for onboard vision. It already runs a working
+ESPHome camera build; the power path is researched (buck converter -> 5V ->
+its micro-USB input) but not yet built, pending a small decision from Enoch.
+The rover itself is currently powered off (Enoch shut it down overnight to
+save the batteries) - not a code/firmware state, just physically off.
 Standing project rules now live in [CLAUDE.md](CLAUDE.md) - read that first.
 
 ---
@@ -227,3 +231,38 @@ a problem; the `CLAUDE.md` structure and what it captures.
 **Enoch-decided:** the constraints themselves, the budget mechanics, the 3D
 printing and physical-assembly workflow, confirming buck converters are on
 hand, and the documentation/software policy in full.
+
+### Update, same session - identified the camera, researched its power spec
+
+Enoch identified the exact board: a TTGO T-Camera, ESP32-WROVER-B,
+OV2640 V1.7, already on the network (hostname `redcam`) and reflashable.
+Turned out this isn't the unused spare assumed earlier - it's
+an *existing, working* ESPHome device (`wrovercam.yaml` in the private
+config repo): camera streaming at SXGA over its own web server (ports 8080
+stream / 8081 snapshot), a 0.96" OLED showing motion/time/IP, a PIR motion
+sensor, and a scheduled daily reboot. Currently deployed fixed and
+USB-powered elsewhere - moving it to the rover means solving power for a
+battery-mounted context instead.
+
+Researched the board before wiring anything to it (avoided a real risk:
+guessing wrong here could fry the board). Finding: it has an onboard IP5306
+power-management chip whose battery JST connector expects a **single-cell
+3.7V LiPo** - directly wiring the rover's 3S pack (9-12.6V) there would
+damage the charge IC. The board also accepts power via **micro-USB (5V)**,
+a safe, standard, documented path. Plan: LM2596 buck converter set to 5.0V
+(verify with a multimeter first) feeding into the T-Camera's micro-USB
+input, not its battery connector. Logged in `BOM.md`, including the one
+remaining open decision: splice a spare USB cable (free, destructive) vs.
+buy a small USB breakout/screw-terminal adapter (~$1-2, clean) to actually
+deliver that 5V into the port - left for Enoch per the "discuss before
+building" rule in `CLAUDE.md`.
+
+Also noted: the rover itself is powered off for the night (batteries saved,
+not a firmware/config state).
+
+**Claude-driven:** researching the board's real power spec before acting on
+an assumption, and catching the JST/LiPo-connector risk before it became a
+mistake.
+
+**Enoch-decided:** identifying the exact board and confirming it's
+reflashable; still pending his choice on cable-splice vs. breakout adapter.
