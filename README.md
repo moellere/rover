@@ -72,6 +72,12 @@ Two more layers are built into the firmware:
   resume), protecting the Li-ion cells from over-discharge. Wired and
   calibrated: the sensor reads 11.77V against a multimeter's 11.79V.
 
+## Hardware designs
+
+`hardware/` holds parametric OpenSCAD parts (currently the camera mount) with
+their rendered STLs and a README covering render, slice, and print. The
+design/slicing toolchain installs with `scripts/install-tools.sh`.
+
 ## Scripts
 
 - `scripts/rover_ctl.py` - CLI for driving the rover directly over ESPHome's

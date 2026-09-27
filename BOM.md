@@ -64,7 +64,8 @@ before connecting the camera.
 | LM2596 adjustable buck converter (e.g. [Addicore LM2596](https://www.addicore.com/products/lm2596-step-down-adjustable-dc-dc-switching-buck-converter)) | 1 | Battery pack -> 5.0V for the camera, isolated from the L298N's already-tight 0.5A regulator | $0 - Enoch has these in inventory | Confirmed available; output needs setting to 5.0V and verifying with a multimeter before connecting |
 | Spare micro-USB cable, spliced | 1 | Buck converter 5V output -> T-Camera micro-USB power input (red = +5V, black = GND - verify by continuity; data wires left unconnected and insulated). Keeps the camera off its LiPo/JST charge circuit entirely | $0 - Enoch has spares | Decided, not yet built |
 | 3.7V single-cell Li-ion pack (on the T-Camera's own JST battery connector) | 1 | Backup power: USB runs the board and charges this cell via the onboard IP5306; if the main pack dies, the camera keeps running so a stranded rover can still report where it is | $0 - Enoch has a spare | Planned - add only after the USB path is built and verified; measure the IP5306's charge-current draw on the main pack first (can reach ~2A) |
-| 3D-printed camera mount | 1 | Attaches the T-Camera to the chassis at a useful angle | $0 (PETG on hand, printer available) | Not yet designed - see handoff notes in JOURNAL.md |
+| 3D-printed camera mount (`hardware/camera-mount.scad`) | 1 | Cradle standing the T-Camera upright on the Makeblock plate (8mm M4 grid), lens/PIR/OLED forward, 10° down-tilt, open front, USB window in the back | $0 (PETG on hand, printer available) | Designed, renders clean; **waiting on caliper measurements of the board** before slicing/printing |
+| M4 x 8-10mm screws + nuts | 2 | Bolt the mount to the Makeblock plate | $0 - Makeblock kit hardware | On hand (kit) |
 
 ## How to keep this current
 

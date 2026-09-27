@@ -29,12 +29,77 @@ Home Assistant's connection to the device is stale and unused for control
 (see the 2026-09-27 entry) - a future cleanup item, not a blocker. Next
 milestone (see below): mount the existing TTGO T-Camera (hostname `redcam`)
 on the rover for onboard vision. It already runs a working
-ESPHome camera build; the power path is decided (buck converter at 5.0V ->
-spliced USB cable -> its micro-USB input) and waiting on Enoch to build it.
-Next after that: design/slice a 3D-printed camera mount. The rover itself is
-currently powered off (Enoch shut it down overnight to save the batteries) -
-not a code/firmware state, just physically off.
-Standing project rules now live in [CLAUDE.md](CLAUDE.md) - read that first.
+ESPHome camera build (rebuilt and reflashed on ESPHome 2026.8.1 - pipeline
+proven, snapshots work), and Claude may reflash it freely. Power path decided
+(buck converter at 5.0V -> spliced USB cable -> its micro-USB input); Enoch is
+building the splice. The camera mount is designed (`hardware/camera-mount.scad`)
+and renders, but **needs six caliper measurements of the board** before
+slicing. Slicing itself is blocked on a one-line sudo apt install on the dev
+VM (Enoch offered; see the 2026-09-28 entry). The rover is powered off
+overnight. Proposed next goal after Phase 1: visual homing (in `CLAUDE.md`).
+Standing project rules live in [CLAUDE.md](CLAUDE.md) - read that first.
+
+---
+
+## 2026-09-28 - Session 2: tooling, camera mount design, pipeline checks
+
+**Model:** Claude Fable 5.1 (`claude-fable-5-1`) - third model on the
+project, picked up from the docs plus the running conversation.
+
+### Guidance from Enoch this session
+- Proceed independently on the authorized work (camera firmware, mount design)
+  and *define the next goal* after workbench mastery.
+- The T-Camera (`redcam`) may be reflashed without asking - that device only.
+- Print preferences: tree supports when needed, no brim.
+- He can run sudo installs on the dev VM if asked.
+- Signing off for the night; keep working within the rules but watch his
+  Claude token budget (Fable has a limit; fallback is Opus 5.5 or waiting).
+
+### What happened
+- **Imagery confirmed:** pulled a 1280x1024 frame from the T-Camera's snapshot
+  server (port 8081) - the board currently looks across a desk, tilted.
+- **Research, sourced:** the Makeblock plate is an 8mm M4 grid in 2mm
+  aluminum (Core Electronics / Studica listings). LilyGO's repo has the V1.7
+  schematic and an official ESPHome config *without* mirror/flip - so the
+  flips in the current config are from today's mounting, to be reset once
+  it's upright on the rover. No 3D model or dimension drawing exists for the
+  V1.7 anywhere found, hence the caliper request.
+- **Firmware pipeline:** compiled the existing camera config on the current
+  toolchain (esp-idf, clean apart from expected strapping-pin warnings) and
+  OTA-flashed it; the camera came back serving frames. No config changes yet
+  - orientation flags wait for mounting.
+- **Printer found:** the Sidewinder X4 Plus is Klipper on an MKS Pi, reachable
+  through Moonraker (read endpoints need no key); 300x300 bed, 0.4 nozzle.
+- **Toolchain, no root:** OpenSCAD 2021.01 and OrcaSlicer 2.4.2 installed as
+  extracted AppImages under `~/.local` via `scripts/install-tools.sh`
+  (wrapper scripts, not symlinks - AppRun breaks otherwise). Orca has a
+  built-in "Artillery Sidewinder X4 Plus 0.4 nozzle" profile and Generic
+  PETG. It still needs GTK/WebKitGTK host libraries - bundling them
+  user-side would mean ~300 packages, so the script documents one sudo
+  `apt-get` line instead; Enoch offered to run it.
+- **Mount designed:** `hardware/camera-mount.scad`, a parametric cradle with
+  side rails, open front, USB window, 10° down-tilt, M4 slots on the 8mm
+  grid. Rendered to STL and checked visually (matplotlib, since headless
+  OpenSCAD can't make PNGs here): the first render leaned the wrong way
+  (lens looking up) - fixed by rotating past vertical instead of short of
+  it. Dimensions are placeholders pending measurement.
+
+### Decisions
+**Claude-driven:** the visual-homing goal proposal; OrcaSlicer over
+PrusaSlicer (built-in X4 Plus profile; PrusaSlicer 2.9.6 has no Linux
+build); the cradle-with-rails mount design and 10° tilt; flashing the
+rebuilt firmware as a pipeline check.
+
+**Enoch-decided:** the flash permission scope, print preferences, offering
+sudo, and the token-budget constraint.
+
+### Open for next session
+1. Enoch: run the apt line (in `install-tools.sh`), measure the board, build
+   the USB splice.
+2. Claude: set the `pcb_*` values, re-render, slice with tree supports / no
+   brim, then ask Enoch to start the print.
+3. After mounting: fix camera orientation flags, drop stream resolution for
+   latency, reflash.
 
 ---
 

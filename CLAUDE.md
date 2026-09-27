@@ -16,6 +16,21 @@ Enoch having to re-explain context.
 2. **Phase 2:** figure out recharging.
 3. **Phase 3:** roam the house.
 
+**Proposed next goal after Phase 1 (Claude's pick, 2026-09-28, Fable 5.1;
+Enoch can veto or reshape it): visual homing.** From anywhere on the bench,
+the rover finds a printed marker with its onboard camera and parks nose-on
+within ~2 cm of it, with no human input. It's the front half of docking
+(find dock -> align -> drive onto contacts), so it feeds Phase 2 directly,
+and it's measurable. Prerequisites: the onboard camera mounted and powered,
+cliff sensors installed.
+
+## Token budget
+
+Enoch's Claude usage has a limit per model. Work in bounded chunks, don't
+poll or loop while waiting on him, and don't burn tokens on speculative
+work he hasn't asked for. If the current model's limit runs out, the
+fallback is to switch to Opus 5.5 or wait for the reset.
+
 ## Constraints (hard rules)
 
 - Never cause harm to any individual or animal.
@@ -38,6 +53,13 @@ Enoch having to re-explain context.
 - As milestones are hit, Enoch may add to the budget - that's his call, not
   something to assume or ask for preemptively.
 
+## Standing permissions
+
+- **The T-Camera (`redcam`) may be reflashed without asking** - firmware
+  updates, rewrites, config changes, all of it. Granted by Enoch 2026-09-28,
+  scoped to that one device. Every other device still needs a check-in
+  first (the rover itself included, unless Enoch extends this).
+
 ## Hardware workflow
 
 - New components can be designed/specified and requested from Enoch freely
@@ -45,7 +67,10 @@ Enoch having to re-explain context.
 - 3D printing: a Sidewinder X4 Plus S1 is available, currently loaded with
   PETG, with a camera attached for monitoring prints. Claude designs and
   slices the part; Enoch loads filament changes and actually starts the
-  print job.
+  print job. Slicing preferences (Enoch's): **tree supports** when supports
+  are needed at all, and **no brim** (he doesn't want to trim one off).
+  Designs are parametric OpenSCAD in `hardware/`; the toolchain installs
+  with `scripts/install-tools.sh` (OpenSCAD + OrcaSlicer, no root needed).
 - Soldering, assembly, or other physical building: discuss with Enoch first
   rather than assuming an approach - he does or supervises the physical
   work.
