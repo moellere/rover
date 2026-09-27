@@ -35,6 +35,8 @@ wall      = 3.0;    // rail/backplate/pedestal thickness
 clear     = 0.3;    // slot clearance around the PCB (PETG shrinks a little)
 rail_d    = 3.0;    // how deep each rail overlaps the PCB edge
 lip       = 2.0;    // front lip height that stops the board sliding forward
+lip_len   = 4.5;    // length of each corner lip along the board edge (must stay
+                    // inside the component-free zones at both board ends)
 tab_w     = 5.0;    // width of the two bottom corner tabs the board rests on
 tilt      = 10;     // degrees the camera looks DOWN from horizontal
 base_l    = 44;     // base plate length (along the rover's travel axis)
@@ -82,11 +84,21 @@ module cradle_flat() {
       for (s = [-1, 1])
         translate([s*(inner_w/2) - (s<0 ? wall : 0), -usb_clear, z0])
           cube([wall, usb_clear + h, depth]);
-      // front lips: overlap the board's FRONT face by rail_d along each edge
-      // (v3 had these stepping outward onto the walls - fixed: step inward)
-      for (s = [-1, 1])
-        translate([s > 0 ? inner_w/2 - rail_d : -inner_w/2, 0, inner_t])
-          cube([rail_d, h, lip]);
+      // front lips at the FOUR CORNERS only. The board's front face is busy
+      // right up to its edges (buttons at the edges ~8 mm up, OLED glass
+      // nearly full-width near the top), so full-length lips would collide;
+      // only the bottom ~8 mm and top ~6 mm are component-free. Insert the
+      // board bottom-first under the lower lips, then tilt the top back past
+      // the chamfered upper lips.
+      for (s = [-1, 1]) {
+        x0 = (s > 0) ? inner_w/2 - rail_d : -inner_w/2;
+        translate([x0, 0, inner_t]) cube([rail_d, lip_len, lip]);            // bottom corners
+        translate([x0, h - lip_len, inner_t])                                  // top corners, chamfered
+          hull() {
+            cube([rail_d, lip_len, 0.01]);
+            translate([0, 0, lip]) cube([rail_d, lip_len - lip, 0.01]);
+          }
+      }
       // two bottom corner tabs INSIDE the rails, under the board's bottom
       // edge, so the board actually rests on them (same v3 fix)
       for (s = [-1, 1])
