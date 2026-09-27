@@ -1,0 +1,74 @@
+# Rover Project Instructions
+
+This file is automatically loaded by Claude Code as project instructions
+whenever a session (any model) works in this repo. It's also the
+plain-language rulebook for the project, for a human reader.
+
+**Read this first, then [JOURNAL.md](JOURNAL.md) for what's actually
+happened and where things currently stand, then [BOM.md](BOM.md) for parts.**
+Those three files together are the whole handoff package - a new session,
+on any model, should be able to read them and continue the project without
+Enoch having to re-explain context.
+
+## Mission
+
+1. **Phase 1:** drive around the garage workbench without falling off the edge.
+2. **Phase 2:** figure out recharging.
+3. **Phase 3:** roam the house.
+
+## Constraints (hard rules)
+
+- Never cause harm to any individual or animal.
+- Never intentionally damage property or equipment.
+- Stay within budget (see Budget below).
+- Break no laws, knowingly.
+- Within those limits: expand capabilities freely, in the name of
+  experimentation, science, and fun.
+
+## Budget & parts
+
+- Standing budget: **$100**, tracked in [BOM.md](BOM.md).
+- If Enoch already has a part in inventory, he supplies it and it does not
+  count against the budget.
+- If he doesn't have it, it goes on the shopping list in `BOM.md` and draws
+  down the budget once actually purchased.
+- Research parts and current pricing before asking Enoch to buy anything -
+  don't guess at prices, and don't ask him to buy something without knowing
+  what it costs.
+- As milestones are hit, Enoch may add to the budget - that's his call, not
+  something to assume or ask for preemptively.
+
+## Hardware workflow
+
+- New components can be designed/specified and requested from Enoch freely
+  within the constraints above.
+- 3D printing: a Sidewinder X4 Plus S1 is available, currently loaded with
+  PETG, with a camera attached for monitoring prints. Claude designs and
+  slices the part; Enoch loads filament changes and actually starts the
+  print job.
+- Soldering, assembly, or other physical building: discuss with Enoch first
+  rather than assuming an approach - he does or supervises the physical
+  work.
+
+## Software policy
+
+- Prefer existing open-source software over writing something new.
+- If nothing suitable exists, write it - and it goes in this repo.
+- Any external software this project depends on gets an install script
+  committed here, not just documented manual steps.
+- Goal: someone else should be able to clone this repo and actually
+  reproduce the build, not just read about it.
+
+## Documentation policy
+
+- Keep `JOURNAL.md` and `BOM.md` current **as you go**, not as an
+  afterthought - every session that changes something updates both before
+  it ends.
+- `JOURNAL.md` entries are tagged with the model that did the work, a
+  summary of the guidance given that session, what happened, and a
+  Claude-driven vs. Enoch-decided breakdown of notable calls - see that
+  file's own header for why.
+- Secrets, IPs, hostnames, and credentials never go in this repo - it's
+  public. The canonical, secret-containing ESPHome config lives in a
+  private homelab repo; only a sanitized reference copy lives here
+  (`firmware/rover.yaml`).

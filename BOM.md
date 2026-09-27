@@ -39,6 +39,17 @@ Firmware support for all of these is already written and waiting (see
 
 Nothing has drawn from Claude's $100 budget yet.
 
+## In progress: onboard camera (next milestone after cliff sensors)
+
+Goal: mount the spare ESP32-WROVER T-Camera on the rover so it has its own
+eyes, ahead of Phase 3 (house-wide roaming, where the fixed workbench camera
+won't help). See [JOURNAL.md](JOURNAL.md) for the reasoning.
+
+| Item | Qty | Purpose | Est. cost | Status |
+|---|---|---|---|---|
+| Buck converter (voltage regulator) | 1 | Own dedicated 12.6V-pack -> camera power path, so the ESP32 camera's WiFi/capture current spikes don't share the L298N's already-tight 0.5A 5V regulator with the D1 Mini | $0 - Enoch has these in inventory | Available if needed - pending confirmation of the T-Camera board's exact input spec |
+| 3D-printed camera mount | 1 | Attaches the T-Camera to the chassis at a useful angle | $0 (PETG on hand, printer available) | Not yet designed |
+
 ## How to keep this current
 
 - When a shopping-list item is actually acquired, move it into the BOM table

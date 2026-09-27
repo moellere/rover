@@ -26,7 +26,10 @@ against a multimeter's 11.79V). The two IR cliff sensors are ordered but not
 yet installed; the guard logic for both is already live in firmware and will
 activate automatically once wired (see [BOM.md](BOM.md) for exact status).
 Home Assistant's connection to the device is stale and unused for control
-(see the 2026-09-27 entry) - a future cleanup item, not a blocker.
+(see the 2026-09-27 entry) - a future cleanup item, not a blocker. Next
+milestone picked (see below): mount the spare ESP32-WROVER T-Camera on the
+rover for onboard vision, pending confirmation of its power requirements.
+Standing project rules now live in [CLAUDE.md](CLAUDE.md) - read that first.
 
 ---
 
@@ -167,3 +170,55 @@ with a multimeter: 11.79V. Solved for the correct factor
 OTA-flashed, and re-read the sensor: 11.77V - within noise of the multimeter
 reading. Battery monitoring is now fully installed and verified accurate, not
 just wired.
+
+### Update, same session - project constraints, next milestone, documentation policy
+
+Enoch turns didn't actually end the session yet - three more rounds of
+guidance came in before the model switch:
+
+1. Asked what Claude would tackle next (besides the already-ordered cliff
+   sensors), and laid out the standing constraints this project operates
+   under: never harm a person or animal, never intentionally damage property
+   or equipment, stay within budget, break no laws knowingly - and within
+   those limits, expand capabilities freely for experimentation, science,
+   and fun. Parts requests go through Enoch; anything he already has doesn't
+   count against budget, anything he doesn't goes on the shopping list and
+   draws the budget down. Claude is expected to research parts and current
+   pricing before asking for a purchase. Budget increases happen at Enoch's
+   discretion as milestones are hit. 3D printing is available (a Sidewinder
+   X4 Plus S1, currently loaded with PETG, with a camera attached for
+   monitoring) - Claude designs and slices, Enoch loads/starts the actual
+   print. Physical building/soldering gets discussed before either of them
+   just does it.
+   - Claude's pick for "what's next": mount the already-owned, currently
+     unused ESP32-WROVER T-Camera on the rover for onboard vision - zero
+     budget cost, and necessary before Phase 3 (the fixed workbench camera
+     won't help once the rover leaves that room). Flagged one open question
+     before committing: the L298N's 5V regulator is already tight at 0.5A,
+     so the camera almost certainly needs its own power path rather than
+     sharing that rail - asked Enoch to identify the T-Camera board's exact
+     input spec.
+2. Enoch confirmed he has buck converters in inventory already, covering
+   that power-path need at no budget cost if one turns out to be necessary.
+3. Added a documentation/software policy: keep the journal, BOM, and other
+   docs current *as changes happen*, not after the fact. Prefer open-source
+   software over writing new code; if something has to be written, it goes
+   in this repo; any external software this project depends on gets a
+   scripted install, not manual instructions. The explicit goal: someone
+   else should be able to clone this repo and actually reproduce the build.
+
+Created `CLAUDE.md` at the repo root to hold all of this as a standing
+rulebook - it's auto-loaded by Claude Code as project instructions for any
+future session in this repo, on any model, which directly serves the
+"pick up where we left off across model switches" goal this whole
+journal/BOM/CLAUDE.md system exists for. Updated `BOM.md` with an "in
+progress" section tracking the camera-mount investigation (buck converter,
+3D-printed mount) ahead of it becoming a full BOM line.
+
+**Claude-driven:** picking the onboard-camera milestone and its
+justification; identifying the shared-regulator power risk before it caused
+a problem; the `CLAUDE.md` structure and what it captures.
+
+**Enoch-decided:** the constraints themselves, the budget mechanics, the 3D
+printing and physical-assembly workflow, confirming buck converters are on
+hand, and the documentation/software policy in full.

@@ -8,7 +8,11 @@ reference copy of its ESPHome firmware.
 This is a collaborative build between Enoch and Claude (Anthropic) - see
 [JOURNAL.md](JOURNAL.md) for the full history, including which model did the
 work at each stage and a running breakdown of which decisions were
-Claude-driven versus Enoch-directed.
+Claude-driven versus Enoch-directed. [CLAUDE.md](CLAUDE.md) holds the
+project's standing rules (mission, constraints, budget policy, how hardware
+and software decisions get made) - it's auto-loaded by Claude Code as project
+instructions, and doubles as the plain-language rulebook for anyone reading
+along.
 
 ## The mission
 
