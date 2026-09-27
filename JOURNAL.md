@@ -211,6 +211,10 @@ sudo, and the token-budget constraint.
   14.4 V 2600 mAh replacements run ~$17 (eBay) to ~$20-25 (Amazon/Walmart).
   Proposed on the BOM shopping list against Claude's budget; awaiting OK.
 
+- Plot twist: the Eufy's pack isn't dead - its bottom power switch was off.
+  Enoch cancelled the battery order; the ledger is back to $0 spent. The IR
+  drive test can happen as soon as it's charged.
+
 ### Open for next session
 1. Enoch: measure the board (six numbers in the `.scad` header), build the
    USB splice, print the marker page (`hardware/markers/`), answer the

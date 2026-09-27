@@ -9,11 +9,11 @@ to just go buy something himself (as with the IR sensors below), it doesn't
 draw against it. Update the running total every time something *is* drawn
 from it - don't let it go stale.
 
-**Budget spent so far: $18.10 — remaining: $81.90** (as of 2026-09-28)
+**Budget spent so far: $0.00 — remaining: $100.00** (as of 2026-09-28)
 
 | Date | Item | Cost |
 |---|---|---|
-| 2026-09-28 | Eufy RoboVac 12 replacement battery, NASTIMA 14.4 V 2600 mAh (Amazon) | $18.10 |
+| 2026-09-28 | ~~Eufy RoboVac 12 replacement battery (Amazon)~~ ordered at $18.10, then cancelled the same evening - the vacuum's bottom power switch was off, the pack is fine | $0.00 |
 
 ## Bill of Materials (currently in the design)
 
@@ -39,10 +39,9 @@ Firmware support for all of these is already written and waiting (see
 | Item | Qty | Purpose | Est. cost | Status |
 |---|---|---|---|---|
 | IR reflectance sensor module (e.g. TCRT5000-based) | 2 | Front-left / front-right cliff detection, into MCP23008 pins 4 and 5 | N/A - purchased directly by Enoch, not drawn from Claude's budget | **Ordered**, awaiting delivery/install |
-| Eufy RoboVac 12 replacement battery, 14.4 V 2600 mAh Li-ion (fits 11/11S/12/15C/15T/30) | 1 | The original pack is dead (lights on the dock, never runs); needed before the Eufy path can move at all | $18.10 (NASTIMA, Amazon) - drawn from Claude's budget | **Ordered** 2026-09-28 |
 | Electrolytic capacitor, 470-1000µF (contingency) | 1 | Only if brownouts/WiFi drops show up once the cliff sensors share the L298N's 5V rail with the radio | ~$1, would draw from budget if needed | Not needed unless that happens |
 
-First draw on the budget: the Eufy battery, $18.10.
+Nothing has drawn from Claude's $100 budget yet.
 
 ## In progress: onboard camera (next milestone after cliff sensors)
 
@@ -76,7 +75,7 @@ before connecting the camera.
 
 | Item | Qty | Purpose | Source | Status |
 |---|---|---|---|---|
-| Eufy RoboVac 12 (+ its dock and IR remote) | 1 | House chassis with native docking/charging, cliff and bumper behaviour; driven by IR | Inventory | Dock delivers power (lights on contact) but the pack is dead - replacement on the shopping list |
+| Eufy RoboVac 12 (+ its dock and IR remote) | 1 | House chassis with native docking/charging, cliff and bumper behaviour; driven by IR | Inventory | Confirmed working: it had simply been switched off at the bottom power switch |
 | IR receiver module (VS1838B-type) | 1 | Captured the remote's codes; stays for adding buttons | Inventory | Wired, GPIO14 |
 | IR LED (940 nm) + 100R resistor | 1 | Transmit codes to the vacuum's receiver from the lid | Inventory | Wired, GPIO4 |
 | ESP32-WROOM-32D devkit (`esp32dev`) | 1 | IR bridge node `eufy-ir` (`firmware/eufy-ir.yaml`) | Inventory | Flashed, online, 6 captured-code buttons |
