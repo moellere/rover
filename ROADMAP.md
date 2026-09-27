@@ -29,7 +29,26 @@ parks nose-on within ~2 cm, unattended.
 | 1.4 | `home_to_marker` | 1.2, 1.3, 0.5 | closed loop: pivot until centred, approach in pulses, stop at range; abort on cliff/battery/lost marker |
 | 1.5 | Bench lap demo | all above | drive a lap around a clutter-free zone using markers as waypoints |
 
-## Tier 2 - recharging (Phase 2)
+## Tier 2R - the Roomba path (issue #1; decided 2026-09-28)
+
+Enoch has an old Roomba with the Open Interface port. Decision: it becomes
+the **house chassis** (Phase 3) and the way into Phase 2, conditional on
+model and battery health; the Makeblock rover stays the bench platform.
+The OI gives docking+charging (`Seek Dock`), 4 cliff sensors, bump and
+wheel-drop, wheel encoders, and battery telemetry - which retires most of
+Tier 2 and half of Tier 3 below for the house robot. Bench work (Tiers 0-1)
+is unchanged and comes first.
+
+| # | Item | Needs | Notes |
+|---|---|---|---|
+| 2R.1 | Identify and health-check | Enoch: model number, powers on, charges on dock | fixes OI version (57600 SCI on 4xx vs 115200 OI on 5xx+) and features |
+| 2R.2 | Port cable | 7-pin mini-DIN plug/cable (inventory or ~$5) | pins 1-2 Vbat, 3 RXD, 4 TXD, 5 BRC/wake, 6-7 GND |
+| 2R.3 | Controller + firmware | an ESP with a free UART; resistor divider on Roomba TX; LM2596 from Vbat | build on `dynodix/esphome-roomba` (SCI/OI external component) or `philpownall/ESPHomeRoomba` (MIT); the D1 Mini or a spare ESP32 |
+| 2R.4 | Brain backend | 2R.3 | second platform behind the same `drive`/`status`/`stop` tools; `status` gains cliff x4, bump, encoders, charge state |
+| 2R.5 | Dock/charge | 2R.3 | `Seek Dock` on low battery; confirm charge state from telemetry |
+| 2R.6 | Camera on the Roomba | mount, power | the port's Vbat is behind a **200 mA PTC fuse** (~2.4 W after the buck) - fine for the ESP, marginal with a streaming camera; use the camera's 3.7 V backup cell or a direct battery tap |
+
+## Tier 2 - recharging (Phase 2) - *now the Makeblock-only path; deferred unless the Roomba falls through*
 
 | # | Item | Needs | Notes |
 |---|---|---|---|

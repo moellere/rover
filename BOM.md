@@ -67,6 +67,15 @@ before connecting the camera.
 | 3D-printed camera mount (`hardware/camera-mount.scad`) | 1 | Pedestal cradle standing the T-Camera upright on the Makeblock plate (8mm M4 grid), lens/PIR/OLED forward, 10° down-tilt, open front, open gap under the board for the bottom-edge micro-USB plug, rear cable window | $0 (~17 g PETG, ~1h15m print) | Designed, sliced with placeholder dims (`hardware/prints/`); **waiting on caliper measurements of the board** before the real print |
 | M4 x 8-10mm screws + nuts | 2 | Bolt the mount to the Makeblock plate | $0 - Makeblock kit hardware | On hand (kit) |
 
+## Candidate: Roomba house chassis (issue #1)
+
+| Item | Qty | Purpose | Source | Status |
+|---|---|---|---|---|
+| Old Roomba with Open Interface (mini-DIN) port | 1 | House chassis: drivetrain, dock+charge, 4 cliff sensors, bump, encoders, battery telemetry | Inventory | Decided conditionally - model number and battery health pending |
+| 7-pin mini-DIN plug or cable | 1 | Connect to the OI port | Inventory? else ~$5 from budget | Pending |
+| Resistors for a 5 V -> 3.3 V divider on Roomba TX | 2 | Level-shift the Roomba's serial output for an ESP | Inventory | Pending |
+| ESP with a free UART (D1 Mini or a spare ESP32) + LM2596 | 1 | OI controller, powered from the port's Vbat (200 mA PTC fuse) | Inventory | Pending |
+
 ## Later: one-board consolidation (after visual homing)
 
 Option Enoch raised, kept on file: drive the L298N from the T-Camera over its

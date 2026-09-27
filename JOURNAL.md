@@ -143,9 +143,19 @@ sudo, and the token-budget constraint.
   the printable homing marker and the brain's marker detector as groundwork
   (see the roadmap and `brain/markers.py`).
 
+- **Issue #1 (Enoch): an old Roomba with the Open Interface port as a
+  chassis.** Researched the OI spec and the open-source ESPHome components
+  for it. Decision (Claude-driven, posted on the issue): adopt it as the
+  house chassis and the path into Phase 2 - docking/charging, cliff x4,
+  bump, encoders and battery telemetry come built in, retiring the dock/
+  charger/BMS build - conditional on model and battery health; keep the
+  Makeblock rover for the bench. Roadmap gained Tier 2R; BOM a candidate
+  section. Waiting on Enoch for model number, health, and a mini-DIN plug.
+
 ### Open for next session
 1. Enoch: measure the board (six numbers in the `.scad` header), build the
-   USB splice, print the marker page (`hardware/markers/`).
+   USB splice, print the marker page (`hardware/markers/`), answer the
+   Roomba questions on issue #1.
 2. Claude: set the `pcb_*`/`usb_*` values, re-render, re-slice via
    `hardware/slicing/slice.sh`, replace the placeholder files on the printer,
    then ask Enoch to start the print.
