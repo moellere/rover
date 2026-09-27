@@ -26,7 +26,9 @@ usb_x     = 0.0;    // micro-USB centre offset from the board's centreline
                     // lens side), mm                        <- measure
 usb_plug_w = 12.0;  // width of the micro-USB PLUG overmold (not the socket)
 usb_plug_t = 8.0;   // thickness of the plug overmold (front-to-back)
-usb_clear  = 16.0;  // gap under the board for plug body + cable bend
+usb_clear  = 16.0;  // gap under the board for the plug body (cable goes straight down)
+cable_slot_w = 13.0; // base pass-through for the cable, wide enough for the plug overmold
+cable_slot_l = 16.0; // ... and long enough to cover the 10-degree tilt offset
 
 // ---- Mount geometry --------------------------------------------------------
 wall      = 3.0;    // rail/backplate/pedestal thickness
@@ -58,6 +60,12 @@ module base() {
     for (x = [-mb_pitch, mb_pitch])
       hull() for (y = [-slot_len/2, slot_len/2])
         translate([x, y, -1]) cylinder(d=m4_hole, h=base_t+2);
+    // cable pass-through: the USB lead runs straight down from the board's
+    // bottom edge, in line with the board, through here and then through the
+    // Makeblock plate's own hole on the centreline below. Centred slightly
+    // aft (+y) because the 10-degree lean puts the bottom edge behind the pivot.
+    hull() for (y = [3 - (cable_slot_l - cable_slot_w)/2, 3 + (cable_slot_l - cable_slot_w)/2])
+      translate([usb_x, y, -1]) cylinder(d=cable_slot_w, h=base_t+2);
   }
 }
 
