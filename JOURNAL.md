@@ -29,11 +29,49 @@ Home Assistant's connection to the device is stale and unused for control
 (see the 2026-09-27 entry) - a future cleanup item, not a blocker. Next
 milestone (see below): mount the existing TTGO T-Camera (hostname `redcam`)
 on the rover for onboard vision. It already runs a working
-ESPHome camera build; the power path is researched (buck converter -> 5V ->
-its micro-USB input) but not yet built, pending a small decision from Enoch.
-The rover itself is currently powered off (Enoch shut it down overnight to
-save the batteries) - not a code/firmware state, just physically off.
+ESPHome camera build; the power path is decided (buck converter at 5.0V ->
+spliced USB cable -> its micro-USB input) and waiting on Enoch to build it.
+Next after that: design/slice a 3D-printed camera mount. The rover itself is
+currently powered off (Enoch shut it down overnight to save the batteries) -
+not a code/firmware state, just physically off.
 Standing project rules now live in [CLAUDE.md](CLAUDE.md) - read that first.
+
+---
+
+## 2026-09-27 - Session 1 (continued): model switch, camera power decision
+
+**Model:** Claude Opus 5.5 (`claude-opus-5-5`) - Enoch switched models
+mid-session, after everything in the Sonnet 5 entry below. First real test of
+the handoff: this model picked up from the conversation plus `CLAUDE.md`,
+`JOURNAL.md`, and `BOM.md`.
+
+### Guidance from Enoch
+- Offered three ways to power the T-Camera and left the pick to Claude: a
+  spare 3.7V Li-ion pack on the board's own battery connector, a 5-pin
+  connector on the bottom of the board that can supply power, or cutting a
+  spare USB cable.
+
+### What happened
+- Picked the spliced USB cable (buck converter at 5.0V -> micro-USB input).
+  Why not the others:
+  - **Separate 3.7V pack:** works electrically (it's what the board's IP5306
+    charger is designed for), but it's a second battery to monitor and, in
+    Phase 2, a second thing to recharge. One pack keeps one charging target,
+    and the battery monitoring already calibrated covers it.
+  - **5-pin bottom connector:** its pinout would need verifying before
+    trusting it; USB is the documented, known-safe input.
+- Wiring spec written up for Enoch (and logged in `BOM.md`): buck input on the
+  L298N's +12V/GND terminals, downstream of the rover's power switch so the
+  camera powers off with the rover; set and verify 5.0V output with a
+  multimeter before connecting; verify USB wire colors by continuity; data
+  wires unconnected and insulated; camera's JST battery connector left empty.
+
+### Decisions
+**Claude-driven:** choosing the power source, and the tap point downstream of
+the power switch.
+
+**Enoch-decided:** offering the options and delegating the choice; he does the
+physical splice and wiring.
 
 ---
 

@@ -54,12 +54,15 @@ IP5306 power-management chip whose battery JST connector expects a
 **single-cell 3.7V LiPo** - wiring the rover's 3S pack (9-12.6V) into that
 connector would damage the charge IC. Safe path instead: buck converter ->
 5.0V -> the board's **micro-USB input** (a documented, standard power path
-for this board), not the battery connector.
+for this board), not the battery connector. Buck input taps the L298N's
++12V/GND terminals (downstream of the rover's power switch, so the camera
+powers off with the rover). Set and verify 5.0V output with a multimeter
+before connecting the camera.
 
 | Item | Qty | Purpose | Est. cost | Status |
 |---|---|---|---|---|
 | LM2596 adjustable buck converter (e.g. [Addicore LM2596](https://www.addicore.com/products/lm2596-step-down-adjustable-dc-dc-switching-buck-converter)) | 1 | Battery pack -> 5.0V for the camera, isolated from the L298N's already-tight 0.5A regulator | $0 - Enoch has these in inventory | Confirmed available; output needs setting to 5.0V and verifying with a multimeter before connecting |
-| USB power delivery into the T-Camera: either a spliced spare USB cable, or a USB breakout/screw-terminal adapter | 1 | Get the buck converter's 5V output into the T-Camera's micro-USB power input without touching its LiPo/JST charge circuit | $0 if a spare cable is used; ~$1-2 for a breakout adapter otherwise | **Decision pending** - Enoch choosing between splicing a cable (destructive, free) vs. a breakout adapter (clean, small cost) |
+| Spare micro-USB cable, spliced | 1 | Buck converter 5V output -> T-Camera micro-USB power input (red = +5V, black = GND - verify by continuity; data wires left unconnected and insulated). Keeps the camera off its LiPo/JST charge circuit entirely | $0 - Enoch has spares | Decided, not yet built |
 | 3D-printed camera mount | 1 | Attaches the T-Camera to the chassis at a useful angle | $0 (PETG on hand, printer available) | Not yet designed |
 
 ## How to keep this current
