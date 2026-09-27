@@ -9,7 +9,7 @@ except for the one `apt-get` line noted at the top of that script).
 | File | What | Status |
 |---|---|---|
 | `roomba-minidin-plug.scad` | 7-pin mini-DIN plug body for the Roomba's Open Interface port: seven solid-core wires held at the pin positions, keyed insert, gripped body. | **Shelved** - the Roomba was gone (issue #1). Test print #1 taught two fixes, now in the file: inset key groove instead of a rib, larger wire holes. Ready if a mini-DIN port reappears. |
-| `camera-mount.scad` | Cradle that stands the TTGO T-Camera upright on the Makeblock plate, lens/PIR/OLED facing forward, tilted 10° down. Open front, back window for the micro-USB lead, M4 slots on the plate's 8mm grid. | Designed and renders clean. **Board dimensions are placeholders** - measure the real board and set the `pcb_*` values before printing. |
+| `camera-mount.scad` | Cradle that stands the TTGO T-Camera upright on the Makeblock plate, lens/PIR/OLED facing forward, tilted 10° down. Open front, back window for the micro-USB lead, M4 slots on the plate's 8mm grid. | Board dimensions measured by Enoch (28.0 x 68.0 x 1.27 mm, 6 mm rear components). Sliced as `prints/camera-mount_v2`. |
 
 ## Render
 
