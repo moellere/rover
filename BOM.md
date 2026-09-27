@@ -72,7 +72,7 @@ before connecting the camera.
 | Item | Qty | Purpose | Source | Status |
 |---|---|---|---|---|
 | Old Roomba with Open Interface (mini-DIN) port | 1 | House chassis: drivetrain, dock+charge, 4 cliff sensors, bump, encoders, battery telemetry | Inventory | Decided conditionally - model number and battery health pending |
-| 7-pin mini-DIN plug or cable | 1 | Connect to the OI port | Inventory? else ~$5 from budget | Pending |
+| 7-pin mini-DIN plug, 3D-printed (`hardware/roomba-minidin-plug.scad`) + 7 solid-core wires | 1 | Connect to the OI port: the wires are the contacts, the print holds them at the pin positions | $0 (PETG + wire on hand) | Test-fit print sliced and on the printer |
 | Resistors for a 5 V -> 3.3 V divider on Roomba TX | 2 | Level-shift the Roomba's serial output for an ESP | Inventory | Pending |
 | ESP with a free UART (D1 Mini or a spare ESP32) + LM2596 | 1 | OI controller, powered from the port's Vbat (200 mA PTC fuse) | Inventory | Pending |
 
