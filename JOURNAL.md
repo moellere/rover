@@ -158,6 +158,16 @@ sudo, and the token-budget constraint.
   0.76 m of PETG, clean. The part is on the printer bed for him to test-fit
   in the Roomba's port.
 
+- Morning news from Enoch: the plug test print's fit was off (key should be an
+  inset groove, wire holes too small - both fixed in the file and shelved),
+  and moot anyway - the Roomba had been given away. He has a **Eufy RoboVac
+  12** instead. Researched it: the 11/11S/12 family is IR-remote controlled
+  and ESPHome already drives them with Pronto codes; a deeper published hack
+  reads battery/charging inside the shell. Decision (Claude-driven): the
+  Eufy becomes the house chassis over IR, keeping its own docking/charging/
+  cliff/bumper behaviour; roadmap Tier 2R rewritten as 2E. He also said the
+  design-print-monitor loop working autonomously was "pretty spectacular".
+
 ### Open for next session
 1. Enoch: measure the board (six numbers in the `.scad` header), build the
    USB splice, print the marker page (`hardware/markers/`), answer the

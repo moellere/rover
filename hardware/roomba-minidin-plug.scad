@@ -1,4 +1,8 @@
-// 7-pin mini-DIN plug body for the Roomba Open Interface port (issue #1).
+// 7-pin mini-DIN plug body for a Roomba Open Interface port (issue #1).
+// SHELVED 2026-09-28: the Roomba turned out to be gone. Test print #1 findings,
+// for whoever revives this: (a) the key must be an INSET groove in the insert,
+// not a protruding rib - the socket has a rib, the plug has the slot;
+// (b) the wire holes were too small - raise wire_d/ins_d. Both are fixed below.
 // Holds seven lengths of solid-core wire at the socket's pin positions, so the
 // wires themselves are the contacts (a well-worn Roomba hack, made repeatable).
 //
@@ -15,10 +19,10 @@
 // ---- fit parameters (tune with a test print) ------------------------------
 shell_d    = 9.2;    // insert OD; socket nominal 9.5 mm minus clearance
 insert_len = 8.0;    // how far the insert goes into the socket
-key_w      = 1.4;    // top key rib width  (set key_h = 0 if the socket has none)
-key_h      = 0.6;    // key rib height
-wire_d     = 0.75;   // hole for the bare conductor: 22 AWG solid = 0.64 mm
-ins_d      = 1.7;    // hole for the insulated wire behind the insert
+key_w      = 1.6;    // top key GROOVE width (socket rib goes in it)
+key_h      = 0.8;    // key groove depth
+wire_d     = 1.0;    // hole for the bare conductor (0.75 was too tight for 22 AWG after printing)
+ins_d      = 2.2;    // hole for the insulated wire behind the insert (1.7 was too tight)
 pin_proud  = 6.0;    // how far bare wire should stick out of the face (for info)
 
 // ---- grip --------------------------------------------------------------
@@ -38,8 +42,6 @@ module body() {
     // insert (face at z = 0, going +z into the socket... modelled face-down
     // so it prints face-up: insert on top of the grip)
     translate([0, 0, grip_len]) cylinder(d = shell_d, h = insert_len);
-    // key rib along the top of the insert
-    translate([-key_w/2, shell_d/2 - 0.3, grip_len]) cube([key_w, key_h + 0.3, insert_len]);
     // grip with a flat on top so "up" is obvious by touch
     difference() {
       cylinder(d = grip_d, h = grip_len);
@@ -58,4 +60,8 @@ module holes() {
   }
 }
 
-difference() { body(); holes(); }
+module key_groove() {  // inset groove along the top of the insert
+  translate([-key_w/2, shell_d/2 - key_h, grip_len - 1]) cube([key_w, key_h + 1, insert_len + 2]);
+}
+
+difference() { body(); holes(); key_groove(); }

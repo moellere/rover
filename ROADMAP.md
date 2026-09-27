@@ -29,26 +29,29 @@ parks nose-on within ~2 cm, unattended.
 | 1.4 | `home_to_marker` | 1.2, 1.3, 0.5 | closed loop: pivot until centred, approach in pulses, stop at range; abort on cliff/battery/lost marker |
 | 1.5 | Bench lap demo | all above | drive a lap around a clutter-free zone using markers as waypoints |
 
-## Tier 2R - the Roomba path (issue #1; decided 2026-09-28)
+## Tier 2E - the Eufy path (issue #1; revised 2026-09-28)
 
-Enoch has an old Roomba with the Open Interface port. Decision: it becomes
-the **house chassis** (Phase 3) and the way into Phase 2, conditional on
-model and battery health; the Makeblock rover stays the bench platform.
-The OI gives docking+charging (`Seek Dock`), 4 cliff sensors, bump and
-wheel-drop, wheel encoders, and battery telemetry - which retires most of
-Tier 2 and half of Tier 3 below for the house robot. Bench work (Tiers 0-1)
-is unchanged and comes first.
+The Roomba turned out to be gone; Enoch has a **Eufy RoboVac 12** instead.
+Decision: it becomes the house chassis, driven over **infrared** - the
+11/11S/12 family is controlled by an IR remote, and ESPHome already drives
+them with an IR LED and published Pronto codes. That keeps the vacuum's own
+docking, charging, cliff and bumper behaviour intact (recharging solved, as
+with the Roomba) at the cost of telemetry: no encoders or sensor readouts
+come back over IR. The camera and brain ride on the lid; the brain steers by
+vision. A later, deeper step taps the battery voltage and charging signal
+inside the shell (also a known hack). Bench work (Tiers 0-1) is unchanged
+and comes first.
 
 | # | Item | Needs | Notes |
 |---|---|---|---|
-| 2R.1 | Identify and health-check | Enoch: model number, powers on, charges on dock | fixes OI version (57600 SCI on 4xx vs 115200 OI on 5xx+) and features |
-| 2R.2 | Port cable | 7-pin mini-DIN plug/cable (inventory or ~$5) | pins 1-2 Vbat, 3 RXD, 4 TXD, 5 BRC/wake, 6-7 GND |
-| 2R.3 | Controller + firmware | an ESP with a free UART; resistor divider on Roomba TX; LM2596 from Vbat | build on `dynodix/esphome-roomba` (SCI/OI external component) or `philpownall/ESPHomeRoomba` (MIT); the D1 Mini or a spare ESP32 |
-| 2R.4 | Brain backend | 2R.3 | second platform behind the same `drive`/`status`/`stop` tools; `status` gains cliff x4, bump, encoders, charge state |
-| 2R.5 | Dock/charge | 2R.3 | `Seek Dock` on low battery; confirm charge state from telemetry |
-| 2R.6 | Camera on the Roomba | mount, power | the port's Vbat is behind a **200 mA PTC fuse** (~2.4 W after the buck) - fine for the ESP, marginal with a streaming camera; use the camera's 3.7 V backup cell or a direct battery tap |
+| 2E.1 | Health check | Enoch: does it run and dock-charge; is the remote around | a dead pack changes the plan (~$20-30 from budget) |
+| 2E.2 | Capture the remote's codes | IR receiver module (VS1838B-type, inventory?) on an ESP; `remote_receiver` dump | the 12 likely matches the 11S codes - verify by capture, don't assume |
+| 2E.3 | IR transmitter node | ESP32 with 2 free GPIOs (spare ESP32 or the D1 Mini) + IR LED, mounted on the lid aimed at the receiver | `remote_transmitter` with Pronto codes: forward/back/left/right/auto/home/start-stop |
+| 2E.4 | Brain backend | 2E.3 | same `drive`/`stop` tools; `status` limited to what the camera sees until 2E.6 |
+| 2E.5 | Camera on the lid | mount, power | its own 3.7 V cell via the IP5306 at first; charged by USB |
+| 2E.6 | Inside-the-shell telemetry (later) | open it up: battery voltage via divider, charging signal | published 11S wiring exists; gives low-battery and docked state |
 
-## Tier 2 - recharging (Phase 2) - *now the Makeblock-only path; deferred unless the Roomba falls through*
+## Tier 2 - recharging (Phase 2) - *now the Makeblock-only path; deferred unless the Eufy falls through*
 
 | # | Item | Needs | Notes |
 |---|---|---|---|

@@ -67,14 +67,16 @@ before connecting the camera.
 | 3D-printed camera mount (`hardware/camera-mount.scad`) | 1 | Pedestal cradle standing the T-Camera upright on the Makeblock plate (8mm M4 grid), lens/PIR/OLED forward, 10° down-tilt, open front, open gap under the board for the bottom-edge micro-USB plug, rear cable window | $0 (~17 g PETG, ~1h15m print) | Designed, sliced with placeholder dims (`hardware/prints/`); **waiting on caliper measurements of the board** before the real print |
 | M4 x 8-10mm screws + nuts | 2 | Bolt the mount to the Makeblock plate | $0 - Makeblock kit hardware | On hand (kit) |
 
-## Candidate: Roomba house chassis (issue #1)
+## Candidate: Eufy RoboVac 12 house chassis (issue #1)
 
 | Item | Qty | Purpose | Source | Status |
 |---|---|---|---|---|
-| Old Roomba with Open Interface (mini-DIN) port | 1 | House chassis: drivetrain, dock+charge, 4 cliff sensors, bump, encoders, battery telemetry | Inventory | Decided conditionally - model number and battery health pending |
-| 7-pin mini-DIN plug, 3D-printed (`hardware/roomba-minidin-plug.scad`) + 7 solid-core wires | 1 | Connect to the OI port: the wires are the contacts, the print holds them at the pin positions | $0 (PETG + wire on hand) | Test-fit print sliced and on the printer |
-| Resistors for a 5 V -> 3.3 V divider on Roomba TX | 2 | Level-shift the Roomba's serial output for an ESP | Inventory | Pending |
-| ESP with a free UART (D1 Mini or a spare ESP32) + LM2596 | 1 | OI controller, powered from the port's Vbat (200 mA PTC fuse) | Inventory | Pending |
+| Eufy RoboVac 12 (+ its dock and IR remote) | 1 | House chassis with native docking/charging, cliff and bumper behaviour; driven by IR | Inventory | Decided conditionally - run/charge check pending |
+| IR receiver module (VS1838B-type) | 1 | Capture the remote's codes once | Inventory? else ~$1 | Pending |
+| IR LED (940 nm) + resistor | 1 | Transmit codes to the vacuum's receiver from the lid | Inventory? else <$1 | Pending |
+| ESP32 with 2 free GPIOs (spare ESP32, or the D1 Mini once retired) | 1 | IR transmitter node | Inventory | Pending |
+
+(The Roomba plan - mini-DIN plug, level shifter - is shelved; the Roomba was gone.)
 
 ## Later: one-board consolidation (after visual homing)
 
