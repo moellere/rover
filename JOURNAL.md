@@ -197,6 +197,20 @@ sudo, and the token-budget constraint.
   the bed for him to de-support, test-fit the T-Camera, and bolt to the
   Makeblock plate.
 
+- Enoch's photos of the v3 print with the board in it exposed a third
+  problem beyond the two he named: full-length front lips can't work on
+  this board (buttons at the edges, OLED nearly full-width). v4 fixed the
+  outward-offset tabs/lips; v5 replaced the lips with 4.5 mm corner lips
+  (upper ones chamfered for tilt-in). He judged v5 workable; printing.
+- Power: the USB lead is soldered to the buck but there's only one, so it
+  can't feed both boards. Recommendation given: feed the D1 Mini from the
+  buck too (and disconnect it from the L298N's regulator - never parallel
+  two regulators), via breadboard rails for the bench phase or a second
+  soldered lead for anything that moves. Enoch's choice pending.
+- The Eufy's pack is dead (dock lights up, vacuum never runs). Researched:
+  14.4 V 2600 mAh replacements run ~$17 (eBay) to ~$20-25 (Amazon/Walmart).
+  Proposed on the BOM shopping list against Claude's budget; awaiting OK.
+
 ### Open for next session
 1. Enoch: measure the board (six numbers in the `.scad` header), build the
    USB splice, print the marker page (`hardware/markers/`), answer the
