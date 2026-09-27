@@ -9,7 +9,11 @@ to just go buy something himself (as with the IR sensors below), it doesn't
 draw against it. Update the running total every time something *is* drawn
 from it - don't let it go stale.
 
-**Budget spent so far: $0.00 — remaining: $100.00** (as of 2026-09-27)
+**Budget spent so far: $18.10 — remaining: $81.90** (as of 2026-09-28)
+
+| Date | Item | Cost |
+|---|---|---|
+| 2026-09-28 | Eufy RoboVac 12 replacement battery, NASTIMA 14.4 V 2600 mAh (Amazon) | $18.10 |
 
 ## Bill of Materials (currently in the design)
 
@@ -35,10 +39,10 @@ Firmware support for all of these is already written and waiting (see
 | Item | Qty | Purpose | Est. cost | Status |
 |---|---|---|---|---|
 | IR reflectance sensor module (e.g. TCRT5000-based) | 2 | Front-left / front-right cliff detection, into MCP23008 pins 4 and 5 | N/A - purchased directly by Enoch, not drawn from Claude's budget | **Ordered**, awaiting delivery/install |
-| Eufy RoboVac 12 replacement battery, 14.4 V 2600 mAh Li-ion (fits 11/11S/12/15C/15T/30) | 1 | The original pack is dead (lights on the dock, never runs); needed before the Eufy path can move at all | ~$17 (eBay) to ~$20-25 (Amazon/Walmart, FIVO/NASTIMA/HT TopHinon) - would draw from Claude's budget | **Proposed** - awaiting Enoch's OK |
+| Eufy RoboVac 12 replacement battery, 14.4 V 2600 mAh Li-ion (fits 11/11S/12/15C/15T/30) | 1 | The original pack is dead (lights on the dock, never runs); needed before the Eufy path can move at all | $18.10 (NASTIMA, Amazon) - drawn from Claude's budget | **Ordered** 2026-09-28 |
 | Electrolytic capacitor, 470-1000µF (contingency) | 1 | Only if brownouts/WiFi drops show up once the cliff sensors share the L298N's 5V rail with the radio | ~$1, would draw from budget if needed | Not needed unless that happens |
 
-Nothing has drawn from Claude's $100 budget yet.
+First draw on the budget: the Eufy battery, $18.10.
 
 ## In progress: onboard camera (next milestone after cliff sensors)
 
