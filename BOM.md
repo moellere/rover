@@ -23,7 +23,7 @@ in place watching the workbench.
 | L298N dual H-bridge module | 1 | Motor driver; its onboard regulator also supplies the D1 Mini's 5V (~0.5A rating) | Inventory | Installed |
 | MCP23008 I2C GPIO expander | 1 | Drives the L298N's 4 direction pins - added because the D1 Mini didn't have enough spare GPIO | Inventory | Installed |
 | 18650 Li-ion cell | 3 (wired 3S) | Power, ~12.6V full / ~9.0V empty | Inventory | Installed |
-| Resistor, 100kΩ + 27kΩ | 1 each | Battery-voltage divider: pack+ (L298N +12V terminal) -> junction -> A0, junction -> 27kΩ -> GND | Inventory | Installed - divider wired |
+| Resistor, 100kΩ + 27kΩ | 1 each | Battery-voltage divider: pack+ (L298N +12V terminal) -> junction -> A0, junction -> 27kΩ -> GND | Inventory | Installed - divider wired and calibrated (`multiply: 15.618`, reads 11.77V vs. a multimeter's 11.79V) |
 | ONVIF camera, Thingino firmware ("camv3") | 1 | Fixed overhead workbench vision (not rover-mounted) | Inventory | Installed |
 | ESP32-WROVER T-Camera | 1 | Spare board, earmarked for a possible future onboard FPV/vision upgrade | Inventory | Owned, not deployed |
 

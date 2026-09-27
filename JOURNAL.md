@@ -20,11 +20,10 @@ breakdown of the notable decisions. Newest entry on top.
 
 Rover drives reliably via ESPHome's native API (`forward`/`backward`/`left`/
 `right`/`stop`). Firmware has a command watchdog and disconnect-triggered
-stop, both tested. The battery-voltage divider is now physically wired
-(100kΩ/27kΩ, L298N +12V terminal -> D1 Mini A0) - **still needs its
-`multiply` constant in `rover.yaml` calibrated against a real multimeter
-reading**, not yet done. The two IR cliff sensors are ordered but not yet
-installed; the guard logic for both is already live in firmware and will
+stop, both tested. Battery monitoring is fully installed and calibrated
+(100kΩ/27kΩ divider, L298N +12V terminal -> D1 Mini A0; sensor reads 11.77V
+against a multimeter's 11.79V). The two IR cliff sensors are ordered but not
+yet installed; the guard logic for both is already live in firmware and will
 activate automatically once wired (see [BOM.md](BOM.md) for exact status).
 Home Assistant's connection to the device is stale and unused for control
 (see the 2026-09-27 entry) - a future cleanup item, not a blocker.
@@ -157,3 +156,14 @@ multimeter reading, once convenient.
 Enoch also said this session is ending here for now, with a model switch to
 follow - a first real test of whether this journal actually does its job of
 letting a different model pick things up cleanly.
+
+### Update, same session - battery sensor calibrated
+
+Before wrapping up, Enoch asked whether the voltage reading had actually been
+tested - it hadn't; the sensor had only ever been read with the placeholder
+`multiply: 15.0`. Read it live: 11.3232V. Enoch measured the pack directly
+with a multimeter: 11.79V. Solved for the correct factor
+(`11.79 / (11.3232 / 15.0) = 15.618`), updated `rover.yaml`, recompiled,
+OTA-flashed, and re-read the sensor: 11.77V - within noise of the multimeter
+reading. Battery monitoring is now fully installed and verified accurate, not
+just wired.

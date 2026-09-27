@@ -65,9 +65,8 @@ Two more layers are built into the firmware:
   in, no firmware changes needed.
 - **Battery cutoff** - a voltage divider into the D1 Mini's one analog input
   refuses to drive below ~9.3V pack voltage (with hysteresis at 9.6V to
-  resume), protecting the Li-ion cells from over-discharge. The divider is
-  now physically wired; the sensor's scale-factor constant still needs
-  calibrating against a multimeter reading.
+  resume), protecting the Li-ion cells from over-discharge. Wired and
+  calibrated: the sensor reads 11.77V against a multimeter's 11.79V.
 
 ## Scripts
 
@@ -96,7 +95,7 @@ Full write-up of this session (and every session since) is in
 
 - [x] Wire the battery voltage divider (L298N +12V terminal -> 100k/27k
       divider -> D1 Mini A0)
-- [ ] Calibrate the battery sensor's scale factor against a multimeter reading
+- [x] Calibrate the battery sensor's scale factor against a multimeter reading
 - [ ] Wire the two IR cliff sensors (ordered) to the MCP23008's spare pins,
       verify output polarity
 - [ ] Watch for brownouts once the cliff sensors share the L298N's 5V
