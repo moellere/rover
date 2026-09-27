@@ -22,7 +22,7 @@ insert_len = 8.0;    // how far the insert goes into the socket
 key_w      = 1.6;    // top key GROOVE width (socket rib goes in it)
 key_h      = 0.8;    // key groove depth
 wire_d     = 1.0;    // hole for the bare conductor (0.75 was too tight for 22 AWG after printing)
-ins_d      = 2.2;    // hole for the insulated wire behind the insert (1.7 was too tight)
+ins_d      = 1.9;    // insulated-wire hole (1.7 too tight; 2.2 would touch neighbours on the 2.2 mm pitch)
 pin_proud  = 6.0;    // how far bare wire should stick out of the face (for info)
 
 // ---- grip --------------------------------------------------------------
