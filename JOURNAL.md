@@ -112,9 +112,19 @@ sudo, and the token-budget constraint.
   under `hardware/prints/` and uploaded to the printer's `rover/` folder
   (not started) at Enoch's request, labelled PLACEHOLDER-DIMS.
 - Disk: the VM was at 76%. Survey done; the redundant AppImage originals
-  (~180 MB, Claude's own) were removed. Larger candidates (uv/pip/esphome
-  caches, an unused 2 GB Docker image, snap revisions, old ESPHome build
-  dirs) proposed to Enoch for approval before deleting.
+  (~180 MB, Claude's own) were removed. Enoch approved purging the
+  zero-risk set (uv/esphome/pip/npm/claude-scratch caches, old ESPHome build
+  dirs except the rover's): **15 GB -> 25 GB free (59% used)**. Still his
+  call: an unused 2 GB Docker image, a 707 MB project cache, and the
+  sudo-only housekeeping (snap revisions, apt cache, journal). A reboot is
+  pending for the newer installed kernel.
+- Enoch asked about the brain and an MCP server. Recommendation given (not
+  yet approved): both ESP boards stay ESPHome (spinal cord + eyes); the
+  brain is an off-board Python service (OpenCV marker detection +
+  aioesphomeapi driving) fronted by an MCP server with `snapshot`, `status`,
+  bounded `drive`, later `home_to_marker` - the same shape as the boat's
+  shore server. Firmware guards remain the authoritative safety layer.
+- Confirmed for Enoch: the mount leans forward, camera 10° down (`tilt`).
 
 ### Open for next session
 1. Enoch: measure the board (six numbers in the `.scad` header), build the
