@@ -67,8 +67,10 @@ fallback is to switch to Opus 5.5 or wait for the reset.
 
 - **The T-Camera (`redcam`) may be reflashed without asking** - firmware
   updates, rewrites, config changes, all of it. Granted by Enoch 2026-09-28,
-  scoped to that one device. Every other device still needs a check-in
-  first (the rover itself included, unless Enoch extends this).
+  scoped to that one device.
+- **The IR bridge (`eufy-ir`) may also be reflashed** - Enoch OK'd it
+  2026-09-28 when the captured codes went in. Every other device still
+  needs a check-in first (the rover itself included).
 
 ## Hardware workflow
 

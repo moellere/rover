@@ -176,6 +176,21 @@ sudo, and the token-budget constraint.
   buttons, receiver on GPIO14 in dump mode as the fallback. Validates and
   compiles; needs one USB flash (HA's ESPHome dashboard), OTA after.
 
+- IR node flashed by Enoch (ESP32-WROOM-32D devkit, factory image sent to
+  him directly) and online. Captured his remote with the node's receiver:
+  six clean codes (forward/back/left/right/home/start-stop). Finding: the
+  RoboVac 12's remote shares the 11S protocol and 9-bit address prefix but
+  its command payloads differ - the published 11S codes would not have
+  worked, despite Eufy listing one remote for both. Rebuilt the node with
+  the captured codes and OTA'd it (Enoch OK'd; recorded in CLAUDE.md).
+  Vacuum-response test pending - the Eufy is also refusing to charge on its
+  dock, which may mean a dead pack (~$20-30 if so).
+- Camera mount: Enoch measured the board (28.0 x 68.0 x 1.27 mm, 6 mm rear
+  components, USB centred) and clarified the USB lead runs straight down in
+  line with the board, not bent backward. v3 adds a cable slot through the
+  base aligned with a Makeblock plate hole. Sliced (1h 18m, 18 g), on the
+  printer, awaiting his go.
+
 ### Open for next session
 1. Enoch: measure the board (six numbers in the `.scad` header), build the
    USB splice, print the marker page (`hardware/markers/`), answer the
