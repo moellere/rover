@@ -168,6 +168,14 @@ sudo, and the token-budget constraint.
   cliff/bumper behaviour; roadmap Tier 2R rewritten as 2E. He also said the
   design-print-monitor loop working autonomously was "pretty spectacular".
 
+- Enoch: the Eufy runs and dock-charges, the remote's on hand, IR
+  receivers/LEDs in inventory, spare ESP32 devkits available. Verified via
+  Eufy's own remote listing (one T2108 remote for 11S/12/15T/30) that the
+  published 11S IR codes are the 12's. Built `eufy-ir.yaml`: an ESP32
+  devkit IR bridge - transmitter on GPIO4 with the 11 remote functions as
+  buttons, receiver on GPIO14 in dump mode as the fallback. Validates and
+  compiles; needs one USB flash (HA's ESPHome dashboard), OTA after.
+
 ### Open for next session
 1. Enoch: measure the board (six numbers in the `.scad` header), build the
    USB splice, print the marker page (`hardware/markers/`), answer the

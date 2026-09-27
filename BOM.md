@@ -71,10 +71,10 @@ before connecting the camera.
 
 | Item | Qty | Purpose | Source | Status |
 |---|---|---|---|---|
-| Eufy RoboVac 12 (+ its dock and IR remote) | 1 | House chassis with native docking/charging, cliff and bumper behaviour; driven by IR | Inventory | Decided conditionally - run/charge check pending |
-| IR receiver module (VS1838B-type) | 1 | Capture the remote's codes once | Inventory? else ~$1 | Pending |
-| IR LED (940 nm) + resistor | 1 | Transmit codes to the vacuum's receiver from the lid | Inventory? else <$1 | Pending |
-| ESP32 with 2 free GPIOs (spare ESP32, or the D1 Mini once retired) | 1 | IR transmitter node | Inventory | Pending |
+| Eufy RoboVac 12 (+ its dock and IR remote) | 1 | House chassis with native docking/charging, cliff and bumper behaviour; driven by IR | Inventory | Confirmed: runs and dock-charges, remote on hand |
+| IR receiver module (VS1838B-type) | 1 | Code capture fallback / verification | Inventory (confirmed) | To wire: OUT -> GPIO14 |
+| IR LED (940 nm) + 100R resistor | 1 | Transmit codes to the vacuum's receiver from the lid | Inventory (confirmed) | To wire: GPIO4 -> 100R -> LED -> GND |
+| ESP32 devkit (generic `esp32dev`) | 1 | IR bridge node (`firmware/eufy-ir.yaml`) | Inventory (Enoch has several) | Config ready; needs one USB flash |
 
 (The Roomba plan - mini-DIN plug, level shifter - is shelved; the Roomba was gone.)
 
