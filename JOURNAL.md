@@ -20,11 +20,14 @@ breakdown of the notable decisions. Newest entry on top.
 
 Rover drives reliably via ESPHome's native API (`forward`/`backward`/`left`/
 `right`/`stop`). Firmware has a command watchdog and disconnect-triggered
-stop, both tested. Cliff-sensor and battery-cutoff logic is written into the
-firmware but inert - waiting on the physical sensors/divider (see
-[BOM.md](BOM.md)). Home Assistant's connection to the device is stale and
-unused for control (see the 2026-09-27 entry) - a future cleanup item, not a
-blocker.
+stop, both tested. The battery-voltage divider is now physically wired
+(100kΩ/27kΩ, L298N +12V terminal -> D1 Mini A0) - **still needs its
+`multiply` constant in `rover.yaml` calibrated against a real multimeter
+reading**, not yet done. The two IR cliff sensors are ordered but not yet
+installed; the guard logic for both is already live in firmware and will
+activate automatically once wired (see [BOM.md](BOM.md) for exact status).
+Home Assistant's connection to the device is stale and unused for control
+(see the 2026-09-27 entry) - a future cleanup item, not a blocker.
 
 ---
 
@@ -139,3 +142,18 @@ for that specific thing):
 - Actually creating the GitHub repo (Claude was blocked from doing this
   unilaterally).
 - This journal/BOM/budget system itself, including the $100 budget policy.
+
+### Update, same session - divider wired, IR sensors ordered
+
+Enoch confirmed the exact chassis (a Makeblock Starter Robot Kit, tank
+configuration) for the BOM, wired the battery-voltage divider per the
+confirmed schematic (100kΩ/27kΩ from the L298N's +12V terminal to the D1
+Mini's A0), and ordered the two IR cliff sensors himself - directly, not
+against Claude's $100 budget. BOM updated accordingly: the divider moves to
+Installed, the cliff sensors show as Ordered. Next step on the battery side
+is calibrating the `multiply` constant in `rover.yaml` against a real
+multimeter reading, once convenient.
+
+Enoch also said this session is ending here for now, with a model switch to
+follow - a first real test of whether this journal actually does its job of
+letting a different model pick things up cleanly.

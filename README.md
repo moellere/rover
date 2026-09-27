@@ -18,7 +18,7 @@ Claude-driven versus Enoch-directed.
 
 ## Hardware
 
-- Chassis: Makeblock tank tracks, two DC gear motors
+- Chassis: Makeblock Starter Robot Kit (tank configuration), two DC gear motors
 - Controller: Wemos D1 Mini (ESP8266)
 - Motor driver: L298N dual H-bridge
 - GPIO expansion: MCP23008 I2C I/O expander (the D1 Mini didn't have enough
@@ -55,19 +55,19 @@ Verified for real: `scripts/test_disconnect_safety.py` fires `forward` and
 disconnects *without* sending `stop`, then reconnects a couple seconds later
 and confirms the device already stopped itself.
 
-Two more layers are wired into the firmware but waiting on hardware:
+Two more layers are built into the firmware:
 
 - **Cliff detection** - two downward-facing IR reflectance sensors (front
   corners) will refuse forward/turn commands the instant either one stops
   seeing the workbench surface underneath (backward stays allowed, so it can
-  always retreat from an edge).
+  always retreat from an edge). Sensors are ordered but not yet installed -
+  the guard logic is live and will activate automatically once they're wired
+  in, no firmware changes needed.
 - **Battery cutoff** - a voltage divider into the D1 Mini's one analog input
-  will refuse to drive below ~9.3V pack voltage (with hysteresis at 9.6V to
-  resume), protecting the Li-ion cells from over-discharge.
-
-Both are scaffolded in `rover.yaml` now (globals, sensors, guard conditions
-on every drive action) so they activate the moment the sensors are wired in
-- no firmware changes needed at that point.
+  refuses to drive below ~9.3V pack voltage (with hysteresis at 9.6V to
+  resume), protecting the Li-ion cells from over-discharge. The divider is
+  now physically wired; the sensor's scale-factor constant still needs
+  calibrating against a multimeter reading.
 
 ## Scripts
 
@@ -94,10 +94,11 @@ Full write-up of this session (and every session since) is in
 
 ## Roadmap
 
-- [ ] Wire the battery voltage divider (L298N +12V terminal -> 100k/27k
-      divider -> D1 Mini A0), calibrate the scale factor against a multimeter
-- [ ] Wire the two IR cliff sensors to the MCP23008's spare pins, verify
-      output polarity
+- [x] Wire the battery voltage divider (L298N +12V terminal -> 100k/27k
+      divider -> D1 Mini A0)
+- [ ] Calibrate the battery sensor's scale factor against a multimeter reading
+- [ ] Wire the two IR cliff sensors (ordered) to the MCP23008's spare pins,
+      verify output polarity
 - [ ] Watch for brownouts once the cliff sensors share the L298N's 5V
       regulator with the D1 Mini and WiFi radio
 - [ ] Figure out a charging/docking approach
