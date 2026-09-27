@@ -14,6 +14,8 @@ and software decisions get made) - it's auto-loaded by Claude Code as project
 instructions, and doubles as the plain-language rulebook for anyone reading
 along.
 
+Where it's all going: [ROADMAP.md](ROADMAP.md).
+
 ## The mission
 
 1. **Phase 1 (current):** drive around the workbench without falling off the edge.

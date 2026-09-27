@@ -76,6 +76,19 @@ async def drive(direction: str, seconds: float = 0.5) -> dict:
 
 
 @mcp.tool()
+def find_marker(camera: str = "rover") -> dict:
+    """Look for ArUco homing markers in a fresh frame from `camera` ('rover' or
+    'bench'). Returns each marker's id, pixel centre, apparent size, bearing in
+    degrees (+ = right of centre) and distance in mm (None until the camera is
+    calibrated - see brain/markers.py)."""
+    from brain.markers import markers_as_dicts
+    if camera not in CAMERAS:
+        raise ValueError(f"camera must be one of {CAMERAS}")
+    found = markers_as_dicts(_snapshot(camera))
+    return {"camera": camera, "count": len(found), "markers": found}
+
+
+@mcp.tool()
 async def stop() -> dict:
     """Stop the motors now."""
     await RoverClient().stop()

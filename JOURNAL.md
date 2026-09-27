@@ -111,13 +111,6 @@ sudo, and the token-budget constraint.
   17.2 g PETG**, a few tree supports under the 10° lean. Files committed
   under `hardware/prints/` and uploaded to the printer's `rover/` folder
   (not started) at Enoch's request, labelled PLACEHOLDER-DIMS.
-- Disk: the VM was at 76%. Survey done; the redundant AppImage originals
-  (~180 MB, Claude's own) were removed. Enoch approved purging the
-  zero-risk set (uv/esphome/pip/npm/claude-scratch caches, old ESPHome build
-  dirs except the rover's): **15 GB -> 25 GB free (59% used)**. Still his
-  call: an unused 2 GB Docker image, a 707 MB project cache, and the
-  sudo-only housekeeping (snap revisions, apt cache, journal). A reboot is
-  pending for the newer installed kernel.
 - Enoch asked about the brain and an MCP server. Recommendation given (not
   yet approved): both ESP boards stay ESPHome (spinal cord + eyes); the
   brain is an off-board Python service (OpenCV marker detection +
@@ -145,9 +138,14 @@ sudo, and the token-budget constraint.
   the bench phase is about not falling off), then consolidate. Cheap wins
   first: feed the D1 Mini from the buck, sleep the camera when idle.
 
+- Enoch signed off; measurements coming in the morning. Asked for a roadmap
+  of future tasks/capabilities - written as `ROADMAP.md`. Also generated
+  the printable homing marker and the brain's marker detector as groundwork
+  (see the roadmap and `brain/markers.py`).
+
 ### Open for next session
 1. Enoch: measure the board (six numbers in the `.scad` header), build the
-   USB splice, decide on the disk-cleanup list.
+   USB splice, print the marker page (`hardware/markers/`).
 2. Claude: set the `pcb_*`/`usb_*` values, re-render, re-slice via
    `hardware/slicing/slice.sh`, replace the placeholder files on the printer,
    then ask Enoch to start the print.

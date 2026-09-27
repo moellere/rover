@@ -18,10 +18,12 @@ courtesy layer that refuses obviously bad requests early.
 | `status` | motion, battery voltage, both cliff sensors, uptime, WiFi dBm | - |
 | `snapshot(camera)` | JPEG from `bench` (fixed workbench cam) or `rover` (onboard T-Camera) | - |
 | `drive(direction, seconds)` | pulse `forward`/`backward`/`left`/`right`, then stop | capped at 1.0 s per call, 0.3 s gap between pulses, refused below 9.6 V or when a cliff sensor is active (backward still allowed) |
+| `find_marker(camera)` | ArUco 4x4_50 markers in a fresh frame: id, pixel centre, apparent size, bearing (+ = right), distance (after calibration) | - |
 | `stop` | stop now | - |
 
-Planned: `home_to_marker` (find a printed marker with the onboard camera,
-park nose-on) once the camera is mounted.
+Planned: `home_to_marker` - closed-loop approach to the marker - once the camera
+is mounted and calibrated (`ROVER_CAM_FOCAL_PX`, see `markers.py`). The
+printable marker is `hardware/markers/aruco_4x4_50_id0_80mm.png`.
 
 ## Install and run
 

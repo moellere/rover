@@ -5,7 +5,8 @@ whenever a session (any model) works in this repo. It's also the
 plain-language rulebook for the project, for a human reader.
 
 **Read this first, then [JOURNAL.md](JOURNAL.md) for what's actually
-happened and where things currently stand, then [BOM.md](BOM.md) for parts.**
+happened and where things currently stand, then [BOM.md](BOM.md) for parts,
+then [ROADMAP.md](ROADMAP.md) for what's planned next.**
 Those three files together are the whole handoff package - a new session,
 on any model, should be able to read them and continue the project without
 Enoch having to re-explain context.
