@@ -89,6 +89,11 @@ fallback is to switch to Opus 5.5 or wait for the reset.
 - Keep `JOURNAL.md` and `BOM.md` current **as you go**, not as an
   afterthought - every session that changes something updates both before
   it ends.
+- **Commit and push regularly** (Enoch, 2026-09-28): after each coherent
+  change, not in one batch at the end of a session. Work on `master`; if a
+  branch is ever used, merge it back the same session so the remote is
+  never behind the working tree for long. Run the secrets/IP scan before
+  every commit.
 - `JOURNAL.md` entries are tagged with the model that did the work, a
   summary of the guidance given that session, what happened, and a
   Claude-driven vs. Enoch-decided breakdown of notable calls - see that
