@@ -199,7 +199,12 @@ guidance came in before the model switch:
      sharing that rail - asked Enoch to identify the T-Camera board's exact
      input spec.
 2. Enoch confirmed he has buck converters in inventory already, covering
-   that power-path need at no budget cost if one turns out to be necessary.
+   that power-path need at no budget cost if one turns out to be necessary -
+   specifically LM2596 adjustable modules (4.5-40V in, 1.25-37V out, ~2-3A),
+   comfortably able to run the pack straight down to whatever the T-Camera
+   needs. Logged in `BOM.md`. Still waiting on the T-Camera's exact input
+   spec before setting the output voltage - 5V is the likely answer but
+   unconfirmed.
 3. Added a documentation/software policy: keep the journal, BOM, and other
    docs current *as changes happen*, not after the fact. Prefer open-source
    software over writing new code; if something has to be written, it goes

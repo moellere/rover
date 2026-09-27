@@ -47,7 +47,7 @@ won't help). See [JOURNAL.md](JOURNAL.md) for the reasoning.
 
 | Item | Qty | Purpose | Est. cost | Status |
 |---|---|---|---|---|
-| Buck converter (voltage regulator) | 1 | Own dedicated 12.6V-pack -> camera power path, so the ESP32 camera's WiFi/capture current spikes don't share the L298N's already-tight 0.5A 5V regulator with the D1 Mini | $0 - Enoch has these in inventory | Available if needed - pending confirmation of the T-Camera board's exact input spec |
+| LM2596 adjustable buck converter (e.g. [Addicore LM2596](https://www.addicore.com/products/lm2596-step-down-adjustable-dc-dc-switching-buck-converter)) | 1 | Own dedicated 12.6V-pack -> camera power path (4.5-40V in, 1.25-37V out adjustable, ~2-3A), so the ESP32 camera's WiFi/capture current spikes don't share the L298N's already-tight 0.5A 5V regulator with the D1 Mini | $0 - Enoch has these in inventory | Confirmed available - output voltage still needs setting to match the T-Camera's input spec (5V expected, not yet confirmed) |
 | 3D-printed camera mount | 1 | Attaches the T-Camera to the chassis at a useful angle | $0 (PETG on hand, printer available) | Not yet designed |
 
 ## How to keep this current
