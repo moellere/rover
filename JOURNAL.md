@@ -152,6 +152,12 @@ sudo, and the token-budget constraint.
   Makeblock rover for the bench. Roadmap gained Tier 2R; BOM a candidate
   section. Waiting on Enoch for model number, health, and a mini-DIN plug.
 
+- Test-fit print of the mini-DIN plug run overnight at Enoch's request (he
+  authorized this one print), monitored through the printer camera with the
+  workbench light switched on only for each shot: completed in 18 min,
+  0.76 m of PETG, clean. The part is on the printer bed for him to test-fit
+  in the Roomba's port.
+
 ### Open for next session
 1. Enoch: measure the board (six numbers in the `.scad` header), build the
    USB splice, print the marker page (`hardware/markers/`), answer the
