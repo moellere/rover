@@ -82,13 +82,15 @@ module cradle_flat() {
       for (s = [-1, 1])
         translate([s*(inner_w/2) - (s<0 ? wall : 0), -usb_clear, z0])
           cube([wall, usb_clear + h, depth]);
-      // front lips over the front face along each edge
+      // front lips: overlap the board's FRONT face by rail_d along each edge
+      // (v3 had these stepping outward onto the walls - fixed: step inward)
       for (s = [-1, 1])
-        translate([s*(inner_w/2) - (s<0 ? rail_d : 0), 0, inner_t])
+        translate([s > 0 ? inner_w/2 - rail_d : -inner_w/2, 0, inner_t])
           cube([rail_d, h, lip]);
-      // two bottom corner tabs the board's bottom edge rests on
+      // two bottom corner tabs INSIDE the rails, under the board's bottom
+      // edge, so the board actually rests on them (same v3 fix)
       for (s = [-1, 1])
-        translate([s*(inner_w/2) - (s<0 ? tab_w : 0), -wall, z0])
+        translate([s > 0 ? inner_w/2 - tab_w : -inner_w/2, -wall, z0])
           cube([tab_w, wall, depth]);
     }
     // the USB plug hangs through the gap between the tabs; make sure the gap
