@@ -1,8 +1,14 @@
 # Rover
 
 A small tracked rover, built from Makeblock parts, living on a garage workbench.
-This repo tracks its progress: mission log, control scripts, and a reference
-copy of its ESPHome firmware.
+This repo tracks its progress: a dated [project journal](JOURNAL.md), a
+maintained [bill of materials & shopping list](BOM.md), control scripts, and a
+reference copy of its ESPHome firmware.
+
+This is a collaborative build between Enoch and Claude (Anthropic) - see
+[JOURNAL.md](JOURNAL.md) for the full history, including which model did the
+work at each stage and a running breakdown of which decisions were
+Claude-driven versus Enoch-directed.
 
 ## The mission
 
@@ -77,23 +83,14 @@ on every drive action) so they activate the moment the sensors are wired in
 All three read connection details from environment variables rather than
 hardcoding them - see each script's docstring.
 
-## Mission log
-
-**2026-09-27 - First drive.** Got camera access sorted out (wrong username
-saved initially; Thingino's default login is always `root`), turned on the
-workbench light so the first snapshot wasn't pitch black, and drove the
-rover forward, pivoted it right, backed it off from some bench clutter it
-was closing in on, and pivoted left - confirming full directional control
-while it stayed well clear of the workbench edge the whole time.
-
-Then hardened the firmware: added the command watchdog and disconnect-safety
-(and verified the latter by deliberately crashing the test script mid-command
-- motors stopped on their own). Scaffolded cliff-sensor and battery-voltage
-monitoring into the firmware ahead of the actual hardware going in.
+## First drive
 
 ![First look at the workbench, lights on](images/01-first-look.jpg)
 ![Mid-drive, having moved a full bench-length](images/02-first-drive.jpg)
 ![Parked safely after the session](images/03-parked-safe.jpg)
+
+Full write-up of this session (and every session since) is in
+[JOURNAL.md](JOURNAL.md).
 
 ## Roadmap
 
@@ -105,6 +102,15 @@ monitoring into the firmware ahead of the actual hardware going in.
       regulator with the D1 Mini and WiFi radio
 - [ ] Figure out a charging/docking approach
 - [ ] Expand the playground beyond the workbench
+
+See [BOM.md](BOM.md) for exactly what each of these needs, what's already on
+hand, and what's still on the shopping list.
+
+## Budget
+
+Parts already in Enoch's inventory are supplied by him. Anything else the
+project needs comes out of a standing **$100 budget** tracked in
+[BOM.md](BOM.md) - see that file for the running total.
 
 ---
 
