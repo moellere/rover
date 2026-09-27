@@ -93,11 +93,35 @@ rebuilt firmware as a pipeline check.
 **Enoch-decided:** the flash permission scope, print preferences, offering
 sudo, and the token-budget constraint.
 
+### Later the same night (Enoch briefly back)
+- He ran the apt line - after a fix: `libgtk-3-0` is `libgtk-3-0t64` on this
+  Ubuntu, and one unknown name makes apt-get abort the whole install.
+  Orca then started headless.
+- New constraint from Enoch: **the micro-USB (and 5-pin connector) are on the
+  board's bottom edge.** Redesigned the cradle: it now floats on a pedestal
+  with an open gap under the board for the plug and a rear cable window,
+  resting on two corner tabs instead of a solid end-stop.
+- Slicing pipeline built and proven: Orca's CLI rejects presets that
+  `inherits` (duplicate-config error), so `scripts/orca_flatten_preset.py`
+  flattens the X4 Plus machine / 0.20mm Standard process / Generic PETG
+  filament chains into standalone JSON, with the house rules
+  (`hardware/slicing/house-rules.json`: no brim, tree supports on auto)
+  applied last. `hardware/slicing/slice.sh` does it in one command and
+  extracts the G-code from the 3MF. Placeholder-dimension slice: **1h 14m,
+  17.2 g PETG**, a few tree supports under the 10° lean. Files committed
+  under `hardware/prints/` and uploaded to the printer's `rover/` folder
+  (not started) at Enoch's request, labelled PLACEHOLDER-DIMS.
+- Disk: the VM was at 76%. Survey done; the redundant AppImage originals
+  (~180 MB, Claude's own) were removed. Larger candidates (uv/pip/esphome
+  caches, an unused 2 GB Docker image, snap revisions, old ESPHome build
+  dirs) proposed to Enoch for approval before deleting.
+
 ### Open for next session
-1. Enoch: run the apt line (in `install-tools.sh`), measure the board, build
-   the USB splice.
-2. Claude: set the `pcb_*` values, re-render, slice with tree supports / no
-   brim, then ask Enoch to start the print.
+1. Enoch: measure the board (six numbers in the `.scad` header), build the
+   USB splice, decide on the disk-cleanup list.
+2. Claude: set the `pcb_*`/`usb_*` values, re-render, re-slice via
+   `hardware/slicing/slice.sh`, replace the placeholder files on the printer,
+   then ask Enoch to start the print.
 3. After mounting: fix camera orientation flags, drop stream resolution for
    latency, reflash.
 
