@@ -73,6 +73,46 @@ the power switch.
 **Enoch-decided:** offering the options and delegating the choice; he does the
 physical splice and wiring.
 
+### Backup battery, and handoff to the next model
+
+Enoch offered to add his spare 3.7V Li-ion pack as a *dedicated backup* on the
+T-Camera's own JST connector, alongside USB power, so the camera survives a
+main-pack depletion. Decided: yes, but after the USB path is built and
+verified. The IP5306 runs the board from USB and charges the cell, then fails
+over to the cell if USB drops. Caveat to measure, not guess: while charging,
+the IP5306 can pull up to ~2A through the buck converter, all from the main
+pack, which will cut drive time until the cell is full. Logged in `BOM.md`.
+
+Enoch is switching models again and splicing the USB cable in the morning.
+**Open work for the next session, explicitly authorized by Enoch:**
+1. **Camera firmware.** Update the T-Camera's firmware for its new on-rover
+   role, either as an ESPHome update or a rewrite from scratch, reflashing
+   the device as needed (hostname `redcam`; the current config is
+   `wrovercam.yaml` in the private ESPHome repo). Per `CLAUDE.md`, anything
+   written goes in this repo with scripted installs.
+2. **Camera mount (design + slice).** Constraints from Enoch:
+   - It attaches to the Makeblock Starter Robot Kit chassis: a horizontal
+     main plate with lots of regularly spaced holes, like a small pegboard.
+     Research the kit's actual parts and hole spacing/screw size rather than
+     guessing.
+   - Account for the camera's orientation on the board. The current config
+     sets `horizontal_mirror: true`, `vertical_flip: true`, and OLED
+     `rotation: 180`, which suggests the board is currently mounted upside
+     down. Once it's mounted upright on the rover, those flags probably need
+     flipping.
+   - The board also carries a PIR motion sensor and an OLED. The mount
+     shouldn't block either, and ideally keeps the OLED readable.
+   - Leave room for the micro-USB power lead and, later, the backup cell.
+   - Printer: Sidewinder X4 Plus S1, PETG loaded. Claude slices; Enoch starts
+     the print.
+3. **Waiting on Enoch:** the USB splice and wiring (spec above), then the
+   cliff sensors when they arrive.
+
+**Claude-driven:** timing the backup cell after USB verification, and flagging
+the charge-current draw on the main pack.
+**Enoch-decided:** offering the backup cell, authorizing firmware work and
+mount design, and the mount constraints.
+
 ---
 
 ## 2026-09-27 - Session 1: First drive + safety hardening
