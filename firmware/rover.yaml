@@ -1,0 +1,488 @@
+# Reference copy - the canonical, live-flashed version of this file lives in a
+# private homelab ESPHome config repo (which is where `!include common/...` and
+# `!secret api_key` actually resolve from). This copy won't compile standalone;
+# it's here for history/documentation of the rover project.
+substitutions:
+  devicename: rover
+
+esp8266:
+  board: d1_mini
+  
+esphome:
+  name: $devicename
+  on_boot:
+      - output.set_level:
+          id: left_pwm
+          level: 0%
+      - output.set_level:
+          id: right_pwm
+          level: 0%
+      - output.turn_off: left_forward_pin
+      - output.turn_off: right_forward_pin
+      - output.turn_off: left_reverse_pin
+      - output.turn_off: right_reverse_pin
+
+<<: !include common/base.yaml
+<<: !include common/sensor.yaml
+
+
+time:
+  - platform: homeassistant
+    id: homeassistant_time
+
+globals:
+  - id: last_command_ms
+    type: uint32_t
+    restore_value: no
+    initial_value: '0'
+  - id: cliff_detected
+    type: bool
+    restore_value: no
+    initial_value: 'false'
+  - id: battery_ok
+    type: bool
+    restore_value: no
+    initial_value: 'true'
+
+# Pin map for awning
+#D0: 
+#D1: SCL - MCP23008 Pin 1
+#D2: SDA - MCP23008 Pin 2
+#D5: left_pwm
+#D6: right_pwm
+#MCP0: Connected to L298N IN1
+#MCP1: Connected to L298N IN2 
+#MCP2: Connected to L298N IN3
+#MCP3: Connected to L298N IN4
+#MCP4:
+#MCP5: 
+#MCP6: 
+#MCP7: 
+
+
+
+interval:
+  - interval: 200ms
+    then:
+      - if:
+          condition:
+            lambda: |-
+              return (id(motion_status).state != "Stopped") && (millis() - id(last_command_ms) > 1500);
+          then:
+            - output.set_level:
+                id: left_pwm
+                level: 0%
+            - output.set_level:
+                id: right_pwm
+                level: 0%
+            - output.turn_off: left_forward_pin
+            - output.turn_off: right_forward_pin
+            - output.turn_off: left_reverse_pin
+            - output.turn_off: right_reverse_pin
+            - text_sensor.template.publish:
+                id: motion_status
+                state: "Stopped"
+            - logger.log: "Watchdog: no command refresh in 1.5s, stopping motors"
+
+i2c:
+  sda: D2
+  scl: D1
+  scan: True
+
+# Example configuration entry
+mcp23008:
+  - id: 'mcp23008_hub'
+    address: 0x20
+
+output:
+  - platform: esp8266_pwm
+    pin: D5
+    frequency: 1000 Hz
+    id: left_pwm
+  - platform: esp8266_pwm
+    pin: D6
+    frequency: 1000 Hz
+    id: right_pwm
+  - platform: gpio
+    id: left_forward_pin
+    pin:
+      mcp23xxx: mcp23008_hub
+      # Use pin number 0
+      number: 0
+      mode:
+        output: true
+      inverted: false
+  - platform: gpio
+    id: left_reverse_pin
+    pin:
+      mcp23xxx: mcp23008_hub
+      # Use pin number 1
+      number: 1
+      mode:
+        output: true
+      inverted: false
+  - platform: gpio
+    id: right_forward_pin
+    pin:
+      mcp23xxx: mcp23008_hub
+      # Use pin number 2
+      number: 2
+      mode:
+        output: true
+      inverted: false
+  - platform: gpio
+    id: right_reverse_pin
+    pin:
+      mcp23xxx: mcp23008_hub
+      # Use pin number 3
+      number: 3
+      mode:
+        output: true
+      inverted: false
+
+# Downward-facing IR reflectance ("cliff") sensors on the free MCP23008 pins.
+# Wiring: VCC/GND + digital OUT of each IR module -> MCP4 (front-left), MCP5 (front-right).
+# `inverted: false` assumes the module drives OUT low when it sees a close reflective
+# surface (floor/bench) and high when there's nothing to reflect off (edge/drop-off) -
+# verify against the actual module datasheet once wired and flip `inverted` if backwards.
+binary_sensor:
+  - platform: gpio
+    name: "Front Left Cliff"
+    id: front_left_cliff
+    device_class: safety
+    pin:
+      mcp23xxx: mcp23008_hub
+      number: 4
+      mode:
+        input: true
+      inverted: false
+    filters:
+      - delayed_on_off: 50ms
+    on_press:
+      - lambda: |-
+          id(cliff_detected) = true;
+      - output.set_level:
+          id: left_pwm
+          level: 0%
+      - output.set_level:
+          id: right_pwm
+          level: 0%
+      - output.turn_off: left_forward_pin
+      - output.turn_off: right_forward_pin
+      - output.turn_off: left_reverse_pin
+      - output.turn_off: right_reverse_pin
+      - text_sensor.template.publish:
+          id: motion_status
+          state: "Stopped (cliff)"
+      - logger.log: "Cliff detected (front-left), emergency stop"
+    on_release:
+      - lambda: |-
+          id(cliff_detected) = id(front_left_cliff).state || id(front_right_cliff).state;
+  - platform: gpio
+    name: "Front Right Cliff"
+    id: front_right_cliff
+    device_class: safety
+    pin:
+      mcp23xxx: mcp23008_hub
+      number: 5
+      mode:
+        input: true
+      inverted: false
+    filters:
+      - delayed_on_off: 50ms
+    on_press:
+      - lambda: |-
+          id(cliff_detected) = true;
+      - output.set_level:
+          id: left_pwm
+          level: 0%
+      - output.set_level:
+          id: right_pwm
+          level: 0%
+      - output.turn_off: left_forward_pin
+      - output.turn_off: right_forward_pin
+      - output.turn_off: left_reverse_pin
+      - output.turn_off: right_reverse_pin
+      - text_sensor.template.publish:
+          id: motion_status
+          state: "Stopped (cliff)"
+      - logger.log: "Cliff detected (front-right), emergency stop"
+    on_release:
+      - lambda: |-
+          id(cliff_detected) = id(front_left_cliff).state || id(front_right_cliff).state;
+
+# Battery voltage: 3S 18650 pack (~12.6V full, ~9.0V empty) through an external divider
+# into A0. A0 on the D1 mini already has an onboard divider extending it to ~0-3.2V;
+# add your OWN divider from pack+ -> A0 -> GND with R_top=100k, R_bottom=27k (scales
+# 12.6V down to ~2.7V, safely under the board's ~3.2V max). The `multiply: 15.0` below
+# is a starting estimate for the combined ratio of both dividers - calibrate it against
+# a multimeter reading once wired (adjust the constant so the reported voltage matches).
+sensor:
+  # NOTE: this file's top-level `sensor:` replaces (not merges with) the one pulled in
+  # via `<<: !include common/sensor.yaml` above (that's a raw YAML merge-key, not
+  # ESPHome `packages:`, so same-key blocks don't combine) - the uptime/wifi_signal
+  # entries are duplicated here so they aren't lost.
+  - platform: uptime
+    name: ${devicename} Uptime
+  - platform: wifi_signal
+    name: ${devicename} WiFi Signal
+    update_interval: 60s
+  - platform: adc
+    pin: A0
+    name: "Battery Voltage"
+    id: battery_voltage
+    update_interval: 30s
+    filters:
+      - multiply: 15.0
+      - sliding_window_moving_average:
+          window_size: 5
+          send_every: 5
+    on_value_range:
+      - below: 9.3
+        then:
+          - lambda: |-
+              id(battery_ok) = false;
+          - output.set_level:
+              id: left_pwm
+              level: 0%
+          - output.set_level:
+              id: right_pwm
+              level: 0%
+          - output.turn_off: left_forward_pin
+          - output.turn_off: right_forward_pin
+          - output.turn_off: left_reverse_pin
+          - output.turn_off: right_reverse_pin
+          - text_sensor.template.publish:
+              id: motion_status
+              state: "Stopped (low battery)"
+          - logger.log: "Battery critical, disabling drive"
+      - above: 9.6
+        then:
+          - lambda: |-
+              id(battery_ok) = true;
+
+switch:
+  - platform: template
+    name: "Forward"
+    lambda: |-
+      if (id(motion_status).state == "Forward") {
+        return true;
+      } else {
+        return false;
+      }
+    turn_on_action:
+      - lambda: |-
+          id(last_command_ms) = millis();
+      - if:
+          condition:
+            lambda: 'return id(battery_ok) && !id(cliff_detected);'
+          then:
+            - output.set_level:
+                id: left_pwm
+                level: 100%
+            - output.set_level:
+                id: right_pwm
+                level: 100%
+            - output.turn_on: left_forward_pin
+            - output.turn_on: right_forward_pin
+            - output.turn_off: left_reverse_pin
+            - output.turn_off: right_reverse_pin
+            - text_sensor.template.publish:
+                id: motion_status
+                state: "Forward"
+    turn_off_action:
+      - output.set_level:
+          id: left_pwm
+          level: 0%
+      - output.set_level:
+          id: right_pwm
+          level: 0%
+      - output.turn_off: left_forward_pin
+      - output.turn_off: right_forward_pin
+      - output.turn_off: left_reverse_pin
+      - output.turn_off: right_reverse_pin
+      - text_sensor.template.publish:
+          id: motion_status
+          state: "Stopped"
+
+text_sensor:
+  - platform: template
+    name: "Motion"
+    id: motion_status
+
+api:
+  on_client_disconnected:
+    - output.set_level:
+        id: left_pwm
+        level: 0%
+    - output.set_level:
+        id: right_pwm
+        level: 0%
+    - output.turn_off: left_forward_pin
+    - output.turn_off: right_forward_pin
+    - output.turn_off: left_reverse_pin
+    - output.turn_off: right_reverse_pin
+    - text_sensor.template.publish:
+        id: motion_status
+        state: "Stopped"
+    - logger.log: "API client disconnected, stopping motors"
+  actions:
+    - action: forward
+      then:
+      - lambda: |-
+          id(last_command_ms) = millis();
+      - if:
+          condition:
+            lambda: 'return id(battery_ok) && !id(cliff_detected);'
+          then:
+            - output.set_level:
+                id: left_pwm
+                level: 75%
+            - output.set_level:
+                id: right_pwm
+                level: 75%
+            - output.turn_on: left_forward_pin
+            - output.turn_on: right_forward_pin
+            - output.turn_off: left_reverse_pin
+            - output.turn_off: right_reverse_pin
+            - text_sensor.template.publish:
+                id: motion_status
+                state: "Forward"
+          else:
+            - output.set_level:
+                id: left_pwm
+                level: 0%
+            - output.set_level:
+                id: right_pwm
+                level: 0%
+            - output.turn_off: left_forward_pin
+            - output.turn_off: right_forward_pin
+            - output.turn_off: left_reverse_pin
+            - output.turn_off: right_reverse_pin
+            - text_sensor.template.publish:
+                id: motion_status
+                state: "Stopped"
+            - logger.log: "Forward blocked (cliff detected or low battery)"
+    - action: backward
+      then:
+      - lambda: |-
+          id(last_command_ms) = millis();
+      - if:
+          condition:
+            lambda: 'return id(battery_ok);'
+          then:
+            - output.set_level:
+                id: left_pwm
+                level: 75%
+            - output.set_level:
+                id: right_pwm
+                level: 75%
+            - output.turn_off: left_forward_pin
+            - output.turn_off: right_forward_pin
+            - output.turn_on: left_reverse_pin
+            - output.turn_on: right_reverse_pin
+            - text_sensor.template.publish:
+                id: motion_status
+                state: "Backward"
+          else:
+            - output.set_level:
+                id: left_pwm
+                level: 0%
+            - output.set_level:
+                id: right_pwm
+                level: 0%
+            - output.turn_off: left_forward_pin
+            - output.turn_off: right_forward_pin
+            - output.turn_off: left_reverse_pin
+            - output.turn_off: right_reverse_pin
+            - text_sensor.template.publish:
+                id: motion_status
+                state: "Stopped"
+            - logger.log: "Backward blocked (low battery)"
+    - action: left
+      then:
+      - lambda: |-
+          id(last_command_ms) = millis();
+      - if:
+          condition:
+            lambda: 'return id(battery_ok) && !id(cliff_detected);'
+          then:
+            - output.set_level:
+                id: left_pwm
+                level: 75%
+            - output.set_level:
+                id: right_pwm
+                level: 75%
+            - output.turn_off: left_forward_pin
+            - output.turn_on: right_forward_pin
+            - output.turn_on: left_reverse_pin
+            - output.turn_off: right_reverse_pin
+            - text_sensor.template.publish:
+                id: motion_status
+                state: "Left"
+          else:
+            - output.set_level:
+                id: left_pwm
+                level: 0%
+            - output.set_level:
+                id: right_pwm
+                level: 0%
+            - output.turn_off: left_forward_pin
+            - output.turn_off: right_forward_pin
+            - output.turn_off: left_reverse_pin
+            - output.turn_off: right_reverse_pin
+            - text_sensor.template.publish:
+                id: motion_status
+                state: "Stopped"
+            - logger.log: "Left blocked (cliff detected or low battery)"
+    - action: right
+      then:
+      - lambda: |-
+          id(last_command_ms) = millis();
+      - if:
+          condition:
+            lambda: 'return id(battery_ok) && !id(cliff_detected);'
+          then:
+            - output.set_level:
+                id: left_pwm
+                level: 75%
+            - output.set_level:
+                id: right_pwm
+                level: 75%
+            - output.turn_on: left_forward_pin
+            - output.turn_off: right_forward_pin
+            - output.turn_off: left_reverse_pin
+            - output.turn_on: right_reverse_pin
+            - text_sensor.template.publish:
+                id: motion_status
+                state: "Right"
+          else:
+            - output.set_level:
+                id: left_pwm
+                level: 0%
+            - output.set_level:
+                id: right_pwm
+                level: 0%
+            - output.turn_off: left_forward_pin
+            - output.turn_off: right_forward_pin
+            - output.turn_off: left_reverse_pin
+            - output.turn_off: right_reverse_pin
+            - text_sensor.template.publish:
+                id: motion_status
+                state: "Stopped"
+            - logger.log: "Right blocked (cliff detected or low battery)"
+    - action: stop
+      then:
+      - output.set_level:
+          id: left_pwm
+          level: 0%
+      - output.set_level:
+          id: right_pwm
+          level: 0%
+      - output.turn_off: left_forward_pin
+      - output.turn_off: right_forward_pin
+      - output.turn_off: left_reverse_pin
+      - output.turn_off: right_reverse_pin
+      - text_sensor.template.publish:
+          id: motion_status
+          state: "Stopped"
