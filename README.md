@@ -72,6 +72,13 @@ Two more layers are built into the firmware:
   resume), protecting the Li-ion cells from over-discharge. Wired and
   calibrated: the sensor reads 11.77V against a multimeter's 11.79V.
 
+## Brain (MCP server)
+
+`brain/` is an MCP server that fronts the rover - `status`, `snapshot` from
+either camera, a hard-capped `drive`, `stop` - and is where autonomy gets
+written. Runs off-board; the firmware guards stay authoritative. Install with
+`scripts/install-brain.sh`; details in `brain/README.md`.
+
 ## Hardware designs
 
 `hardware/` holds parametric OpenSCAD parts (currently the camera mount) with

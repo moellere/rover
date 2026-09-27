@@ -125,6 +125,25 @@ sudo, and the token-budget constraint.
   bounded `drive`, later `home_to_marker` - the same shape as the boat's
   shore server. Firmware guards remain the authoritative safety layer.
 - Confirmed for Enoch: the mount leans forward, camera 10° down (`tilt`).
+- **Brain approved and built** (`brain/`): an MCP server (official MCP Python
+  SDK, pinned to 1.x - 2.x renamed the server class the same week) with
+  `status`, `snapshot(bench|rover)`, a hard-capped `drive` (<=1.0 s, 0.3 s
+  gap, refused under 9.6 V or with a cliff active except backward), and
+  `stop`. Hosts/keys come from `~/.rover-brain.env` via `brain/run.sh`, never
+  the repo. Tested through a real MCP stdio client: tools list, both cameras
+  return JPEGs; `status` correctly errors with the rover powered off.
+  Registered with Claude Code at user scope as `rover-brain`.
+- Board consolidation, discussed: Enoch asked whether the T-Camera replaces
+  the D1 Mini. First answer was no (its GPIOs are all taken by the camera
+  bus/OLED/PIR); Enoch pointed out the I2C expanders on hand (MCP23008, and
+  16-pin MCP23017s), which makes it *possible* - direction pins via an
+  expander, the two PWM lines via a PCA9685 (or PCA9685 alone). He also
+  noted two boards drain the pack faster: ~0.9 W for the D1 Mini (half of
+  it the L298N's linear regulator) vs ~1.5 W for the streaming camera -
+  roughly 12 h idle with both, ~18 h with one, on a ~28 Wh pack. Decision:
+  keep two boards through visual homing (the safety firmware is tested and
+  the bench phase is about not falling off), then consolidate. Cheap wins
+  first: feed the D1 Mini from the buck, sleep the camera when idle.
 
 ### Open for next session
 1. Enoch: measure the board (six numbers in the `.scad` header), build the

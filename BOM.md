@@ -67,6 +67,17 @@ before connecting the camera.
 | 3D-printed camera mount (`hardware/camera-mount.scad`) | 1 | Pedestal cradle standing the T-Camera upright on the Makeblock plate (8mm M4 grid), lens/PIR/OLED forward, 10° down-tilt, open front, open gap under the board for the bottom-edge micro-USB plug, rear cable window | $0 (~17 g PETG, ~1h15m print) | Designed, sliced with placeholder dims (`hardware/prints/`); **waiting on caliper measurements of the board** before the real print |
 | M4 x 8-10mm screws + nuts | 2 | Bolt the mount to the Makeblock plate | $0 - Makeblock kit hardware | On hand (kit) |
 
+## Later: one-board consolidation (after visual homing)
+
+Option Enoch raised, kept on file: drive the L298N from the T-Camera over its
+I2C bus instead of the D1 Mini. Direction pins via an MCP23008/MCP23017
+(both in inventory); the two PWM speed lines via a PCA9685 16-channel PWM
+board (~$3-5, not in inventory - would draw from budget), or the PCA9685
+alone for all six lines. Saves ~0.9 W idle (about a third more idle
+runtime) and one WiFi client. Deferred until the safety firmware doesn't
+need re-validating mid-phase. Cheaper interim win: power the D1 Mini from
+the buck converter instead of the L298N's linear regulator (~0.5 W of heat).
+
 ## How to keep this current
 
 - When a shopping-list item is actually acquired, move it into the BOM table

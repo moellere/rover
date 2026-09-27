@@ -24,6 +24,15 @@ within ~2 cm of it, with no human input. It's the front half of docking
 and it's measurable. Prerequisites: the onboard camera mounted and powered,
 cliff sensors installed.
 
+## Architecture (decided 2026-09-28)
+
+Three layers: the D1 Mini is the **spinal cord** (ESPHome; watchdog,
+disconnect-stop, cliff and battery guards in firmware - authoritative), the
+T-Camera is the **eyes** (ESPHome; snapshot/stream), and `brain/` is the
+**brain** - an off-board MCP server where autonomy lives. Drive the rover
+through the `rover-brain` MCP tools, not ad-hoc scripts. Consolidating both
+ESPs onto one board is a known later step (see BOM.md), not now.
+
 ## Token budget
 
 Enoch's Claude usage has a limit per model. Work in bounded chunks, don't
