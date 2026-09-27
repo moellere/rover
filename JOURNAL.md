@@ -191,6 +191,12 @@ sudo, and the token-budget constraint.
   base aligned with a Makeblock plate hole. Sliced (1h 18m, 18 g), on the
   printer, awaiting his go.
 
+- Camera mount v3 printed on Enoch's go: 80 min, 5.9 m of PETG, monitored
+  at 4/31/57/86 % through the printer camera (light on only per shot) -
+  clean throughout, tree supports did their job under the lean. Part is on
+  the bed for him to de-support, test-fit the T-Camera, and bolt to the
+  Makeblock plate.
+
 ### Open for next session
 1. Enoch: measure the board (six numbers in the `.scad` header), build the
    USB splice, print the marker page (`hardware/markers/`), answer the
