@@ -92,3 +92,26 @@ and comes first.
 | 5.4 | Patrol mode | scheduled lap with snapshots posted to HA |
 | 5.5 | Voice | announcements through the Echo Pyramid ("docking", "low battery") |
 | 5.6 | OLED face | the T-Camera's screen shows state/expressions instead of an IP address |
+
+## Parts likely on hand (from the ESPHome configs and wirestudio's library)
+
+Enoch pointed at wirestudio and the ESPHome repo as a view of what he has.
+The catalog is a superset of the inventory, so each of these is a "check
+the bin" rather than a certainty - but every one maps to a roadmap item and
+would cost $0 if present:
+
+| Part (catalog / in use) | Roadmap use |
+|---|---|
+| HC-SR04 ultrasonic (in use on one device), VL53L0X ToF | 3.4 obstacle sensing; 4.2 house obstacles |
+| MPU6050 / BMI270 IMU (BMI270 in use) | heading hold for pivots; dead-reckoning between markers |
+| INA219 current/voltage sensor | real battery state (current + voltage) on either rover; charge detection on the Eufy |
+| PCA9685 16-ch PWM | 3.5 one-board consolidation (T-Camera drives the L298N over I2C) |
+| Rotary encoder / pulse counter (both in use) | 3.3 wheel odometry on the Makeblock |
+| LD2410 / LD2420 radar (10 devices use LD2420) | person/pet detection ahead - 4.5 house rules ("stop for animals") |
+| WS2812B / NeoPixel (25 devices) | status ring on the rover; "eyes" |
+| I2S mic + MAX98357A speaker (in use on the audio devices) | 5.5 voice on the robot itself, not just the Echo |
+| HC-SR501 / RCWL-0516 motion | cheap "someone's here" wake-up for patrol mode |
+| esp32-wrover-cam board profile | second camera (rear / downward for cliff verification) |
+
+Next time Enoch is at the bins: confirm VL53L0X or HC-SR04, INA219, an IMU,
+PCA9685, and encoders - those five unlock Tiers 3 and 4 without spending.
