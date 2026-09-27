@@ -18,9 +18,9 @@
 
 // ---- Board (MEASURE THESE) --------------------------------------------------
 pcb_w     = 28.0;   // PCB width  (bottom/top edge), mm      <- measure
-pcb_l     = 62.0;   // PCB length (side edge, bottom->top), mm <- measure
-pcb_t     = 1.6;    // PCB thickness, mm                     <- measure
-comp_back = 4.0;    // tallest component on the BACK face, mm <- measure
+pcb_l     = 68.0;   // PCB length (side edge, bottom->top), mm <- measure
+pcb_t     = 1.27;    // PCB thickness, mm                     <- measure
+comp_back = 6.0;    // tallest component on the BACK face, mm <- measure
 usb_x     = 0.0;    // micro-USB centre offset from the board's centreline
                     // along the bottom edge (+ = right, viewed from the
                     // lens side), mm                        <- measure
