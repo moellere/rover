@@ -9,8 +9,10 @@ set -euo pipefail
 
 # System prerequisites (the one part that needs root). OrcaSlicer's AppImage
 # links against GTK3/WebKitGTK/GStreamer on the host, and xvfb lets it slice
-# headless on a machine with no display. Ubuntu/Debian:
-#   sudo apt-get install -y libwebkit2gtk-4.1-0 libgtk-3-0 libopengl0 \
+# headless on a machine with no display. Ubuntu 24.04+ (the GTK package is
+# libgtk-3-0t64 there; on older releases it's libgtk-3-0 - a wrong name makes
+# apt-get abort the whole line, installing nothing):
+#   sudo apt-get install -y libwebkit2gtk-4.1-0 libgtk-3-0t64 libopengl0 \
 #        libglu1-mesa libegl1 libgstreamer-plugins-base1.0-0 libsecret-1-0 xvfb
 if ! ldconfig -p | grep -q libwebkit2gtk-4.1.so.0; then
   echo "WARNING: libwebkit2gtk-4.1 not found - OrcaSlicer will not start until the" >&2
