@@ -229,6 +229,20 @@ sudo, and the token-budget constraint.
   the captured codes or the vacuum's own start-up behaviour. New rule in
   CLAUDE.md: the Eufy is tested on the floor only.
 
+- Marker printed and placed on the bench; `find_marker` found id 0 live on
+  the bench camera (48.6 px wide, dead centre) - first real detection.
+- Rover powered on: brain `status` works (10.58 V idle, cliffs quiet), and a
+  0.3 s backward pulse through the brain's client drove and stopped cleanly.
+  Battery read 9.82 V right after the pulse - sagging near the brain's
+  9.6 V refusal line; the pack needs a charge soon.
+- T-Camera would **not** power from 5 V/GND on its bottom 5-pin connector;
+  micro-USB is the only usable input. It's temporarily hanging from the
+  pegboard on wall USB, looking down at the bench; its view is rotated by
+  that mounting, so orientation flags wait for the bracket.
+- The spliced USB lead delivers nothing at the plug despite ~5 V at the
+  buck - diagnosis steps given (wire identification by continuity, broken
+  conductor at the strain relief, polarity).
+
 ### Open for next session
 1. Enoch: measure the board (six numbers in the `.scad` header), build the
    USB splice, print the marker page (`hardware/markers/`), answer the
