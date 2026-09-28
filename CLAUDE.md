@@ -83,6 +83,10 @@ fallback is to switch to Opus 5.5 or wait for the reset.
   are needed at all, and **no brim** (he doesn't want to trim one off).
   Designs are parametric OpenSCAD in `hardware/`; the toolchain installs
   with `scripts/install-tools.sh` (OpenSCAD + OrcaSlicer, no root needed).
+- **The Eufy is tested on the floor, never on the workbench.** It has no rear
+  cliff sensors and none of the rover's firmware guards; on 2026-09-28 it
+  started reversing toward the bench edge during IR testing and Enoch caught
+  it. Never leave the IR node aimed at it unattended.
 - Cameras at night: turn the garage workbench light on just before taking a
   picture (bench cam or printer cam), then back off. Don't leave it on.
 - Soldering, assembly, or other physical building: discuss with Enoch first

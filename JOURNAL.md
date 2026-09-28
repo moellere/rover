@@ -219,6 +219,16 @@ sudo, and the token-budget constraint.
   (6/38/69 %). On the bed for Enoch to de-support and test-fit - the corner
   lips and inside tabs are the things to verify this time.
 
+- Eufy IR test, first live attempt: with the vacuum on the workbench and the
+  node on its lid, Forward presses did nothing; the node's own receiver
+  heard the LED (fragments only - receiver saturation at 2 cm, so loopback
+  proves emission, not fidelity). Raised RMT buffers to 256 and set 3x
+  repeats per press. Then, after Enoch repositioned node and vacuum, it
+  **started reversing toward the bench edge** and he caught it. No job of
+  mine was sending at the time. Unexplained; suspects are a label shift in
+  the captured codes or the vacuum's own start-up behaviour. New rule in
+  CLAUDE.md: the Eufy is tested on the floor only.
+
 ### Open for next session
 1. Enoch: measure the board (six numbers in the `.scad` header), build the
    USB splice, print the marker page (`hardware/markers/`), answer the

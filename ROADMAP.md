@@ -113,5 +113,7 @@ would cost $0 if present:
 | HC-SR501 / RCWL-0516 motion | cheap "someone's here" wake-up for patrol mode |
 | esp32-wrover-cam board profile | second camera (rear / downward for cliff verification) |
 
-Next time Enoch is at the bins: confirm VL53L0X or HC-SR04, INA219, an IMU,
-PCA9685, and encoders - those five unlock Tiers 3 and 4 without spending.
+Bin check (2026-09-28): **HC-SR04, an IMU, and a PCA9685 are on hand**; no
+wheel encoders that fit the Makeblock motors, so 3.3 odometry leans on the
+IMU + timing (or a later optical encoder on a motor shaft). INA219 and
+VL53L0X unconfirmed.
