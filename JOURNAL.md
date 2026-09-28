@@ -215,6 +215,10 @@ sudo, and the token-budget constraint.
   Enoch cancelled the battery order; the ledger is back to $0 spent. The IR
   drive test can happen as soon as it's charged.
 
+- Camera mount v5 printed: 82 min, 6.6 m of PETG, clean at every check
+  (6/38/69 %). On the bed for Enoch to de-support and test-fit - the corner
+  lips and inside tabs are the things to verify this time.
+
 ### Open for next session
 1. Enoch: measure the board (six numbers in the `.scad` header), build the
    USB splice, print the marker page (`hardware/markers/`), answer the
