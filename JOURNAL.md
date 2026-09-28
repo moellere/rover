@@ -243,6 +243,17 @@ sudo, and the token-budget constraint.
   buck - diagnosis steps given (wire identification by continuity, broken
   conductor at the strain relief, polarity).
 
+- Eufy on the floor: Home then Forward from the node did nothing. Loopback
+  on the node's own receiver isn't proof of emission (38 kHz GPIO noise can
+  couple in), and Enoch's phone saw no flicker (940 nm is nearly invisible
+  to phones). Tried to see the LED with the bench camera: daylight mode
+  blocks IR; forced night mode via Thingino's `json-imp.cgi` (cmd=daynight
+  val=night|day; ir850/ir940 floods toggle likewise) - still nothing, but
+  the open garage door floods the scene with daylight IR, so inconclusive.
+  Next: electrical checks (multimeter across the LED during an 8 s test
+  burst; wiring GPIO4 -> 100R -> anode), then a transistor driver if the
+  LED is merely too dim.
+
 ### Open for next session
 1. Enoch: measure the board (six numbers in the `.scad` header), build the
    USB splice, print the marker page (`hardware/markers/`), answer the

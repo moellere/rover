@@ -52,3 +52,10 @@ No host, key, or password is stored in this repo or in the MCP registration
 - `rover_client.py` - ESPHome native-API wrapper (state, drive, stop)
 - `cameras.py` - still-frame capture from both cameras
 - `run.sh` - launcher; `env.example` - the variables it expects
+
+## Bench camera day/night
+
+The Thingino bench camera can be forced between modes for night-time marker
+work: `GET /x/json-imp.cgi?cmd=daynight&val=night` (or `day`, `read`);
+its IR floodlights toggle with `cmd=ir850|ir940&val=0|1`. Restore `day`
+afterwards.
