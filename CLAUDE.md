@@ -34,6 +34,14 @@ T-Camera is the **eyes** (ESPHome; snapshot/stream), and `brain/` is the
 through the `rover-brain` MCP tools, not ad-hoc scripts. Consolidating both
 ESPs onto one board is a known later step (see BOM.md), not now.
 
+## Rover orientation on the bench
+
+The bench camera looks at the rover's **rear** (the 18650 pack faces the
+camera). So `forward` drives *away* from the camera toward the pegboard and
+the marker; `backward` drives *toward* the camera and the near edge. Claude
+got this backwards once (2026-09-28); check the frame before choosing a
+direction.
+
 ## Token budget
 
 Enoch's Claude usage has a limit per model. Work in bounded chunks, don't

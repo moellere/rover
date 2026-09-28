@@ -21,6 +21,10 @@ courtesy layer that refuses obviously bad requests early.
 | `find_marker(camera)` | ArUco 4x4_50 markers in a fresh frame: id, pixel centre, apparent size, bearing (+ = right), distance (after calibration) | - |
 | `stop` | stop now | - |
 
+Orientation note: on the bench, `forward` moves the rover away from the fixed
+bench camera (the camera sees its rear); `backward` moves it toward the
+camera and the near edge.
+
 Planned: `home_to_marker` - closed-loop approach to the marker - once the camera
 is mounted and calibrated (`ROVER_CAM_FOCAL_PX`, see `markers.py`). The
 printable marker is `hardware/markers/aruco_4x4_50_id0_80mm.png`.
