@@ -60,12 +60,26 @@ class HomingResult:
     log: list = field(default_factory=list)
 
 
+LOOK_RETRIES = 3        # transient camera errors (reboot, busy HTTP server) before giving up
+
+
 def _look(camera: str, marker_id: int) -> Marker | None:
     # The camera's snapshot endpoint returns its most recent captured frame,
-    # which can predate the last pulse. Grab one, wait, and use a second.
-    snapshot(camera)
-    time.sleep(0.4)
-    ms = find_markers(snapshot(camera), camera)
+    # which can predate the last pulse. Grab one, wait longer than the
+    # camera's idle frame period (1 fps), and use a second.
+    # A failed fetch is retried a few times: the rover is stopped between
+    # pulses, so waiting out a camera hiccup is safe; aborting the run isn't
+    # any safer and loses the approach.
+    for attempt in range(LOOK_RETRIES):
+        try:
+            snapshot(camera)
+            time.sleep(1.2)
+            ms = find_markers(snapshot(camera), camera)
+            break
+        except OSError:
+            if attempt == LOOK_RETRIES - 1:
+                raise
+            time.sleep(2.0)
     for m in ms:
         if m.id == marker_id:
             return m

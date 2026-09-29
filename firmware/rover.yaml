@@ -95,20 +95,24 @@ mcp23008:
     address: 0x20
 
 output:
+  # Trike build (2026-09-29): the motors sit on the opposite sides, facing the
+  # opposite way, compared with the tank build. Electrically that is a swap of
+  # channels AND polarity, so the "left" outputs below drive L298N channel B
+  # in what the board calls reverse, and vice versa. Pivots were already
+  # correct on the trike; forward/backward were inverted - this fixes that.
   - platform: esp8266_pwm
-    pin: D5
+    pin: D6
     frequency: 1000 Hz
     id: left_pwm
   - platform: esp8266_pwm
-    pin: D6
+    pin: D5
     frequency: 1000 Hz
     id: right_pwm
   - platform: gpio
     id: left_forward_pin
     pin:
       mcp23xxx: mcp23008_hub
-      # Use pin number 0
-      number: 0
+      number: 3
       mode:
         output: true
       inverted: false
@@ -116,8 +120,7 @@ output:
     id: left_reverse_pin
     pin:
       mcp23xxx: mcp23008_hub
-      # Use pin number 1
-      number: 1
+      number: 2
       mode:
         output: true
       inverted: false
@@ -125,8 +128,7 @@ output:
     id: right_forward_pin
     pin:
       mcp23xxx: mcp23008_hub
-      # Use pin number 2
-      number: 2
+      number: 1
       mode:
         output: true
       inverted: false
@@ -134,8 +136,7 @@ output:
     id: right_reverse_pin
     pin:
       mcp23xxx: mcp23008_hub
-      # Use pin number 3
-      number: 3
+      number: 0
       mode:
         output: true
       inverted: false
@@ -264,6 +265,31 @@ sensor:
           - lambda: |-
               id(battery_ok) = true;
 
+# Motor duty, adjustable live over the API so the brain can tune without a
+# reflash. The trike pivots ~30 deg per 0.1 s at 100%; 50% is the starting
+# point. Values survive reboots.
+number:
+  - platform: template
+    name: "Drive duty"
+    id: drive_duty
+    unit_of_measurement: "%"
+    min_value: 20
+    max_value: 100
+    step: 5
+    initial_value: 75
+    restore_value: true
+    optimistic: true
+  - platform: template
+    name: "Pivot duty"
+    id: pivot_duty
+    unit_of_measurement: "%"
+    min_value: 20
+    max_value: 100
+    step: 5
+    initial_value: 50
+    restore_value: true
+    optimistic: true
+
 switch:
   - platform: template
     name: "Forward"
@@ -282,10 +308,10 @@ switch:
           then:
             - output.set_level:
                 id: left_pwm
-                level: 100%
+                level: !lambda 'return id(drive_duty).state / 100.0;'
             - output.set_level:
                 id: right_pwm
-                level: 100%
+                level: !lambda 'return id(drive_duty).state / 100.0;'
             - output.turn_on: left_forward_pin
             - output.turn_on: right_forward_pin
             - output.turn_off: left_reverse_pin
@@ -340,10 +366,10 @@ api:
           then:
             - output.set_level:
                 id: left_pwm
-                level: 75%
+                level: !lambda 'return id(drive_duty).state / 100.0;'
             - output.set_level:
                 id: right_pwm
-                level: 75%
+                level: !lambda 'return id(drive_duty).state / 100.0;'
             - output.turn_on: left_forward_pin
             - output.turn_on: right_forward_pin
             - output.turn_off: left_reverse_pin
@@ -376,10 +402,10 @@ api:
           then:
             - output.set_level:
                 id: left_pwm
-                level: 75%
+                level: !lambda 'return id(drive_duty).state / 100.0;'
             - output.set_level:
                 id: right_pwm
-                level: 75%
+                level: !lambda 'return id(drive_duty).state / 100.0;'
             - output.turn_off: left_forward_pin
             - output.turn_off: right_forward_pin
             - output.turn_on: left_reverse_pin
@@ -412,10 +438,10 @@ api:
           then:
             - output.set_level:
                 id: left_pwm
-                level: 100%
+                level: !lambda 'return id(pivot_duty).state / 100.0;'
             - output.set_level:
                 id: right_pwm
-                level: 100%
+                level: !lambda 'return id(pivot_duty).state / 100.0;'
             - output.turn_off: left_forward_pin
             - output.turn_on: right_forward_pin
             - output.turn_on: left_reverse_pin
@@ -448,10 +474,10 @@ api:
           then:
             - output.set_level:
                 id: left_pwm
-                level: 100%
+                level: !lambda 'return id(pivot_duty).state / 100.0;'
             - output.set_level:
                 id: right_pwm
-                level: 100%
+                level: !lambda 'return id(pivot_duty).state / 100.0;'
             - output.turn_on: left_forward_pin
             - output.turn_off: right_forward_pin
             - output.turn_off: left_reverse_pin
