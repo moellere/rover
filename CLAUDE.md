@@ -105,6 +105,21 @@ fallback is to switch to Opus 5.5 or wait for the reset.
   2026-09-28 when the captured codes went in. Every other device still
   needs a check-in first (the rover itself included).
 
+## Resources on the table (Enoch, 2026-09-29)
+
+This is Claude's project to drive toward the goals; use whatever it needs:
+
+- **Brain hosting.** The brain runs as a script on the dev VM today, which
+  is fine for bench work but the VM may be resource-constrained and a
+  script isn't robust for unattended operation. For Phase 3, package
+  `brain/` as a container with its MCP endpoint hosted like the other
+  homelab MCP servers; ask the homelab-helper MCP (`recommend_placement`)
+  or that session where it should run.
+- **Firmware.** ESPHome is a choice, not a constraint - custom firmware on
+  the rover's board is fine if it is **OTA-flashable**. Current position:
+  keep ESPHome for the reflex layer (fast iteration, clear safety logic);
+  go custom (ESP-IDF + OTA) only when perception has to run on the bot.
+
 ## Hardware workflow
 
 - New components can be designed/specified and requested from Enoch freely
