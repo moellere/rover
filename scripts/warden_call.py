@@ -16,6 +16,7 @@ Useful when the MCP server isn't loaded into the current Claude session.
 Runs with the brain's venv (scripts/install-brain.sh installs the `mcp` SDK).
 """
 import asyncio
+import base64
 import json
 import os
 import sys
@@ -33,8 +34,16 @@ async def main(tool: str, args: dict) -> None:
         async with ClientSession(r, w) as s:
             await s.initialize()
             res = await s.call_tool(tool, args)
-            for c in res.content:
-                print(getattr(c, "text", c))
+            for i, c in enumerate(res.content):
+                if getattr(c, "type", "") == "image":
+                    # e.g. get_snapshot - write the frame out instead of dumping base64
+                    ext = (getattr(c, "mimeType", "") or "image/jpeg").split("/")[-1]
+                    path = os.environ.get("WARDEN_IMAGE_OUT", f"warden_{tool}_{i}.{ext}")
+                    with open(path, "wb") as f:
+                        f.write(base64.b64decode(c.data))
+                    print(f"image -> {path}")
+                else:
+                    print(getattr(c, "text", c))
 
 
 if __name__ == "__main__":

@@ -98,12 +98,10 @@ fallback is to switch to Opus 5.5 or wait for the reset.
   are needed at all, and **no brim** (he doesn't want to trim one off).
   Designs are parametric OpenSCAD in `hardware/`; the toolchain installs
   with `scripts/install-tools.sh` (OpenSCAD + OrcaSlicer, no root needed).
-  **Prints go through the print-warden MCP** (`print-warden`, user scope;
-  since 2026-09-29): upload the STL, `submit_job`, check `job_status`, then
-  `request_start` (Enoch gets Start/Skip on his phone) or `start_print`
-  with his quoted permission from chat. Never start or cancel a print via
-  Moonraker directly. If the MCP isn't loaded in the session,
-  `scripts/warden_call.py` talks to it over HTTP.
+  Prints are submitted and started through the print-warden MCP (since
+  2026-09-29), never through the printer's API directly; starting needs
+  Enoch's OK, quoted, and he cancels. `scripts/warden_call.py` is the
+  fallback when the MCP isn't loaded in the session.
 - **The Eufy is tested on the floor, never on the workbench.** It has no rear
   cliff sensors and none of the rover's firmware guards; on 2026-09-28 it
   started reversing toward the bench edge during IR testing and Enoch caught
