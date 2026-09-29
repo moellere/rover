@@ -18,7 +18,8 @@ from typing import Optional
 import cv2
 import numpy as np
 
-MARKER_MM = float(os.environ.get("ROVER_MARKER_MM", "80"))
+MARKER_MM = float(os.environ.get("ROVER_MARKER_MM", "80"))   # default size
+MARKER_SIZES_MM = {0: 80.0, 1: 160.0}                             # printed pages in hardware/markers/
 CAM_HFOV_DEG = float(os.environ.get("ROVER_CAM_HFOV_DEG", "66"))  # OV2640 typical
 
 # Per-camera focal length in pixels, from a marker of known size at a known
@@ -46,11 +47,11 @@ class Marker:
     image_h: int
 
 
-def estimate_distance(side_px: float, camera: str = "rover") -> Optional[float]:
+def estimate_distance(side_px: float, camera: str = "rover", marker_id: int = 0) -> Optional[float]:
     f = focal_px(camera)
     if not f or side_px <= 0:
         return None
-    return f * MARKER_MM / side_px
+    return f * MARKER_SIZES_MM.get(marker_id, MARKER_MM) / side_px
 
 
 def find_markers(jpeg: bytes, camera: str = "rover") -> list[Marker]:
@@ -73,7 +74,7 @@ def find_markers(jpeg: bytes, camera: str = "rover") -> list[Marker]:
         f_px = focal_px(camera) or (half_w / np.tan(np.radians(CAM_HFOV_DEG / 2)))
         bearing = float(np.degrees(np.arctan2(cx - half_w, f_px)))
         out.append(Marker(int(mid), float(cx), float(cy), side, bearing,
-                          estimate_distance(side, camera), w, h))
+                          estimate_distance(side, camera, int(mid)), w, h))
     return out
 
 
