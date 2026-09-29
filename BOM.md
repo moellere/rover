@@ -29,6 +29,7 @@ in place watching the workbench.
 | 18650 Li-ion cell | 3 (wired 3S) | Power, ~12.6V full / ~9.0V empty | Inventory | Installed |
 | Resistor, 100kΩ + 27kΩ | 1 each | Battery-voltage divider: pack+ (L298N +12V terminal) -> junction -> A0, junction -> 27kΩ -> GND | Inventory | Installed - divider wired and calibrated (`multiply: 15.618`, reads 11.77V vs. a multimeter's 11.79V) |
 | ONVIF camera, Thingino firmware ("camv3") | 1 | Fixed overhead workbench vision (not rover-mounted) | Inventory | Installed |
+| Wyze Cam Pan v2, Thingino firmware ("fishcam") | 1 | `front` camera: across the bench, head-on view of the rover (since 2026-09-29) | Inventory | Installed |
 | ESP32-WROVER T-Camera | 1 | Spare board, earmarked for a possible future onboard FPV/vision upgrade | Inventory | Owned, not deployed |
 
 ## Shopping list (needed, not yet installed)
