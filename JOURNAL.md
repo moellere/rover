@@ -347,8 +347,12 @@ sudo, and the token-budget constraint.
     measure 68.5 mm across the outer edges of their holes = 64 mm c-c (8
     grid units); slots cover 63-66 and are oversized per his request. The
     strip presents the v5 cradle's own M4 slot pair on top. Sliced (21 min,
-    8.8 g), uploaded to the printer's `rover/` folder, not started - the
-    trike rebuild comes first, then a fit check.
+    8.8 g). Enoch: "once you have designed it, if you're confident, you can
+    print" - **started 2026-09-29 through the new print-warden MCP** (job
+    `6c5fbbfe1e`; warden's own slice matched: 20 layers, 8.79 g). The
+    warden wasn't loaded in this session, so `scripts/warden_call.py` calls
+    it as a Streamable-HTTP MCP client; the direct-to-Moonraker gcode was
+    removed. Fit check after the trike rebuild.
   - Enoch flagged that the bracket sits loosely and shifts on every jerky
     move, which corrupts bearings; he offered to measure the chassis
     posts so an adapter plate can bolt the mount down. Accepted -
