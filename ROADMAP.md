@@ -9,9 +9,11 @@ means Enoch already has it. Enoch reshapes this freely; it's a proposal.
 
 | # | Item | Needs | Why |
 |---|---|---|---|
-| 0.1 | Print and fit the camera mount | board measurements (Enoch), ~17 g PETG | everything visual depends on it |
-| 0.2 | Camera on rover power | USB splice (Enoch), buck at 5.0 V | camera travels with the rover |
-| 0.3 | Camera firmware for the rover role | camera mounted | fix mirror/flip for upright mounting; drop the stream to VGA for latency; keep 8081 snapshots; reflash (pre-authorized) |
+| 0.1 | ~~Print and fit the camera mount~~ **done** (v5) | - | everything visual depends on it |
+| 0.1a | **Rebuild the chassis as the trike** (two motors + trailing caster) | Enoch's rebuild time, $0 | the tank skidded its tracks to pivot - stiction, asymmetry, 100% duty bursts; wheels pivot cleanly at low duty. Decided 2026-09-29. Then re-tune `PIVOT_S`/`FORWARD_S` in `brain/homing.py` |
+| 0.1b | Camera adapter strip fitted | `hardware/prints/camera-strip_v1` on the printer, 2x M4 + nuts + washers | bolts the cradle to the front standoffs so bearings stop drifting with every pulse |
+| 0.2 | ~~Camera on rover power~~ **done** (buck -> spliced USB) | - | camera travels with the rover |
+| 0.3 | ~~Camera firmware for the rover role~~ **done** (5 fps idle, PSRAM) | - | snapshots are fresh; stream still SXGA - drop to VGA if latency matters |
 | 0.4 | Cliff sensors installed | sensors (ordered), polarity check | the firmware guards are already waiting for them |
 | 0.5 | Brain driving verified | rover powered on | `status` + a short `drive` pulse through the MCP server; calibrate seconds-per-cm and seconds-per-degree for pivots |
 | 0.6 | Home Assistant cleanup | - | re-add the rover so battery/motion/cliff show on the dashboard; add both camera feeds to the workbench section |

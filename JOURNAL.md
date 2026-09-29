@@ -330,6 +330,25 @@ sudo, and the token-budget constraint.
     now judged by lateral offset (<=30 mm) as well as bearing, and losing
     the marker right after a pulse inside 1.25x the stop distance counts
     as arrived.
+  - **Chassis decision.** Enoch pointed out (not steering, just informing)
+    that the Starter Robot Kit also builds as a two-motor trike with a
+    trailing caster, and that it came with a Me Orion (Arduino + RJ25)
+    board. Claude's call, Enoch proceeding: **rebuild as the trike** - the
+    tank had to skid its tracks sideways to pivot, which is where all of
+    tonight's stiction/asymmetry came from; wheels on an axle pivot at low
+    duty with angle roughly proportional to pulse length, which is what
+    homing wants. Same differential steering, so firmware and brain are
+    unchanged; only pulse constants get re-tuned. **Keep the D1 Mini +
+    ESPHome, skip the Orion** - it has no WiFi so the ESP stays in the loop
+    anyway, and the tested watchdog/disconnect/cliff/battery firmware would
+    have to be rewritten for no gain.
+  - **Camera adapter strip** (`hardware/camera-strip.scad`) designed from
+    Enoch's measurements: the two front M4 standoffs are 30 mm tall and
+    measure 68.5 mm across the outer edges of their holes = 64 mm c-c (8
+    grid units); slots cover 63-66 and are oversized per his request. The
+    strip presents the v5 cradle's own M4 slot pair on top. Sliced (21 min,
+    8.8 g), uploaded to the printer's `rover/` folder, not started - the
+    trike rebuild comes first, then a fit check.
   - Enoch flagged that the bracket sits loosely and shifts on every jerky
     move, which corrupts bearings; he offered to measure the chassis
     posts so an adapter plate can bolt the mount down. Accepted -

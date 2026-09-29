@@ -9,7 +9,8 @@ except for the one `apt-get` line noted at the top of that script).
 | File | What | Status |
 |---|---|---|
 | `roomba-minidin-plug.scad` | 7-pin mini-DIN plug body for the Roomba's Open Interface port: seven solid-core wires held at the pin positions, keyed insert, gripped body. | **Shelved** - the Roomba was gone (issue #1). Test print #1 taught two fixes, now in the file: inset key groove instead of a rib, larger wire holes. Ready if a mini-DIN port reappears. |
-| `camera-mount.scad` | Cradle that stands the TTGO T-Camera upright on the Makeblock plate, lens/PIR/OLED facing forward, tilted 10° down. Open front, back window for the micro-USB lead, M4 slots on the plate's 8mm grid. | Board dimensions measured by Enoch (28.0 x 68.0 x 1.27 mm, 6 mm rear components). Sliced as `prints/camera-mount_v2`. |
+| `camera-mount.scad` | Cradle that stands the TTGO T-Camera upright on the Makeblock plate, lens/PIR/OLED facing forward, tilted 10° down. Open front, back window for the micro-USB lead, M4 slots on the plate's 8mm grid. | Board dimensions measured by Enoch (28.0 x 68.0 x 1.27 mm, 6 mm rear components). **v5 printed and in use** (`prints/camera-mount_v5`): corner lips, straight-down cable slot, inside tabs. Known quirk: the base's cable slot breaks into its two M4 slots - use washers under the screw heads. |
+| `camera-strip.scad` | Adapter strip that bolts the v5 cradle rigidly to the chassis: spans the two front M4 standoffs (64 mm c-c, 30 mm tall, slotted for 63-66), presents the cradle's own 8 mm-grid M4 slots on top, 8 mm cable slot underneath. Runs left-right; camera centred. | Designed from Enoch's measurements 2026-09-29 (68.5 mm across the outer edges of the standoff holes). Sliced as `prints/camera-strip_v1` (21 min, 8.8 g PETG, no supports), uploaded to the printer's `rover/` folder, not started. Fit-check after the trike rebuild. |
 
 ## Render
 
