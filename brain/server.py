@@ -89,6 +89,17 @@ def find_marker(camera: str = "rover") -> dict:
 
 
 @mcp.tool()
+async def home_to_marker(marker_id: int = 0, stop_mm: float = 200.0, max_pulses: int = 20) -> dict:
+    """Autonomously drive to an ArUco marker seen by the rover's camera: pivot
+    until centred, step forward until `stop_mm` away, re-measuring after every
+    pulse. Stops on a lost marker, a cliff, low battery, or the pulse cap."""
+    from brain.homing import home_to_marker as _home
+    r = await _home(marker_id, "rover", stop_mm, max_pulses)
+    return {"ok": r.ok, "reason": r.reason, "pulses": r.pulses,
+            "final_bearing_deg": r.final_bearing_deg, "final_distance_mm": r.final_distance_mm, "log": r.log}
+
+
+@mcp.tool()
 async def stop() -> dict:
     """Stop the motors now."""
     await RoverClient().stop()
