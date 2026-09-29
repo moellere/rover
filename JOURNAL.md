@@ -491,6 +491,14 @@ sudo, and the token-budget constraint.
   29 min, 7.9 g PETG); Enoch: "OK, print it" - started. Grover drove ~15 cm
   toward fishcam for a look at the beam and veered right (toward the long
   edge, ~13 cm clear); left there.
+- **TFMini goes direct.** Enoch spotted the as-built chain was 5 V ->
+  LD33V -> 3.3 V -> boost board -> 5 V. The TFMini takes 5 V and talks
+  3.3 V I2C, so it can run straight off the buck with SDA/SCL on the D1
+  Mini. He'd rather not cut the stock cable, so he ordered a GH1.25 ->
+  Dupont 2.54 pre-crimped kit (Amazon B087N4GY8Z) for inventory; Grover's
+  prorated share is $0.40 (budget: $3.29 spent, $96.71 left). The Qwiic
+  chain + LD33V remains a stopgap until the kit arrives. Bracket printed
+  meanwhile.
 - **Near miss, backing up.** Enoch asked for a test reverse toward the bench
   camera. Done in 0.3 s pulses with the marker as odometry and a stop at a
   known-safe distance - but the caster flipping on direction change dragged

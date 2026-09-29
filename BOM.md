@@ -9,10 +9,11 @@ to just go buy something himself (as with the IR sensors below), it doesn't
 draw against it. Update the running total every time something *is* drawn
 from it - don't let it go stale.
 
-**Budget spent so far: $2.89 — remaining: $97.11** (as of 2026-09-29)
+**Budget spent so far: $3.29 — remaining: $96.71** (as of 2026-09-29)
 
 | Date | Item | Cost |
 |---|---|---|
+| 2026-09-29 | GH1.25-to-Dupont 2.54 pre-crimped cable + connector kit (Amazon B087N4GY8Z) - Enoch bought it for inventory; Grover's share (one 4-pin TFMini lead) prorated by Enoch | $0.40 |
 | 2026-09-29 | 3S 40A BMS protection/balance board (Gebildet, Amazon B0G6JQ8ZFN) - Enoch bought a 3-pack for $8.66 for inventory; one is Grover's, so 1/3 is charged here | $2.89 |
 | 2026-09-28 | ~~Eufy RoboVac 12 replacement battery (Amazon)~~ ordered at $18.10, then cancelled the same evening - the vacuum's bottom power switch was off, the pack is fine | $0.00 |
 
@@ -72,7 +73,8 @@ before connecting the camera.
 | Spare micro-USB cable, spliced | 1 | Buck converter 5V output -> T-Camera micro-USB power input (identify VBUS/GND by continuity to the plug's outer pins; data wires unconnected). The board's 5-pin bottom connector does NOT accept 5 V power - USB is the only input | $0 - Enoch has spares | Soldered to the buck; **no voltage at the plug yet** - cable/splice being diagnosed |
 | 3.7V single-cell Li-ion pack (on the T-Camera's own JST battery connector) | 1 | Backup power: USB runs the board and charges this cell via the onboard IP5306; if the main pack dies, the camera keeps running so a stranded rover can still report where it is | $0 - Enoch has a spare | Planned - add only after the USB path is built and verified; measure the IP5306's charge-current draw on the main pack first (can reach ~2A) |
 | Benewake TFMini micro-LiDAR (SparkFun Qwiic SEN-14786) + SparkFun Qwiic Adapter (pass-through, no regulator) + Qwiic breadboard breakout | 1 | Forward range for homing stop distance and obstacle stop (roadmap 3.4) | Inventory | Firmware ready (guard boots off). Power plan 2026-09-29: Qwiic 3.3 V line from its own LD33V (below), **not** the D1 Mini's 3V3; SDA -> D2, SCL -> D1 alongside the MCP23008. Mount: `hardware/tfmini-bracket.scad` (staged, not printed); M2 screws x2 for the ears, M4 x 20 + nuts x2 for the beam |
-| LD33V (LD1117V33) 3.3 V LDO, TO-220, + 10 uF out / in caps | 1 | Dedicated 3.3 V for the TFMini's Qwiic line, fed from the buck's 5 V - keeps the TFMini's boost off the D1 Mini's small regulator | Inventory (Enoch used it for the TFMini before) | Planned |
+| GH1.25 4-pin to Dupont 2.54 lead (from kit B087N4GY8Z) | 1 | TFMini direct: sensor's GH socket -> breadboard, so the Qwiic boost board, adapter and LD33V drop out (red 5 V from the buck, black GND, white SDA -> D2, green SCL -> D1). Assemble from the kit's pre-crimped wires; map wires by **pin position** against the stock cable's GH plug, not by colour. Kit Dupont ends may be female - male-male jumpers into the breadboard if so | $0.40 (prorated) | **Ordered** 2026-09-29 by Enoch; the stock cable stays uncut |
+| LD33V (LD1117V33) 3.3 V LDO, TO-220, + 10 uF out / in caps | 1 | Dedicated 3.3 V for the TFMini's Qwiic line, fed from the buck's 5 V - keeps the TFMini's boost off the D1 Mini's small regulator | Inventory (Enoch used it for the TFMini before) | Interim only - retired once the GH lead arrives (direct 5 V) |
 | Second 5 V lead from the buck | 1 | Buck OUT -> D1 Mini 5V/G; the D1 comes off the L298N's linear 5 V regulator (disconnect it - never two regulators on one rail) | Inventory | Planned, with the TFMini wiring |
 | 3D-printed camera mount (`hardware/camera-mount.scad`) | 1 | Pedestal cradle standing the T-Camera upright on the Makeblock plate (8mm M4 grid), lens/PIR/OLED forward, 10° down-tilt, open front, open gap under the board for the bottom-edge micro-USB plug, rear cable window | $0 (~17 g PETG, ~1h15m print) | **v5 printed and in use** (`hardware/prints/camera-mount_v5`) |
 | 3D-printed camera adapter strip (`hardware/camera-strip.scad`) | 1 | Bolts the cradle to the two front M4 standoffs (64 mm c-c) so the camera stops shifting on pulses | $0 (8.8 g PETG, 21 min) | **Printed 2026-09-29 and fitted** |
