@@ -300,6 +300,29 @@ sudo, and the token-budget constraint.
   one-time bench-cam recalibration, two PTZ presets ("bench", "wide").
   Future prints go through the print-warden MCP, which reuses this repo's
   slicing rules.
+- **Homing against the 160 mm marker (id 1), later the same night** - a
+  string of fixes from real runs:
+  - Every other pulse looked ineffective because the camera's snapshot
+    endpoint was serving frames up to 10 s old (`idle_framerate` was
+    0.1 fps). Set it to 5 fps (needs `psram:`), reflashed, and `_look`
+    now discards one frame and uses a second.
+  - The loop ground against a mat edge/cables at 229 mm - added a stuck
+    guard (three pulses with <0.5 deg / <15 mm change -> stop). A single
+    1.0 s `backward` pulse freed it. Enoch then cleared the lane.
+  - Still "stuck" at 325 mm with a clear lane: **left pivots do nothing
+    at 0.2-0.6 s while right pivots bite at 0.25 s**; one 1.0 s left pulse
+    turned it 12 deg (Enoch watched the left track move), then three more
+    1.0 s left pulses did nothing at all. Forward pulses also veer right
+    (bearing drifts more negative). Reads as a weak/intermittent right
+    motor or track, not an obstacle - Enoch is checking. Loop changes:
+    pivot pulses adapt per direction, the cap is now 1.0 s (the server's
+    max), and a no-effect pivot doesn't count toward "stuck" until its
+    pulse has grown to the cap.
+  - Enoch flagged that the bracket sits loosely and shifts on every jerky
+    move, which corrupts bearings; he offered to measure the chassis
+    posts so an adapter plate can bolt the mount down. Accepted -
+    measurements requested (post spacing both axes, post type/diameter,
+    height, which way is forward).
 
 ### Open for next session
 1. Enoch: measure the board (six numbers in the `.scad` header), build the
