@@ -163,7 +163,11 @@ This is Claude's project to drive toward the goals; use whatever it needs:
   afterthought - every session that changes something updates both before
   it ends.
 - **Commit and push regularly** (Enoch, 2026-09-28): after each coherent
-  change, not in one batch at the end of a session. Work on `master`; if a
+  change, not in one batch at the end of a session. **Documentation updates
+  in this repo never need Enoch's permission** (2026-09-29) - keep README,
+  JOURNAL, BOM, ROADMAP and the hardware/brain READMEs current and push.
+  README is the "what it is now" snapshot, JOURNAL the history, BOM and
+  ROADMAP the ledgers: rewrite in place, don't accumulate. Work on `master`; if a
   branch is ever used, merge it back the same session so the remote is
   never behind the working tree for long. Run the secrets/IP scan before
   every commit.
