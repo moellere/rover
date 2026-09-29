@@ -38,6 +38,9 @@ STOP_MM = 200.0         # stop when the marker is this close
 SETTLE_S = 1.5          # wait after a pulse before looking (motion blur); _look adds its own second frame
 MAX_PULSES = 20         # hard cap on drive pulses per run
 MAX_LOST = 3            # consecutive frames without the marker -> give up
+STUCK_PULSES = 3        # consecutive pulses with no measurable change -> stop (don't grind)
+STUCK_DEG = 0.5
+STUCK_MM = 15.0
 
 
 @dataclass
@@ -71,6 +74,8 @@ async def home_to_marker(marker_id: int = 0, camera: str = "rover",
     last: Marker | None = None
     pivot_s = PIVOT_S
     prev_bearing: float | None = None
+    stuck = 0
+    prev_obs: tuple[float, float | None] | None = None
     t0 = time.monotonic()
     try:
         while pulses < max_pulses:
@@ -91,6 +96,20 @@ async def home_to_marker(marker_id: int = 0, camera: str = "rover",
             if m.distance_mm is not None and m.distance_mm <= stop_mm and abs(m.bearing_deg) <= CENTER_DEG:
                 await client.stop()
                 return HomingResult(True, "arrived", pulses, m.bearing_deg, m.distance_mm, log)
+
+            # Stuck guard: pulses that change nothing mean the rover is held up
+            # (cable, mat edge, obstacle). Stop instead of grinding the motors.
+            obs = (m.bearing_deg, m.distance_mm)
+            if prev_obs is not None and pulses > 0 and abs(obs[0] - prev_obs[0]) < STUCK_DEG and \
+               (obs[1] is None or prev_obs[1] is None or abs(obs[1] - prev_obs[1]) < STUCK_MM):
+                stuck += 1
+                if stuck >= STUCK_PULSES:
+                    await client.stop()
+                    return HomingResult(False, f"stuck: no movement over {STUCK_PULSES} pulses", pulses,
+                                        m.bearing_deg, m.distance_mm, log)
+            else:
+                stuck = 0
+            prev_obs = obs
 
             # Guards read from the rover before every pulse.
             st = await client.state(timeout=3.0)
