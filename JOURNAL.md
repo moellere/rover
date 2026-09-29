@@ -475,8 +475,22 @@ sudo, and the token-budget constraint.
   own LD33V off that same 5 V (Enoch ran the TFMini this way before) - the
   SparkFun Qwiic Adapter is pass-through, the 3.3->5 V boost lives on the
   TFMini's cable board, so the D1's ~500 mA regulator would otherwise carry
-  it. Enoch is doing the rework; sensor has side mounting ears (photo via
-  fishcam pending).
+  it. Enoch is doing the rework. He noted the LD33V build never had its
+  10 uF caps - add them (LD1117 needs >= 10 uF on the output); the LD33V
+  pinout is GND-OUT-IN, not a 7805's.
+- Fishcam's PTZ works through HA's `onvif.ptz` (ContinuousMove; RelativeMove
+  returns 500) - tilted down to inspect the parts on the bench, then back.
+- **TFMini bracket designed** (`hardware/tfmini-bracket.scad`): ear holes
+  from Benewake's TFmini-S drawing (Enoch's link; 2 x 2.35 mm at 36 mm
+  c-c, same housing). Enoch: the beam's top face is free (the clear plate
+  is set back), holes are top/bottom on the standard grid, not threaded,
+  and the centre pair is taken by the bracket under the beam that joins
+  the caster beam - so the part bolts through the next holes out (+/-12)
+  with a relief pocket over the centre pair, and hangs the sensor in front
+  of the beam at its mid-height. Staged via print-warden (job 010780c633,
+  29 min, 7.9 g PETG), awaiting Enoch's go-ahead. Grover drove ~15 cm
+  toward fishcam for a look at the beam and veered right (toward the long
+  edge, ~13 cm clear); left there.
 - **Near miss, backing up.** Enoch asked for a test reverse toward the bench
   camera. Done in 0.3 s pulses with the marker as odometry and a stop at a
   known-safe distance - but the caster flipping on direction change dragged
