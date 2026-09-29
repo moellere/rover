@@ -264,6 +264,12 @@ sudo, and the token-budget constraint.
   when they arrive; a transistor driver is the next step only if the
   vacuum ignores a working LED at distance.
 
+- Bench camera calibrated for distance: Enoch measured lens-to-marker at
+  66 in; the marker spans 50.7 px there, so the focal length is 1062 px
+  (~84 deg horizontal FOV). The brain now holds a per-camera focal length
+  (`BENCH_CAM_FOCAL_PX`, `ROVER_CAM_FOCAL_PX`) and `find_marker` reports
+  distance - verified: 1676 mm back at 66 in.
+
 ### Open for next session
 1. Enoch: measure the board (six numbers in the `.scad` header), build the
    USB splice, print the marker page (`hardware/markers/`), answer the

@@ -20,8 +20,14 @@ import numpy as np
 
 MARKER_MM = float(os.environ.get("ROVER_MARKER_MM", "80"))
 CAM_HFOV_DEG = float(os.environ.get("ROVER_CAM_HFOV_DEG", "66"))  # OV2640 typical
-_focal = os.environ.get("ROVER_CAM_FOCAL_PX")
-FOCAL_PX: Optional[float] = float(_focal) if _focal else None
+
+# Per-camera focal length in pixels, from a marker of known size at a known
+# distance: focal_px = side_px * distance_mm / MARKER_MM.
+#   BENCH_CAM_FOCAL_PX  - the fixed workbench camera
+#   ROVER_CAM_FOCAL_PX  - the T-Camera on the rover
+def focal_px(camera: str) -> Optional[float]:
+    v = os.environ.get({"bench": "BENCH_CAM_FOCAL_PX", "rover": "ROVER_CAM_FOCAL_PX"}.get(camera, ""))
+    return float(v) if v else None
 
 _DICT = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_4X4_50)
 _PARAMS = cv2.aruco.DetectorParameters()
@@ -40,13 +46,14 @@ class Marker:
     image_h: int
 
 
-def estimate_distance(side_px: float) -> Optional[float]:
-    if not FOCAL_PX or side_px <= 0:
+def estimate_distance(side_px: float, camera: str = "rover") -> Optional[float]:
+    f = focal_px(camera)
+    if not f or side_px <= 0:
         return None
-    return FOCAL_PX * MARKER_MM / side_px
+    return f * MARKER_MM / side_px
 
 
-def find_markers(jpeg: bytes) -> list[Marker]:
+def find_markers(jpeg: bytes, camera: str = "rover") -> list[Marker]:
     arr = np.frombuffer(jpeg, np.uint8)
     img = cv2.imdecode(arr, cv2.IMREAD_GRAYSCALE)
     if img is None:
@@ -63,12 +70,12 @@ def find_markers(jpeg: bytes) -> list[Marker]:
         side = float(np.mean([np.linalg.norm(pts[i] - pts[(i + 1) % 4]) for i in range(4)]))
         # small-angle-free bearing: map pixel offset through the pinhole model
         half_w = w / 2.0
-        f_px = FOCAL_PX or (half_w / np.tan(np.radians(CAM_HFOV_DEG / 2)))
+        f_px = focal_px(camera) or (half_w / np.tan(np.radians(CAM_HFOV_DEG / 2)))
         bearing = float(np.degrees(np.arctan2(cx - half_w, f_px)))
         out.append(Marker(int(mid), float(cx), float(cy), side, bearing,
-                          estimate_distance(side), w, h))
+                          estimate_distance(side, camera), w, h))
     return out
 
 
-def markers_as_dicts(jpeg: bytes) -> list[dict]:
-    return [asdict(m) for m in find_markers(jpeg)]
+def markers_as_dicts(jpeg: bytes, camera: str = "rover") -> list[dict]:
+    return [asdict(m) for m in find_markers(jpeg, camera)]

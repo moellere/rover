@@ -84,7 +84,7 @@ def find_marker(camera: str = "rover") -> dict:
     from brain.markers import markers_as_dicts
     if camera not in CAMERAS:
         raise ValueError(f"camera must be one of {CAMERAS}")
-    found = markers_as_dicts(_snapshot(camera))
+    found = markers_as_dicts(_snapshot(camera), camera)
     return {"camera": camera, "count": len(found), "markers": found}
 
 
