@@ -53,10 +53,11 @@ placed so the approach path is clear.
 Backing up is **not** the mirror of driving forward: the trailing caster has
 to flip 180° when direction changes and drags the rear sideways while it
 does (2026-09-29: three 0.3 s backward pulses turned the rover ~45° and put
-the caster on the right-hand bench edge). No rear cliff sensors exist.
-Reverse only in single short pulses (<= 0.3 s), re-look between each, and
-only with a clear view of the space behind on the bench camera - never a
-timed run toward the near edge.
+one wheel over the right-hand bench edge; Enoch caught it). No rear cliff
+sensors exist, and the rover camera faces *away* from the direction of
+travel - marker distance says nothing about sideways drift. Reverse only in
+single short pulses (<= 0.3 s), and **look at the bench camera before each
+one** - never a scripted sequence checked only through the rover camera.
 
 ## Rover orientation on the bench
 

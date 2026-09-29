@@ -388,10 +388,15 @@ sudo, and the token-budget constraint.
   known-safe distance - but the caster flipping on direction change dragged
   the rear sideways each pulse (+8, +11.5 deg drift), the third pulse
   turned the rover ~45 deg and lost the marker (the loop stopped on that,
-  as designed), and it ended with the caster at the right-hand bench edge.
-  Enoch called it from the bench. Rule added to `CLAUDE.md`: reverse is a
-  short-pulse, look-between, bench-camera-checked move only - the caster
-  makes it unpredictable and there are no rear cliff sensors.
+  as designed), and it ended **with one wheel over the right-hand bench
+  edge** - Enoch called it from the bench and lifted it back. Claude's
+  error, precisely: the "look between pulses" used only the rover camera,
+  which faces away from the direction of travel; marker distance measured
+  how far back it had gone and nothing about the rear drifting sideways.
+  The bench camera was the only sensor covering the space behind it and
+  the script didn't consult it until the end. Rule added to `CLAUDE.md`:
+  reverse is single short pulses with a bench-camera look before each one;
+  the caster makes it unpredictable and there are no rear cliff sensors.
 - Power management, on Enoch's question before bed: firmware only refuses to
   drive under 9.3 V; idle draw still flattens a pack. For now he switches the
   pack off; deep-sleep and a hardware LVC are on the roadmap (3.2a/3.2b).
