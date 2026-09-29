@@ -31,8 +31,9 @@ breakdown of the notable decisions. Newest entry on top.
   the new motor orientation.
 - **Camera adapter strip printed and fitted** (`hardware/camera-strip.scad`)
   - the cradle is bolted to the front standoffs now.
-- **Open:** redcam still runs ESPHome 2024.9.2 - its config now validates
-  on 2026.x but the OLED lambda hits a wifi API rename; fix and flash.
+- **Pending flash (pre-built):** rover with brake-on-stop; redcam onto
+  ESPHome 2026.8.1 (it still runs 2024.9.2). Both are `esphome run` away
+  once the pack is on.
 - Firmware: watchdog, disconnect-stop, battery guard (calibrated) live;
   cliff-sensor guards live but sensors not yet installed (ordered). Camera
   (`redcam`) on rover power, fresh snapshots (5 fps idle).
@@ -380,8 +381,10 @@ sudo, and the token-budget constraint.
 - redcam turned out to still be on ESPHome 2024.9.2: its config has never
   validated on 2026.x (`idle_framerate` max 1 fps; the camera's SCCB pins
   must be a separate `i2c:` bus; the OLED lambda used the Arduino `WiFi`
-  object). Two of three fixed; the last build error is an ESPHome API rename
-  in the wifi component - **open for tomorrow**. `_look` now retries
+  object; `IPAddress::str()` removed in 2026.8). All fixed and **both
+  firmwares are pre-built** (Enoch's suggestion: build while the pack is
+  off, flash the moment it's back) - the rover's with brake-on-stop, the
+  camera's on 2026.8.1. First job tomorrow: two OTA uploads. `_look` now retries
   transient camera errors and waits 1.2 s between its two frames.
 - **Near miss, backing up.** Enoch asked for a test reverse toward the bench
   camera. Done in 0.3 s pulses with the marker as odometry and a stop at a
