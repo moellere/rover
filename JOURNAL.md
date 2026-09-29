@@ -293,6 +293,14 @@ sudo, and the token-budget constraint.
   breakout in inventory - added to the roadmap as the forward range sensor
   (better than the HC-SR04 for a precise stop distance and obstacle stop).
 
+- Bench camera swap (handoff from the homelab-helper session, note in
+  `handoffs/`, LAN addresses stripped on arrival): **agreed by Enoch,
+  deferred until bench testing is done.** camv3 -> the PTZ "fishcam";
+  camv3 goes to the printer. Rover side: new BENCH_CAM_HOST + password,
+  one-time bench-cam recalibration, two PTZ presets ("bench", "wide").
+  Future prints go through the print-warden MCP, which reuses this repo's
+  slicing rules.
+
 ### Open for next session
 1. Enoch: measure the board (six numbers in the `.scad` header), build the
    USB splice, print the marker page (`hardware/markers/`), answer the
