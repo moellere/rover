@@ -18,28 +18,31 @@ breakdown of the notable decisions. Newest entry on top.
 
 ## Current status (as of the latest entry below)
 
-Rover drives reliably via ESPHome's native API (`forward`/`backward`/`left`/
-`right`/`stop`). Firmware has a command watchdog and disconnect-triggered
-stop, both tested. Battery monitoring is fully installed and calibrated
-(100kΩ/27kΩ divider, L298N +12V terminal -> D1 Mini A0; sensor reads 11.77V
-against a multimeter's 11.79V). The two IR cliff sensors are ordered but not
-yet installed; the guard logic for both is already live in firmware and will
-activate automatically once wired (see [BOM.md](BOM.md) for exact status).
-Home Assistant's connection to the device is stale and unused for control
-(see the 2026-09-27 entry) - a future cleanup item, not a blocker. Next
-milestone (see below): mount the existing TTGO T-Camera (hostname `redcam`)
-on the rover for onboard vision. It already runs a working
-ESPHome camera build (rebuilt and reflashed on ESPHome 2026.8.1 - pipeline
-proven, snapshots work), and Claude may reflash it freely. Power path decided
-(buck converter at 5.0V -> spliced USB cable -> its micro-USB input); Enoch is
-building the splice. The camera mount is designed (`hardware/camera-mount.scad`)
-and renders, but **needs six caliper measurements of the board** before
-slicing. Slicing itself is blocked on a one-line sudo apt install on the dev
-VM (Enoch offered; see the 2026-09-28 entry). The rover is powered off
-overnight. Proposed next goal after Phase 1: visual homing (in `CLAUDE.md`).
-**Visual homing (Tier 1) works as of 2026-09-29** - `home_to_marker` drove
-the rover to the marker unattended. Standing project rules live in
-[CLAUDE.md](CLAUDE.md) - read that first.
+**Where things stand, 2026-09-29 (late):**
+
+- **Visual homing works** - `home_to_marker` has driven the rover to a
+  marker unattended twice (80 mm marker: 594 -> 90 mm; 160 mm marker:
+  667 -> 214 mm). The brain (`brain/`, MCP server `rover-brain`) is the
+  only way the rover is driven.
+- **The chassis is being rebuilt as the trike** (two motors + trailing
+  caster) - Enoch started tonight. Reason: the tank had to skid its tracks
+  to pivot, which produced stiction, left/right asymmetry and 100%-duty
+  pivots. Pulse constants in `brain/homing.py` need re-tuning once it's
+  running; pivot duty may go back to 75%.
+- **Camera adapter strip printed** (`hardware/camera-strip.scad`) - bolts
+  the v5 cradle to the front standoffs so the camera stops shifting.
+  Fit check after the rebuild.
+- Firmware: watchdog, disconnect-stop, battery guard (calibrated) live;
+  cliff-sensor guards live but sensors not yet installed (ordered). Camera
+  (`redcam`) on rover power, fresh snapshots (5 fps idle).
+- Eufy RoboVac 12 is the house chassis (IR-driven); IR node proven except
+  its LEDs (replacements on order). Bench camera swap to the PTZ agreed,
+  deferred until bench testing is done.
+- Next: TFMini forward LiDAR (obstacle stop + precise stop distance),
+  cliff sensors when they arrive, D1 Mini onto the buck.
+
+Standing project rules live in [CLAUDE.md](CLAUDE.md) - read that first;
+decisions and their reasoning are in the dated entries below.
 
 ---
 
@@ -354,6 +357,23 @@ sudo, and the token-budget constraint.
     posts so an adapter plate can bolt the mount down. Accepted -
     measurements requested (post spacing both axes, post type/diameter,
     height, which way is forward).
+
+### Decisions, 2026-09-29 (Fable 5.1)
+
+| Decision | Who | Why |
+|---|---|---|
+| Pivot at 100% motor duty (forward/backward stay 75%) | Claude proposed, Enoch approved the reflash | left pivots stalled under load at 75%; unloaded the tracks ran in sync, so it was torque margin, not wiring |
+| Homing "arrived" = within the stop distance **and** either bearing <= 6 deg or lateral offset <= 30 mm; a lost marker right after a pulse at close range counts as arrived | Claude | at 170 mm the 160 mm marker overfills the frame; the loop was parking correctly and reporting failure |
+| Per-direction adaptive pivot pulses, 1.0 s cap, stuck guard only after a pivot has maxed out | Claude | left and right needed different pulse lengths; the guard was quitting before the pulse had grown |
+| Stop distance for the big marker stays 200 mm | Claude | the camera keeps the full marker in frame at ~215 mm; closer than that is the TFMini's job later |
+| **Rebuild the chassis as the trike** (two motors + trailing caster) instead of tank tracks | Enoch raised the option without steering; Claude chose; Enoch is doing the rebuild | tank pivots skid the tracks sideways - the source of tonight's stiction and asymmetry; differential steering is unchanged so firmware and brain carry over |
+| **Keep the D1 Mini + ESPHome; don't move to the kit's Me Orion board** | Enoch offered; Claude declined | no WiFi on the Orion, so the ESP stays anyway; the tested safety firmware would have to be rewritten for no gain |
+| Adapter **strip** across the two front standoffs, not a full plate | Enoch asked which; Claude chose the strip | two posts 64 mm apart fully constrain a 30 g camera; a full plate waits until the TFMini and cliff sensors need mounting on the trike layout |
+| Standoff slots oversized (4.5 mm, slotted 63-66 mm c-c) | Enoch's request | measurement was across hole edges; screw heads cover the play |
+| Strip printed tonight without a fit check on the trike | Enoch: "if you're confident, you can print" | flat 20-minute part, 8.8 g; low cost to reprint if the trike moves the posts |
+| Prints go through the print-warden, not the printer API | Enoch (and the homelab-helper session) | one gate for slicing, start permission, and monitoring; rule added to `CLAUDE.md` |
+| Bench camera swap to the PTZ still deferred | Enoch, earlier tonight | finish testing on the current calibration first |
+| Rewriting public git history to purge the earlier LAN-IP leak | **open - Enoch's call** | the tip is clean; a force-push touches a public repo, so not done without his say-so |
 
 ### Open for next session
 1. Enoch: measure the board (six numbers in the `.scad` header), build the

@@ -28,7 +28,8 @@ parks nose-on within ~2 cm, unattended.
 | 1.1 | Printed marker | paper, `hardware/markers/` (done) | ArUco 4x4, id 0, 80 mm - printable page committed |
 | 1.2 | `find_marker` tool | camera mounted | detector already in `brain/markers.py`; returns id, pixel centre, apparent size, bearing |
 | 1.3 | Camera calibration | a ruler and the marker | focal length from marker size at known distances -> distance estimate |
-| 1.4 | `home_to_marker` | 1.2, 1.3, 0.5 | **done 2026-09-29** - closed loop with adaptive pivots; first arrival: 12 pulses, 594 mm -> 90 mm |
+| 1.4 | `home_to_marker` | 1.2, 1.3, 0.5 | **done 2026-09-29** - closed loop with adaptive pivots; arrivals: 12 pulses 594 -> 90 mm (80 mm marker), 14 pulses 667 -> 214 mm (160 mm marker) |
+| 1.4a | Re-tune homing on the trike | 0.1a | shorter pivots, probably 75% duty again; check left/right symmetry first, then `PIVOT_S`, `FORWARD_S`, `CENTER_DEG` |
 | 1.5 | Bench lap demo | all above | drive a lap around a clutter-free zone using markers as waypoints |
 
 ## Tier 2E - the Eufy path (issue #1; revised 2026-09-28)

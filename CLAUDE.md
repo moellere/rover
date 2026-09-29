@@ -34,6 +34,13 @@ T-Camera is the **eyes** (ESPHome; snapshot/stream), and `brain/` is the
 through the `rover-brain` MCP tools, not ad-hoc scripts. Consolidating both
 ESPs onto one board is a known later step (see BOM.md), not now.
 
+**Chassis (decided 2026-09-29):** the Makeblock kit is built as the
+**trike** (two driven wheels + trailing caster), not the tank. Tank tracks
+had to skid sideways to pivot, which caused stiction and left/right
+asymmetry. Steering is still differential, so `left`/`right` mean the same
+thing. The kit's Me Orion board is *not* used - the D1 Mini + ESPHome
+stays (Orion has no WiFi and the safety firmware is proven).
+
 ## Homing runs need a clear lane
 
 `home_to_marker` has no obstacle sensing yet (the TFMini is the plan): it
