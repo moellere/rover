@@ -488,7 +488,7 @@ sudo, and the token-budget constraint.
   the caster beam - so the part bolts through the next holes out (+/-12)
   with a relief pocket over the centre pair, and hangs the sensor in front
   of the beam at its mid-height. Staged via print-warden (job 010780c633,
-  29 min, 7.9 g PETG), awaiting Enoch's go-ahead. Grover drove ~15 cm
+  29 min, 7.9 g PETG); Enoch: "OK, print it" - started. Grover drove ~15 cm
   toward fishcam for a look at the beam and veered right (toward the long
   edge, ~13 cm clear); left there.
 - **Near miss, backing up.** Enoch asked for a test reverse toward the bench
