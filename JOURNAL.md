@@ -270,6 +270,14 @@ sudo, and the token-budget constraint.
   (`BENCH_CAM_FOCAL_PX`, `ROVER_CAM_FOCAL_PX`) and `find_marker` reports
   distance - verified: 1676 mm back at 66 in.
 
+- T-Camera mounted in the bracket on the rover and powered ("janky, but
+  connected"). Its view is upright and un-mirrored as mounted, so the
+  existing flip settings are right - no firmware change. The marker didn't
+  decode at 50.75 in (too small: this lens is a fisheye), so Enoch moved it
+  to 24 in: 57.3 px there -> ROVER_CAM_FOCAL_PX = 437 (~111 deg FOV).
+  Verified 610 mm back at 24 in, bearing +10.2 deg. Generated a 160 mm
+  id-1 marker page for longer range.
+
 ### Open for next session
 1. Enoch: measure the board (six numbers in the `.scad` header), build the
    USB splice, print the marker page (`hardware/markers/`), answer the
