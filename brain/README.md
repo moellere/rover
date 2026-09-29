@@ -25,9 +25,14 @@ Orientation note: on the bench, `forward` moves the rover away from the fixed
 bench camera (the camera sees its rear); `backward` moves it toward the
 camera and the near edge.
 
-Planned: `home_to_marker` - closed-loop approach to the marker - once the camera
-is mounted and calibrated (`ROVER_CAM_FOCAL_PX`, see `markers.py`). The
-printable marker is `hardware/markers/aruco_4x4_50_id0_80mm.png`.
+`home_to_marker(marker_id, stop_mm, max_pulses)` - the closed loop in
+`homing.py`: look with the rover camera, pivot toward the marker if it's off
+centre, else step forward, settle, look again. Per-direction adaptive pivot
+pulses, a stuck guard, retries on transient camera errors, and arrival by
+lateral offset (the big marker overfills the frame inside ~200 mm, which
+counts as arrived). Printable markers: `hardware/markers/` (id 0 = 80 mm,
+id 1 = 160 mm; use id 1 beyond ~1 m). Reversing is deliberately not part of
+the loop - see the reversing rule in the project `CLAUDE.md`.
 
 ## Install and run
 

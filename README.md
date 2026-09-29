@@ -1,105 +1,117 @@
-# Rover
+# Grover
 
-A small tracked rover, built from Makeblock parts, living on a garage workbench.
-This repo tracks its progress: a dated [project journal](JOURNAL.md), a
-maintained [bill of materials & shopping list](BOM.md), control scripts, and a
-reference copy of its ESPHome firmware.
+A small rover built from Makeblock parts, living on a garage workbench and
+learning to look after itself. Named Grover on 2026-09-29: blue rails, and it
+spends its life demonstrating *near... far*.
 
-This is a collaborative build between Enoch and Claude (Anthropic) - see
-[JOURNAL.md](JOURNAL.md) for the full history, including which model did the
-work at each stage and a running breakdown of which decisions were
-Claude-driven versus Enoch-directed. [CLAUDE.md](CLAUDE.md) holds the
-project's standing rules (mission, constraints, budget policy, how hardware
-and software decisions get made) - it's auto-loaded by Claude Code as project
-instructions, and doubles as the plain-language rulebook for anyone reading
-along.
+This repo is the whole project: a dated [journal](JOURNAL.md) of what
+happened and who decided it, the [bill of materials](BOM.md) against a $100
+budget, the [roadmap](ROADMAP.md), the off-board brain, printable hardware,
+scripts, and a reference copy of the firmware.
 
-Where it's all going: [ROADMAP.md](ROADMAP.md).
+It is a collaborative build between Enoch and Claude (Anthropic). The
+journal records which model did the work at each stage and which decisions
+were Claude-driven versus Enoch-directed. [CLAUDE.md](CLAUDE.md) is the
+standing rulebook (mission, hard constraints, budget policy, permissions,
+safety rules learned the hard way) - auto-loaded by Claude Code as project
+instructions, and readable as plain English by anyone.
 
 ## The mission
 
-1. **Phase 1 (current):** drive around the workbench without falling off the edge.
-2. **Phase 2:** figure out recharging.
-3. **Phase 3:** graduate to roaming the house.
+1. **Phase 1 (current):** drive around the workbench without falling off.
+2. **Phase 2:** recharge itself.
+3. **Phase 3:** roam the house.
+
+## Where it stands (2026-09-29)
+
+- **Visual homing works.** `home_to_marker` finds a printed ArUco marker
+  with the onboard camera and parks in front of it, unattended - three
+  arrivals so far, the latest from 1.1 m away in 7 pulses / 35 s.
+- **Chassis is the trike build** (two driven wheels in front, trailing
+  caster) - rebuilt from the tank on 2026-09-29 because tank pivots skidded
+  the tracks and made turning erratic. Same differential steering.
+- **Camera rides on the rover** in a printed cradle bolted to the chassis
+  via a printed adapter strip.
+- Firmware guards: command watchdog, disconnect-stop, low-battery refusal,
+  cliff-sensor refusal (sensors on order), brake-on-stop.
+- Known hazard: no rear cliff sensors, and reversing a trike is
+  unpredictable (the caster flips) - one wheel went over the edge on
+  2026-09-29. See the reversing rule in `CLAUDE.md`.
+
+## Architecture
+
+Three layers, decided early and still standing:
+
+| Layer | Hardware | Role |
+|---|---|---|
+| **Spinal cord** | Wemos D1 Mini (ESP8266), ESPHome | reflexes: watchdog, disconnect-stop, cliff and battery guards, brake-on-stop. Authoritative - nothing off-board can override them. |
+| **Eyes** | TTGO T-Camera (ESP32-WROVER, OV2640), ESPHome | snapshot and stream endpoints; no decisions |
+| **Brain** | `brain/` - Python + OpenCV, off-board | everything with judgment: marker detection, the homing loop, bounded drive pulses. Exposed as an MCP server (`rover-brain`). |
+
+Claude (the model) is *not* in the control loop: it starts a run and reads
+the log. A homing run is a plain Python loop - look, decide one pulse,
+settle, look again - talking to the rover over ESPHome's native API.
 
 ## Hardware
 
-- Chassis: Makeblock Starter Robot Kit (tank configuration), two DC gear motors
-- Controller: Wemos D1 Mini (ESP8266)
-- Motor driver: L298N dual H-bridge
-- GPIO expansion: MCP23008 I2C I/O expander (the D1 Mini didn't have enough
-  spare pins to drive the L298N's 4 direction lines directly)
-- Power: 3x 18650 Li-ion cells, wired 3S (~12.6V full, ~9.0V empty). The
-  L298N's onboard regulator steps this down to 5V for the D1 Mini (rated
-  ~0.5A - a real constraint on how much else can share that rail).
-- Vision: a fixed ONVIF camera overlooking the workbench (not mounted on the
-  rover itself) provides the eyes for teleop.
+- Chassis: Makeblock Starter Robot Kit, **trike** configuration; two DC gear
+  motors, trailing caster
+- Controller: Wemos D1 Mini; MCP23008 I2C expander for the four direction
+  lines (the D1 Mini is short on pins)
+- Motor driver: L298N dual H-bridge (its 0.5 A linear 5 V regulator feeds
+  the D1 Mini today; moving to the buck is on the roadmap)
+- Power: 3x 18650 Li-ion in 3S (12.6 V full); LM2596 buck at 5 V for the
+  camera; battery voltage read through a 100k/27k divider on A0
+- Vision: TTGO T-Camera on the rover (fisheye, ~111 deg); a fixed Thingino
+  ONVIF camera watches the whole bench and is the second set of eyes
+- Homing targets: ArUco 4x4_50 markers, ids 0 (80 mm) and 1 (160 mm),
+  printable from `hardware/markers/`
+- Coming: two IR cliff sensors (ordered), a Benewake TFMini LiDAR
+  (inventory) for obstacle stop and precise stop distance
 
 ## Software
 
-Firmware is [ESPHome](https://esphome.io/) (see `firmware/rover.yaml` - a
-reference copy; the live/canonical version is tracked in a private homelab
-config repo alongside this device's WiFi/API secrets, so this copy won't
-compile standalone).
-
-Driving happens over ESPHome's **native API** directly (bypassing Home
-Assistant, whose connection to this device turned out to be stale) using
-five custom services: `forward`, `backward`, `left`, `right`, `stop`. Left/right
-are in-place pivot turns (one track forward, one reverse).
+- **Firmware:** ESPHome (`firmware/rover.yaml`, `firmware/eufy-ir.yaml` -
+  reference copies; the live configs with secrets are in a private repo).
+  Custom services `forward`/`backward`/`left`/`right`/`stop`; `Drive duty`
+  and `Pivot duty` sliders for live tuning; every stop path brakes.
+- **Brain:** `brain/` - MCP tools `status`, `snapshot(bench|rover)`,
+  `drive` (capped at 1 s, refused on low battery or cliff), `find_marker`,
+  `home_to_marker`, `stop`. Install with `scripts/install-brain.sh`; details
+  in `brain/README.md`.
+- **Printing:** parametric OpenSCAD in `hardware/` (camera cradle, adapter
+  strip, marker pages, a shelved Roomba plug), sliced with the house rules
+  (PETG, no brim, tree supports on auto) and printed through the
+  print-warden service; toolchain via `scripts/install-tools.sh`.
+- **Scripts:** `rover_ctl.py` (drive over the native API),
+  `test_disconnect_safety.py` (proves the disconnect-stop),
+  `camera_snapshot.py`, `warden_call.py` (talk to the print-warden from a
+  shell). All read hosts and credentials from environment variables.
 
 ### Safety design
 
-A device that can drive off the edge of a table needs more than "send stop
-when you mean it." Two independent protections are always active:
+A device that can drive off a table needs more than "send stop when you
+mean it." In the firmware, always on:
 
-- **Command watchdog** - every drive command stamps a timestamp; if 1.5s
-  passes without a refresh, the firmware stops the motors on its own.
-- **Disconnect safety** - if the controlling API client disconnects for any
-  reason (crash, WiFi drop, script exit), the motors stop immediately.
+- **Command watchdog** - no drive command for 1.5 s -> motors stop.
+- **Disconnect-stop** - the API client goes away for any reason -> motors
+  stop. Verified by `scripts/test_disconnect_safety.py`.
+- **Cliff guard** - a front IR sensor stops seeing the bench -> forward and
+  pivots refused (backward stays allowed).
+- **Battery guard** - below 9.3 V the rover refuses to drive; resumes at
+  9.6 V. Calibrated to within 0.02 V of a multimeter.
+- **Brake-on-stop** - every stop shorts the motor windings for 150 ms
+  before coasting, so a cliff stop is centimetres, not a coast.
 
-Verified for real: `scripts/test_disconnect_safety.py` fires `forward` and
-disconnects *without* sending `stop`, then reconnects a couple seconds later
-and confirms the device already stopped itself.
+The brain adds courtesy limits on top (pulse cap, gap between pulses,
+lost-marker and stuck detection) but never replaces the firmware's.
 
-Two more layers are built into the firmware:
+## Side quest: the house chassis
 
-- **Cliff detection** - two downward-facing IR reflectance sensors (front
-  corners) will refuse forward/turn commands the instant either one stops
-  seeing the workbench surface underneath (backward stays allowed, so it can
-  always retreat from an edge). Sensors are ordered but not yet installed -
-  the guard logic is live and will activate automatically once they're wired
-  in, no firmware changes needed.
-- **Battery cutoff** - a voltage divider into the D1 Mini's one analog input
-  refuses to drive below ~9.3V pack voltage (with hysteresis at 9.6V to
-  resume), protecting the Li-ion cells from over-discharge. Wired and
-  calibrated: the sensor reads 11.77V against a multimeter's 11.79V.
-
-## Brain (MCP server)
-
-`brain/` is an MCP server that fronts the rover - `status`, `snapshot` from
-either camera, a hard-capped `drive`, `stop` - and is where autonomy gets
-written. Runs off-board; the firmware guards stay authoritative. Install with
-`scripts/install-brain.sh`; details in `brain/README.md`.
-
-## Hardware designs
-
-`hardware/` holds parametric OpenSCAD parts (currently the camera mount) with
-their rendered STLs and a README covering render, slice, and print. The
-design/slicing toolchain installs with `scripts/install-tools.sh`.
-
-## Scripts
-
-- `scripts/rover_ctl.py` - CLI for driving the rover directly over ESPHome's
-  native API (`list`, `forward`, `backward`, `left`, `right`, `stop`, each
-  optionally with a duration for a timed pulse).
-- `scripts/test_disconnect_safety.py` - the disconnect-safety regression test
-  described above.
-- `scripts/camera_snapshot.py` - grabs a still frame from the workbench
-  camera. Documents a couple of Thingino-firmware gotchas that cost real
-  debugging time (see the docstring).
-
-All three read connection details from environment variables rather than
-hardcoding them - see each script's docstring.
+The house-roaming phase will ride on a **Eufy RoboVac 12** driven over
+infrared from an ESP32 (`firmware/eufy-ir.yaml`), keeping the vacuum's own
+docking, cliff and bumper behaviour. Codes captured; IR LEDs on order. See
+Tier 2E in the roadmap.
 
 ## First drive
 
@@ -107,29 +119,11 @@ hardcoding them - see each script's docstring.
 ![Mid-drive, having moved a full bench-length](images/02-first-drive.jpg)
 ![Parked safely after the session](images/03-parked-safe.jpg)
 
-Full write-up of this session (and every session since) is in
-[JOURNAL.md](JOURNAL.md).
-
-## Roadmap
-
-- [x] Wire the battery voltage divider (L298N +12V terminal -> 100k/27k
-      divider -> D1 Mini A0)
-- [x] Calibrate the battery sensor's scale factor against a multimeter reading
-- [ ] Wire the two IR cliff sensors (ordered) to the MCP23008's spare pins,
-      verify output polarity
-- [ ] Watch for brownouts once the cliff sensors share the L298N's 5V
-      regulator with the D1 Mini and WiFi radio
-- [ ] Figure out a charging/docking approach
-- [ ] Expand the playground beyond the workbench
-
-See [BOM.md](BOM.md) for exactly what each of these needs, what's already on
-hand, and what's still on the shopping list.
-
 ## Budget
 
-Parts already in Enoch's inventory are supplied by him. Anything else the
-project needs comes out of a standing **$100 budget** tracked in
-[BOM.md](BOM.md) - see that file for the running total.
+Parts already in Enoch's inventory are supplied by him. Anything else comes
+out of a standing **$100 budget** tracked in [BOM.md](BOM.md). Spent so far:
+$0.00.
 
 ---
 

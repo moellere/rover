@@ -9,7 +9,7 @@ to just go buy something himself (as with the IR sensors below), it doesn't
 draw against it. Update the running total every time something *is* drawn
 from it - don't let it go stale.
 
-**Budget spent so far: $0.00 — remaining: $100.00** (as of 2026-09-28)
+**Budget spent so far: $0.00 — remaining: $100.00** (as of 2026-09-29)
 
 | Date | Item | Cost |
 |---|---|---|
@@ -22,7 +22,7 @@ in place watching the workbench.
 
 | Component | Qty | Role | Source | Status |
 |---|---|---|---|---|
-| Makeblock Starter Robot Kit (tank configuration) | 1 kit (chassis + 2 DC gear motors) | Drivetrain | Inventory | Installed |
+| Makeblock Starter Robot Kit, **trike configuration** (two driven wheels + trailing caster; was the tank until 2026-09-29) | 1 kit (chassis + 2 DC gear motors) | Drivetrain | Inventory | Installed |
 | Wemos D1 Mini (ESP8266) | 1 | Main controller | Inventory | Installed |
 | L298N dual H-bridge module | 1 | Motor driver; its onboard regulator also supplies the D1 Mini's 5V (~0.5A rating) | Inventory | Installed |
 | MCP23008 I2C GPIO expander | 1 | Drives the L298N's 4 direction pins - added because the D1 Mini didn't have enough spare GPIO | Inventory | Installed |
@@ -69,8 +69,9 @@ before connecting the camera.
 | Spare micro-USB cable, spliced | 1 | Buck converter 5V output -> T-Camera micro-USB power input (identify VBUS/GND by continuity to the plug's outer pins; data wires unconnected). The board's 5-pin bottom connector does NOT accept 5 V power - USB is the only input | $0 - Enoch has spares | Soldered to the buck; **no voltage at the plug yet** - cable/splice being diagnosed |
 | 3.7V single-cell Li-ion pack (on the T-Camera's own JST battery connector) | 1 | Backup power: USB runs the board and charges this cell via the onboard IP5306; if the main pack dies, the camera keeps running so a stranded rover can still report where it is | $0 - Enoch has a spare | Planned - add only after the USB path is built and verified; measure the IP5306's charge-current draw on the main pack first (can reach ~2A) |
 | Benewake TFMini micro-LiDAR + SparkFun Qwiic adapter + Qwiic breadboard breakout | 1 | Forward range for homing stop distance and obstacle stop (roadmap 3.4) | Inventory | Planned: D1 Mini I2C at 0x10, TFMini 5 V from the buck; see roadmap 3.4 |
-| 3D-printed camera mount (`hardware/camera-mount.scad`) | 1 | Pedestal cradle standing the T-Camera upright on the Makeblock plate (8mm M4 grid), lens/PIR/OLED forward, 10° down-tilt, open front, open gap under the board for the bottom-edge micro-USB plug, rear cable window | $0 (~17 g PETG, ~1h15m print) | Designed, sliced with placeholder dims (`hardware/prints/`); **waiting on caliper measurements of the board** before the real print |
-| M4 x 8-10mm screws + nuts | 2 | Bolt the mount to the Makeblock plate | $0 - Makeblock kit hardware | On hand (kit) |
+| 3D-printed camera mount (`hardware/camera-mount.scad`) | 1 | Pedestal cradle standing the T-Camera upright on the Makeblock plate (8mm M4 grid), lens/PIR/OLED forward, 10° down-tilt, open front, open gap under the board for the bottom-edge micro-USB plug, rear cable window | $0 (~17 g PETG, ~1h15m print) | **v5 printed and in use** (`hardware/prints/camera-mount_v5`) |
+| 3D-printed camera adapter strip (`hardware/camera-strip.scad`) | 1 | Bolts the cradle to the two front M4 standoffs (64 mm c-c) so the camera stops shifting on pulses | $0 (8.8 g PETG, 21 min) | **Printed 2026-09-29 and fitted** |
+| M4 x 8-10mm screws + nuts + washers | 4 | Two into the standoffs, two through the cradle base into the strip | $0 - Makeblock kit hardware | Fitted |
 
 ## Candidate: Eufy RoboVac 12 house chassis (issue #1)
 
