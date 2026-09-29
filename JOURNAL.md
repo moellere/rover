@@ -469,6 +469,14 @@ sudo, and the token-budget constraint.
   right from the fishcam view - low enough for small obstacles, and level
   keeps the 2.3 deg beam off the bench for a couple of metres. Needs the
   beam's hole layout and the sensor's mounting details from Enoch.
+- **Power plan agreed with Enoch's inventory:** today the D1 Mini runs off
+  the L298N's 5 V (linear) regulator and the camera off the buck. New: the
+  D1 moves onto the buck's 5 V, and the TFMini's Qwiic 3.3 V line gets its
+  own LD33V off that same 5 V (Enoch ran the TFMini this way before) - the
+  SparkFun Qwiic Adapter is pass-through, the 3.3->5 V boost lives on the
+  TFMini's cable board, so the D1's ~500 mA regulator would otherwise carry
+  it. Enoch is doing the rework; sensor has side mounting ears (photo via
+  fishcam pending).
 - **Near miss, backing up.** Enoch asked for a test reverse toward the bench
   camera. Done in 0.3 s pulses with the marker as odometry and a stop at a
   known-safe distance - but the caster flipping on direction change dragged
