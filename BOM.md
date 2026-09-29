@@ -9,10 +9,11 @@ to just go buy something himself (as with the IR sensors below), it doesn't
 draw against it. Update the running total every time something *is* drawn
 from it - don't let it go stale.
 
-**Budget spent so far: $0.00 — remaining: $100.00** (as of 2026-09-29)
+**Budget spent so far: $2.89 — remaining: $97.11** (as of 2026-09-29)
 
 | Date | Item | Cost |
 |---|---|---|
+| 2026-09-29 | 3S 40A BMS protection/balance board (Gebildet, Amazon B0G6JQ8ZFN) - Enoch bought a 3-pack for $8.66 for inventory; one is Grover's, so 1/3 is charged here | $2.89 |
 | 2026-09-28 | ~~Eufy RoboVac 12 replacement battery (Amazon)~~ ordered at $18.10, then cancelled the same evening - the vacuum's bottom power switch was off, the pack is fine | $0.00 |
 
 ## Bill of Materials (currently in the design)
@@ -40,9 +41,10 @@ Firmware support for all of these is already written and waiting (see
 | Item | Qty | Purpose | Est. cost | Status |
 |---|---|---|---|---|
 | IR reflectance sensor module (e.g. TCRT5000-based) | 2 | Front-left / front-right cliff detection, into MCP23008 pins 4 and 5 | N/A - purchased directly by Enoch, not drawn from Claude's budget | **Ordered**, awaiting delivery/install |
+| 3S BMS protection/balance board, 40A (Gebildet 3-pack, Amazon B0G6JQ8ZFN) | 1 of 3 | Per-cell over-discharge/overcharge/short protection and top balancing for the 18650 pack - the firmware's 9.3 V guard only sees the pack total. Not a charger: still needs a 12.6 V CC/CV source. Wiring: B-, B1 (cell 1-2 junction), B2 (cell 2-3), B+ to the cells; P-/P+ to the load, with the voltage divider on the P side. The holder likely needs two balance taps soldered on - plan with Enoch first. Drill-style boards may ship latched off until charge voltage is applied once | $2.89 (1/3 of $8.66) | **Ordered** by Enoch 2026-09-29; specs to confirm from the board on arrival |
 | Electrolytic capacitor, 470-1000µF (contingency) | 1 | Only if brownouts/WiFi drops show up once the cliff sensors share the L298N's 5V rail with the radio | ~$1, would draw from budget if needed | Not needed unless that happens |
 
-Nothing has drawn from Claude's $100 budget yet.
+First budget draw: the BMS board ($2.89), 2026-09-29.
 
 ## In progress: onboard camera (next milestone after cliff sensors)
 

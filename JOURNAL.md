@@ -446,6 +446,10 @@ sudo, and the token-budget constraint.
   pack-level 9.3 V guard can't give), an INA219 for current, matched cells
   charged full. Skipped for Grover: RC LiPo, USB-C PD bank + trigger,
   LiFePO4 - the Eufy carries the recharging mission.
+- **Enoch ordered a 3-pack of 3S 40A BMS boards** ($8.66) for inventory;
+  Claude took one for Grover, first budget draw ($2.89, $97.11 left).
+  Wiring plan in BOM; soldering balance taps onto the holder to be
+  discussed with Enoch when it arrives.
 - **Near miss, backing up.** Enoch asked for a test reverse toward the bench
   camera. Done in 0.3 s pulses with the marker as odometry and a stop at a
   known-safe distance - but the caster flipping on direction change dragged

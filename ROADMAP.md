@@ -60,7 +60,7 @@ and comes first.
 |---|---|---|---|
 | 2.1 | Dock design | 3D print | a wedge the rover drives into, marker on its face, contacts at the end of travel |
 | 2.2 | Charge contacts | pogo pins or copper strips (~$5-10 budget) | on the rover's nose and the dock |
-| 2.3 | 3S charger + protection | 3S BMS/charger module (~$10-20 budget, unless inventory) | charging the pack in place, safely - the one piece of this project with real fire risk; design reviewed with Enoch before anything is wired |
+| 2.3 | 3S charger + protection | protection half **ordered 2026-09-29** (3S 40A BMS, see BOM); still needs a 12.6 V CC/CV charger for in-place charging | charging the pack in place, safely - the one piece of this project with real fire risk; design reviewed with Enoch before anything is wired |
 | 2.4 | Auto-dock | 1.4, 2.1-2.3 | return-to-dock when `battery_voltage` drops below a threshold; confirm charging via voltage rise |
 | 2.5 | Charge telemetry | 2.3 | charging state and current into the brain and HA |
 
