@@ -48,6 +48,16 @@ will drive over cables, mats and small objects between it and the marker.
 Check the lane on the bench camera before a run, and keep the marker
 placed so the approach path is clear.
 
+## Reversing the trike
+
+Backing up is **not** the mirror of driving forward: the trailing caster has
+to flip 180° when direction changes and drags the rear sideways while it
+does (2026-09-29: three 0.3 s backward pulses turned the rover ~45° and put
+the caster on the right-hand bench edge). No rear cliff sensors exist.
+Reverse only in single short pulses (<= 0.3 s), re-look between each, and
+only with a clear view of the space behind on the bench camera - never a
+timed run toward the near edge.
+
 ## Rover orientation on the bench
 
 The bench camera looks at the rover's **rear** (the 18650 pack faces the

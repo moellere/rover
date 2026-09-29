@@ -383,6 +383,15 @@ sudo, and the token-budget constraint.
   object). Two of three fixed; the last build error is an ESPHome API rename
   in the wifi component - **open for tomorrow**. `_look` now retries
   transient camera errors and waits 1.2 s between its two frames.
+- **Near miss, backing up.** Enoch asked for a test reverse toward the bench
+  camera. Done in 0.3 s pulses with the marker as odometry and a stop at a
+  known-safe distance - but the caster flipping on direction change dragged
+  the rear sideways each pulse (+8, +11.5 deg drift), the third pulse
+  turned the rover ~45 deg and lost the marker (the loop stopped on that,
+  as designed), and it ended with the caster at the right-hand bench edge.
+  Enoch called it from the bench. Rule added to `CLAUDE.md`: reverse is a
+  short-pulse, look-between, bench-camera-checked move only - the caster
+  makes it unpredictable and there are no rear cliff sensors.
 - Power management, on Enoch's question before bed: firmware only refuses to
   drive under 9.3 V; idle draw still flattens a pack. For now he switches the
   pack off; deep-sleep and a hardware LVC are on the roadmap (3.2a/3.2b).
