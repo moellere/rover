@@ -450,6 +450,25 @@ sudo, and the token-budget constraint.
   Claude took one for Grover, first budget draw ($2.89, $97.11 left).
   Wiring plan in BOM; soldering balance taps onto the holder to be
   discussed with Enoch when it arrives.
+- **Enoch handed over milestone choice** ("you tell me what you want to do
+  next") - recorded in CLAUDE.md. Claude picked the TFMini (roadmap 3.4).
+- **TFMini, software side done before the hardware.** SparkFun's guide:
+  the Qwiic TFMini's own cable carries 5 V directly (red 5V, black GND,
+  white SDA, green SCL), so it runs off the buck and skips the adapter's
+  3.3->5 V boost (the D1 Mini's regulator can't feed its ~800 mA peak);
+  it reports invalid under 30 cm. Firmware: read at 10 Hz on the existing
+  I2C bus (MCP23008 at 0x20, TFMini 0x10), `Front range` / strength /
+  valid sensors, and an `Obstacle stop` guard (cm, 0 = off, boots off
+  until verified) that refuses forward and stops a forward move inside the
+  threshold. The guard holds through invalid frames (an object that got
+  under 30 cm must not clear it) and, when enabled, treats a missing
+  sensor as an obstacle. Flashed with no sensor attached: clean boot, no
+  log spam, forward unaffected. Brain: range fields in `status`,
+  `set_obstacle_stop(cm)` tool.
+- Mount: the front blue beam above the motors (~5 cm off the bench) looks
+  right from the fishcam view - low enough for small obstacles, and level
+  keeps the 2.3 deg beam off the bench for a couple of metres. Needs the
+  beam's hole layout and the sensor's mounting details from Enoch.
 - **Near miss, backing up.** Enoch asked for a test reverse toward the bench
   camera. Done in 0.3 s pulses with the marker as odometry and a stop at a
   known-safe distance - but the caster flipping on direction change dragged
