@@ -35,7 +35,7 @@ FORWARD_S = 0.3         # forward pulse length
 FORWARD_NEAR_S = 0.15   # shorter step inside NEAR_MM so the stop isn't overshot
 NEAR_MM = 350.0
 STOP_MM = 200.0         # stop when the marker is this close
-SETTLE_S = 2.5          # wait after a pulse before trusting a frame (motion blur)
+SETTLE_S = 1.5          # wait after a pulse before looking (motion blur); _look adds its own second frame
 MAX_PULSES = 20         # hard cap on drive pulses per run
 MAX_LOST = 3            # consecutive frames without the marker -> give up
 
@@ -51,6 +51,10 @@ class HomingResult:
 
 
 def _look(camera: str, marker_id: int) -> Marker | None:
+    # The camera's snapshot endpoint returns its most recent captured frame,
+    # which can predate the last pulse. Grab one, wait, and use a second.
+    snapshot(camera)
+    time.sleep(0.4)
     ms = find_markers(snapshot(camera), camera)
     for m in ms:
         if m.id == marker_id:
