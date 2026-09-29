@@ -32,8 +32,9 @@ breakdown of the notable decisions. Newest entry on top.
 - **Camera adapter strip printed and fitted** (`hardware/camera-strip.scad`)
   - the cradle is bolted to the front standoffs now.
 - **Both ESPs on ESPHome 2026.8.1** (flashed 2026-09-29 once the pack
-  was back): the rover with brake-on-stop, redcam off 2024.9.2. Brake
-  effect on coast distance not yet measured.
+  was back): the rover with brake-on-stop, redcam off 2024.9.2. The
+  first braked stop was followed by redcam dropping offline (hung, needs a
+  power cycle) - brake-vs-new-build cause still open.
 - Firmware: watchdog, disconnect-stop, battery guard (calibrated) live;
   cliff-sensor guards live but sensors not yet installed (ordered). Camera
   (`redcam`) on rover power, fresh snapshots (5 fps idle).
@@ -389,6 +390,15 @@ sudo, and the token-budget constraint.
 - **Both flashed** once Enoch reinstalled the batteries: two OTA uploads,
   both OK; logs confirm 2026.8.1 with the pre-built compile stamps, the rover
   came back Stopped at 11.8 V and redcam serves frames on the new build.
+- **Brake test aborted, camera lost.** First braked stop (0.3 s forward
+  pulse, lane checked on the bench cam, marker 1082 mm at +19 deg) went fine
+  mechanically - the caster flipped back to trailing and squared the rover
+  up - but redcam dropped off WiFi within about a minute of it and had not
+  returned 5 min later (no ping; HA unavailable from 09:24). The D1 Mini
+  did not reset. Suspects: the brake's current transient disturbing the
+  camera's supply, or the new 2026.8.1 camera build being fragile; homing
+  runs on the old build survived dozens of unbraked stops. Needs a power
+  cycle by hand; test paused until then.
 - **Near miss, backing up.** Enoch asked for a test reverse toward the bench
   camera. Done in 0.3 s pulses with the marker as odometry and a stop at a
   known-safe distance - but the caster flipping on direction change dragged
