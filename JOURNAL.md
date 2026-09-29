@@ -31,9 +31,9 @@ breakdown of the notable decisions. Newest entry on top.
   the new motor orientation.
 - **Camera adapter strip printed and fitted** (`hardware/camera-strip.scad`)
   - the cradle is bolted to the front standoffs now.
-- **Pending flash (pre-built):** rover with brake-on-stop; redcam onto
-  ESPHome 2026.8.1 (it still runs 2024.9.2). Both are `esphome run` away
-  once the pack is on.
+- **Both ESPs on ESPHome 2026.8.1** (flashed 2026-09-29 once the pack
+  was back): the rover with brake-on-stop, redcam off 2024.9.2. Brake
+  effect on coast distance not yet measured.
 - Firmware: watchdog, disconnect-stop, battery guard (calibrated) live;
   cliff-sensor guards live but sensors not yet installed (ordered). Camera
   (`redcam`) on rover power, fresh snapshots (5 fps idle).
@@ -384,8 +384,11 @@ sudo, and the token-budget constraint.
   object; `IPAddress::str()` removed in 2026.8). All fixed and **both
   firmwares are pre-built** (Enoch's suggestion: build while the pack is
   off, flash the moment it's back) - the rover's with brake-on-stop, the
-  camera's on 2026.8.1. First job tomorrow: two OTA uploads. `_look` now retries
+  camera's on 2026.8.1. `_look` now retries
   transient camera errors and waits 1.2 s between its two frames.
+- **Both flashed** once Enoch reinstalled the batteries: two OTA uploads,
+  both OK; logs confirm 2026.8.1 with the pre-built compile stamps, the rover
+  came back Stopped at 11.8 V and redcam serves frames on the new build.
 - **Near miss, backing up.** Enoch asked for a test reverse toward the bench
   camera. Done in 0.3 s pulses with the marker as odometry and a stop at a
   known-safe distance - but the caster flipping on direction change dragged
