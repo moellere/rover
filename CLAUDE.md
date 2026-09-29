@@ -34,6 +34,13 @@ T-Camera is the **eyes** (ESPHome; snapshot/stream), and `brain/` is the
 through the `rover-brain` MCP tools, not ad-hoc scripts. Consolidating both
 ESPs onto one board is a known later step (see BOM.md), not now.
 
+## Homing runs need a clear lane
+
+`home_to_marker` has no obstacle sensing yet (the TFMini is the plan): it
+will drive over cables, mats and small objects between it and the marker.
+Check the lane on the bench camera before a run, and keep the marker
+placed so the approach path is clear.
+
 ## Rover orientation on the bench
 
 The bench camera looks at the rover's **rear** (the 18650 pack faces the
