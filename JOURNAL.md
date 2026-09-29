@@ -498,7 +498,7 @@ sudo, and the token-budget constraint.
   Dupont 2.54 pre-crimped kit (Amazon B087N4GY8Z) for inventory; Grover's
   prorated share is $0.40 (budget: $3.29 spent, $96.71 left). The Qwiic
   chain + LD33V remains a stopgap until the kit arrives. Bracket printed
-  meanwhile.
+  meanwhile (print-warden: done, 36 min).
 - **Near miss, backing up.** Enoch asked for a test reverse toward the bench
   camera. Done in 0.3 s pulses with the marker as odometry and a stop at a
   known-safe distance - but the caster flipping on direction change dragged
