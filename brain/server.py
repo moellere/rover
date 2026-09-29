@@ -33,7 +33,8 @@ _last_drive_end = 0.0
 
 @mcp.tool()
 async def status() -> dict:
-    """Current rover state: motion, battery voltage, cliff sensors, uptime, WiFi."""
+    """Current rover state: motion, battery voltage, cliff sensors, uptime, WiFi,
+    and whether stops brake."""
     st = await RoverClient().state()
     return {
         "motion": st.motion,
@@ -42,12 +43,15 @@ async def status() -> dict:
         "front_right_cliff": st.front_right_cliff,
         "uptime_s": st.uptime_s,
         "wifi_dbm": st.wifi_dbm,
+        "brake_on_stop": st.brake_on_stop,
     }
 
 
 @mcp.tool()
 def snapshot(camera: str = "bench") -> Image:
-    """Grab a still JPEG. camera = 'bench' (fixed workbench camera) or 'rover' (onboard T-Camera)."""
+    """Grab a still JPEG. camera = 'bench' (fixed, behind the rover's start end,
+    sees its rear), 'front' (across the bench, sees the rover head-on and the
+    long left edge) or 'rover' (onboard T-Camera)."""
     if camera not in CAMERAS:
         raise ValueError(f"camera must be one of {CAMERAS}")
     return Image(data=_snapshot(camera), format="jpeg")
@@ -77,8 +81,8 @@ async def drive(direction: str, seconds: float = 0.5) -> dict:
 
 @mcp.tool()
 def find_marker(camera: str = "rover") -> dict:
-    """Look for ArUco homing markers in a fresh frame from `camera` ('rover' or
-    'bench'). Returns each marker's id, pixel centre, apparent size, bearing in
+    """Look for ArUco homing markers in a fresh frame from `camera` ('rover',
+    'bench' or 'front'). Returns each marker's id, pixel centre, apparent size, bearing in
     degrees (+ = right of centre) and distance in mm (None until the camera is
     calibrated - see brain/markers.py)."""
     from brain.markers import markers_as_dicts
@@ -97,6 +101,15 @@ async def home_to_marker(marker_id: int = 0, stop_mm: float = 200.0, max_pulses:
     r = await _home(marker_id, "rover", stop_mm, max_pulses)
     return {"ok": r.ok, "reason": r.reason, "pulses": r.pulses,
             "final_bearing_deg": r.final_bearing_deg, "final_distance_mm": r.final_distance_mm, "log": r.log}
+
+
+@mcp.tool()
+async def set_brake(on: bool) -> dict:
+    """Turn the firmware's brake-on-stop on (default) or off. Off only for A/B
+    tests - every stop path still stops, it just coasts."""
+    await RoverClient().set_switch("brake_on_stop", on)
+    st = await RoverClient().state(timeout=3.0)
+    return {"ok": st.brake_on_stop == on, "brake_on_stop": st.brake_on_stop}
 
 
 @mcp.tool()

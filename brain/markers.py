@@ -25,9 +25,10 @@ CAM_HFOV_DEG = float(os.environ.get("ROVER_CAM_HFOV_DEG", "66"))  # OV2640 typic
 # Per-camera focal length in pixels, from a marker of known size at a known
 # distance: focal_px = side_px * distance_mm / MARKER_MM.
 #   BENCH_CAM_FOCAL_PX  - the fixed workbench camera
+#   FRONT_CAM_FOCAL_PX  - the head-on camera across the bench
 #   ROVER_CAM_FOCAL_PX  - the T-Camera on the rover
 def focal_px(camera: str) -> Optional[float]:
-    v = os.environ.get({"bench": "BENCH_CAM_FOCAL_PX", "rover": "ROVER_CAM_FOCAL_PX"}.get(camera, ""))
+    v = os.environ.get({"bench": "BENCH_CAM_FOCAL_PX", "front": "FRONT_CAM_FOCAL_PX", "rover": "ROVER_CAM_FOCAL_PX"}.get(camera, ""))
     return float(v) if v else None
 
 _DICT = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_4X4_50)

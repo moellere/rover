@@ -1,24 +1,28 @@
 """
-Still-frame capture from the two cameras.
+Still-frame capture from the three cameras.
 
-    bench  - the fixed ONVIF camera over the workbench (Thingino firmware):
+    bench  - the fixed camera behind the rover's start end (camv3, Thingino):
              BENCH_CAM_HOST, BENCH_CAM_USER (default root), BENCH_CAM_PASS
+    front  - the PTZ camera across the bench, facing the rover head-on
+             (fishcam, Thingino): FRONT_CAM_HOST, FRONT_CAM_USER, FRONT_CAM_PASS
     rover  - the T-Camera on the rover (ESPHome snapshot server):
              ROVER_CAM_HOST, ROVER_CAM_SNAPSHOT_PORT (default 8081)
 """
 import os
 import urllib.request
 
-CAMERAS = ("bench", "rover")
+CAMERAS = ("bench", "front", "rover")
+THINGINO = {"bench": "BENCH_CAM", "front": "FRONT_CAM"}
 
 
 def snapshot(camera: str, timeout: float = 15.0) -> bytes:
-    if camera == "bench":
-        host = os.environ.get("BENCH_CAM_HOST")
-        pw = os.environ.get("BENCH_CAM_PASS")
+    if camera in THINGINO:
+        pre = THINGINO[camera]
+        host = os.environ.get(f"{pre}_HOST")
+        pw = os.environ.get(f"{pre}_PASS")
         if not host or not pw:
-            raise RuntimeError("BENCH_CAM_HOST / BENCH_CAM_PASS not set")
-        user = os.environ.get("BENCH_CAM_USER", "root")
+            raise RuntimeError(f"{pre}_HOST / {pre}_PASS not set")
+        user = os.environ.get(f"{pre}_USER", "root")
         url = f"http://{host}/x/image.cgi"
         mgr = urllib.request.HTTPPasswordMgrWithDefaultRealm()
         mgr.add_password(None, url, user, pw)

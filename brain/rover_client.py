@@ -28,6 +28,7 @@ class RoverState:
     front_right_cliff: Optional[bool] = None
     uptime_s: Optional[float] = None
     wifi_dbm: Optional[float] = None
+    brake_on_stop: Optional[bool] = None
     raw: dict = field(default_factory=dict)
 
 
@@ -82,6 +83,8 @@ class RoverClient:
                     out.uptime_s = float(val)
                 elif oid.endswith("wifi_signal"):
                     out.wifi_dbm = float(val)
+                elif oid == "brake_on_stop":
+                    out.brake_on_stop = bool(val)
             return out
         finally:
             await client.disconnect()
@@ -100,6 +103,19 @@ class RoverClient:
             await asyncio.sleep(seconds)
             await client.execute_service(svc["stop"], {})
             await asyncio.sleep(0.2)
+        finally:
+            await client.disconnect()
+
+    async def set_switch(self, object_id: str, on: bool) -> None:
+        """Turn a firmware switch entity (e.g. brake_on_stop) on or off."""
+        client = await self._connect()
+        try:
+            entities, _ = await client.list_entities_services()
+            match = [e for e in entities if e.object_id == object_id]
+            if not match:
+                raise ValueError(f"no entity {object_id!r} on the rover")
+            client.switch_command(match[0].key, on)
+            await asyncio.sleep(0.3)
         finally:
             await client.disconnect()
 
