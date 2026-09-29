@@ -312,12 +312,24 @@ sudo, and the token-budget constraint.
   - Still "stuck" at 325 mm with a clear lane: **left pivots do nothing
     at 0.2-0.6 s while right pivots bite at 0.25 s**; one 1.0 s left pulse
     turned it 12 deg (Enoch watched the left track move), then three more
-    1.0 s left pulses did nothing at all. Forward pulses also veer right
-    (bearing drifts more negative). Reads as a weak/intermittent right
-    motor or track, not an obstacle - Enoch is checking. Loop changes:
-    pivot pulses adapt per direction, the cap is now 1.0 s (the server's
-    max), and a no-effect pivot doesn't count toward "stuck" until its
-    pulse has grown to the cap.
+    1.0 s left pulses did nothing at all. Loop changes first: pivot pulses
+    adapt per direction, the cap is now 1.0 s (the server's max), and a
+    no-effect pivot doesn't count toward "stuck" until its pulse has grown
+    to the cap.
+  - **Root cause: torque margin, not wiring.** Firmware drives both sides
+    at the same duty, and with the rover lifted (Enoch's eyes) both tracks
+    ran in sync forward and back. Under load, a tank pivot scrubs both
+    tracks sideways and 75% duty was right at the edge - one direction
+    got over it, the other didn't. With Enoch's OK, `left`/`right` now run
+    at **100% duty** (forward/backward stay 75%). Result: 0.3 s pivots turn
+    ~24 deg in *either* direction; initial pivot pulse dropped to 0.1 s.
+  - **Second autonomous arrival, first on the 160 mm marker:** 667 mm ->
+    214 mm in 14 pulses. The previous run had actually parked at 173 mm
+    and 4.5 deg but reported "marker lost" - close in, the big marker
+    overfills the T-Camera's frame and its border gets cropped. Arrival is
+    now judged by lateral offset (<=30 mm) as well as bearing, and losing
+    the marker right after a pulse inside 1.25x the stop distance counts
+    as arrived.
   - Enoch flagged that the bracket sits loosely and shifts on every jerky
     move, which corrupts bearings; he offered to measure the chassis
     posts so an adapter plate can bolt the mount down. Accepted -

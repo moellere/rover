@@ -19,6 +19,7 @@ Environment (see brain/rover_client.py, brain/cameras.py, brain/markers.py):
 ROVER_HOST / ROVER_API_KEY / ROVER_CAM_HOST / ROVER_CAM_FOCAL_PX.
 """
 import asyncio
+import math
 import time
 from dataclasses import dataclass, field
 
@@ -28,7 +29,8 @@ from brain.rover_client import RoverClient
 
 # Tunables - conservative on purpose.
 CENTER_DEG = 6.0        # "centred" if |bearing| <= this (pivot granularity is ~5-7 deg)
-PIVOT_S = 0.15          # initial pivot pulse length (~12 deg at 100% duty on the bench)
+PIVOT_S = 0.1           # initial pivot pulse length (0.15 s was ~14 deg at 100% duty and
+                        # ping-ponged across the 6 deg tolerance)
 PIVOT_MAX_S = 1.0       # adaptive cap: a pulse that doesn't turn the rover grows by 1.5x
                         # (the server's MAX_PULSE_S). Left/right are tracked separately:
                         # at 75% duty the left pivot needed ~4x the pulse of the right;
@@ -38,6 +40,8 @@ FORWARD_S = 0.3         # forward pulse length
 FORWARD_NEAR_S = 0.15   # shorter step inside NEAR_MM so the stop isn't overshot
 NEAR_MM = 350.0
 STOP_MM = 200.0         # stop when the marker is this close
+ARRIVE_LATERAL_MM = 30.0  # ...or within this sideways offset (d*sin(bearing)) at the stop distance
+CLOSE_LOST_FACTOR = 1.25  # marker lost inside stop_mm*this after a pulse = it overfilled the frame
 SETTLE_S = 1.5          # wait after a pulse before looking (motion blur); _look adds its own second frame
 MAX_PULSES = 20         # hard cap on drive pulses per run
 MAX_LOST = 3            # consecutive frames without the marker -> give up
@@ -89,6 +93,13 @@ async def home_to_marker(marker_id: int = 0, camera: str = "rover",
                 log.append({"t": round(time.monotonic() - t0, 1), "seen": False})
                 if lost >= MAX_LOST:
                     await client.stop()
+                    # Close in, the marker overfills the frame (its border gets
+                    # cropped and detection fails) - that's arrival, not loss.
+                    if last is not None and last.distance_mm is not None and pulses > 0 \
+                       and last.distance_mm <= stop_mm * CLOSE_LOST_FACTOR \
+                       and abs(last.distance_mm * math.sin(math.radians(last.bearing_deg))) <= 2 * ARRIVE_LATERAL_MM:
+                        return HomingResult(True, "arrived (marker filled the frame)", pulses,
+                                            last.bearing_deg, last.distance_mm, log)
                     return HomingResult(False, f"marker lost for {MAX_LOST} frames", pulses,
                                         last.bearing_deg if last else None, last.distance_mm if last else None, log)
                 await asyncio.sleep(1.0)
@@ -97,9 +108,11 @@ async def home_to_marker(marker_id: int = 0, camera: str = "rover",
             last = m
             log.append({"t": round(time.monotonic() - t0, 1), "seen": True,
                         "bearing": round(m.bearing_deg, 1), "distance": round(m.distance_mm or -1)})
-            if m.distance_mm is not None and m.distance_mm <= stop_mm and abs(m.bearing_deg) <= CENTER_DEG:
-                await client.stop()
-                return HomingResult(True, "arrived", pulses, m.bearing_deg, m.distance_mm, log)
+            if m.distance_mm is not None and m.distance_mm <= stop_mm:
+                lateral = abs(m.distance_mm * math.sin(math.radians(m.bearing_deg)))
+                if abs(m.bearing_deg) <= CENTER_DEG or lateral <= ARRIVE_LATERAL_MM:
+                    await client.stop()
+                    return HomingResult(True, "arrived", pulses, m.bearing_deg, m.distance_mm, log)
 
             # Stuck guard: pulses that change nothing mean the rover is held up
             # (cable, mat edge, obstacle). Stop instead of grinding the motors.
