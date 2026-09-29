@@ -77,7 +77,7 @@ before connecting the camera.
 |---|---|---|---|---|
 | Eufy RoboVac 12 (+ its dock and IR remote) | 1 | House chassis with native docking/charging, cliff and bumper behaviour; driven by IR | Inventory | Confirmed working: it had simply been switched off at the bottom power switch |
 | IR receiver module (VS1838B-type) | 1 | Captured the remote's codes; stays for adding buttons | Inventory | Wired, GPIO14 |
-| IR LED (940 nm) + 100R resistor | 1 | Transmit codes to the vacuum's receiver from the lid | Inventory | Wired, GPIO4 |
+| IR LED (940 nm) + 100R resistor | 1 | Transmit codes to the vacuum's receiver from the lid | Inventory - the two on hand turned out dead/wrong; replacements ordered by Enoch (not from Claude's budget) | Wired on IO4; drive path proven with a visible LED; awaiting working IR LEDs |
 | ESP32-WROOM-32D devkit (`esp32dev`) | 1 | IR bridge node `eufy-ir` (`firmware/eufy-ir.yaml`) | Inventory | Flashed, online, 6 captured-code buttons |
 
 (The Roomba plan - mini-DIN plug, level shifter - is shelved; the Roomba was gone.)

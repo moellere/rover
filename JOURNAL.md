@@ -254,6 +254,16 @@ sudo, and the token-budget constraint.
   burst; wiring GPIO4 -> 100R -> anode), then a transistor driver if the
   LED is merely too dim.
 
+- **Root cause found for the Eufy IR failure: the IR LEDs.** Two IR LEDs
+  (swapped in turn) never showed on the night-mode bench camera; a visible
+  LED in the same spot lit brightly on the 8 s test burst, so the node,
+  IO4, the RMT transmitter and the captured codes are all fine. Possible
+  mix-up with look-alike IR phototransistors (dark = receiver, clear =
+  emitter). Enoch has new IR LEDs on order (his own purchase). The
+  test-burst button stays in the firmware for the 30-second verification
+  when they arrive; a transistor driver is the next step only if the
+  vacuum ignores a working LED at distance.
+
 ### Open for next session
 1. Enoch: measure the board (six numbers in the `.scad` header), build the
    USB splice, print the marker page (`hardware/markers/`), answer the
