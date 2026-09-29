@@ -21,17 +21,18 @@ breakdown of the notable decisions. Newest entry on top.
 **Where things stand, 2026-09-29 (late):**
 
 - **Visual homing works** - `home_to_marker` has driven the rover to a
-  marker unattended twice (80 mm marker: 594 -> 90 mm; 160 mm marker:
-  667 -> 214 mm). The brain (`brain/`, MCP server `rover-brain`) is the
+  marker unattended three times (tank: 594 -> 90 mm, 667 -> 214 mm;
+  trike: 1109 -> 168 mm). The brain (`brain/`, MCP server `rover-brain`) is the
   only way the rover is driven.
-- **The chassis is being rebuilt as the trike** (two motors + trailing
-  caster) - Enoch started tonight. Reason: the tank had to skid its tracks
-  to pivot, which produced stiction, left/right asymmetry and 100%-duty
-  pivots. Pulse constants in `brain/homing.py` need re-tuning once it's
-  running; pivot duty may go back to 75%.
-- **Camera adapter strip printed** (`hardware/camera-strip.scad`) - bolts
-  the v5 cradle to the front standoffs so the camera stops shifting.
-  Fit check after the rebuild.
+- **The chassis is now the trike** (two driven wheels in front, trailing
+  caster) - rebuilt 2026-09-29. First trike homing run: 1109 -> 168 mm in
+  7 pulses. Motor duty is tunable live (`Drive duty` / `Pivot duty`
+  sliders on the rover); forward/backward were remapped in firmware for
+  the new motor orientation.
+- **Camera adapter strip printed and fitted** (`hardware/camera-strip.scad`)
+  - the cradle is bolted to the front standoffs now.
+- **Open:** redcam still runs ESPHome 2024.9.2 - its config now validates
+  on 2026.x but the OLED lambda hits a wifi API rename; fix and flash.
 - Firmware: watchdog, disconnect-stop, battery guard (calibrated) live;
   cliff-sensor guards live but sensors not yet installed (ordered). Camera
   (`redcam`) on rover power, fresh snapshots (5 fps idle).
@@ -357,6 +358,34 @@ sudo, and the token-budget constraint.
     posts so an adapter plate can bolt the mount down. Accepted -
     measurements requested (post spacing both axes, post type/diameter,
     height, which way is forward).
+
+### The trike, same night (2026-09-29, late)
+
+- Enoch rebuilt the chassis as the trike in about an hour (drive wheels in
+  front, caster at the rear) and fitted the freshly printed camera strip -
+  "worked great". Zip-tied the motor leads at his own suggestion.
+- **Forward and backward came up inverted** on the new build (pivots were
+  correct): rotating the motor mounts swaps sides *and* polarity. Caught it
+  on the bench camera after one 0.1 s pulse moved the rover toward the near
+  edge; no more pulses until fixed. Fix, with Enoch's OK: the four MCP23008
+  motor pins and the two PWM pins are remapped in firmware.
+- **Motor duty is now two live sliders** on the rover (`Drive duty` 75%,
+  `Pivot duty` 50%), so tuning no longer needs a reflash. Needed at once:
+  on the trike a 0.1 s pivot at 100% was ~30 deg. At 50%, 0.05 s is ~3 deg,
+  0.1 s ~6 deg, left/right symmetric.
+- **Third autonomous arrival, first on the trike: 1109 mm -> 168 mm in 7
+  pulses, 35 s, final bearing -0.8 deg.** Four consecutive forward pulses
+  held within 2 deg of centre. Near-range step cut to 0.1 s (the 0.15 s step
+  overshot the 200 mm stop).
+- redcam turned out to still be on ESPHome 2024.9.2: its config has never
+  validated on 2026.x (`idle_framerate` max 1 fps; the camera's SCCB pins
+  must be a separate `i2c:` bus; the OLED lambda used the Arduino `WiFi`
+  object). Two of three fixed; the last build error is an ESPHome API rename
+  in the wifi component - **open for tomorrow**. `_look` now retries
+  transient camera errors and waits 1.2 s between its two frames.
+- Power management, on Enoch's question before bed: firmware only refuses to
+  drive under 9.3 V; idle draw still flattens a pack. For now he switches the
+  pack off; deep-sleep and a hardware LVC are on the roadmap (3.2a/3.2b).
 
 ### Decisions, 2026-09-29 (Fable 5.1)
 

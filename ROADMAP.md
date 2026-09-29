@@ -10,8 +10,8 @@ means Enoch already has it. Enoch reshapes this freely; it's a proposal.
 | # | Item | Needs | Why |
 |---|---|---|---|
 | 0.1 | ~~Print and fit the camera mount~~ **done** (v5) | - | everything visual depends on it |
-| 0.1a | **Rebuild the chassis as the trike** (two motors + trailing caster) | Enoch's rebuild time, $0 | the tank skidded its tracks to pivot - stiction, asymmetry, 100% duty bursts; wheels pivot cleanly at low duty. Decided 2026-09-29. Then re-tune `PIVOT_S`/`FORWARD_S` in `brain/homing.py` |
-| 0.1b | Camera adapter strip fitted | `hardware/prints/camera-strip_v1` on the printer, 2x M4 + nuts + washers | bolts the cradle to the front standoffs so bearings stop drifting with every pulse |
+| 0.1a | ~~Rebuild the chassis as the trike~~ **done 2026-09-29** (drive wheels front, caster rear) | - | the tank skidded its tracks to pivot - stiction, asymmetry, 100% duty bursts; wheels pivot cleanly at low duty. Decided 2026-09-29. Then re-tune `PIVOT_S`/`FORWARD_S` in `brain/homing.py` |
+| 0.1b | ~~Camera adapter strip fitted~~ **done 2026-09-29** | - | bolts the cradle to the front standoffs so bearings stop drifting with every pulse |
 | 0.2 | ~~Camera on rover power~~ **done** (buck -> spliced USB) | - | camera travels with the rover |
 | 0.3 | ~~Camera firmware for the rover role~~ **done** (5 fps idle, PSRAM) | - | snapshots are fresh; stream still SXGA - drop to VGA if latency matters |
 | 0.4 | Cliff sensors installed | sensors (ordered), polarity check | the firmware guards are already waiting for them |
@@ -29,7 +29,7 @@ parks nose-on within ~2 cm, unattended.
 | 1.2 | `find_marker` tool | camera mounted | detector already in `brain/markers.py`; returns id, pixel centre, apparent size, bearing |
 | 1.3 | Camera calibration | a ruler and the marker | focal length from marker size at known distances -> distance estimate |
 | 1.4 | `home_to_marker` | 1.2, 1.3, 0.5 | **done 2026-09-29** - closed loop with adaptive pivots; arrivals: 12 pulses 594 -> 90 mm (80 mm marker), 14 pulses 667 -> 214 mm (160 mm marker) |
-| 1.4a | Re-tune homing on the trike | 0.1a | shorter pivots, probably 75% duty again; check left/right symmetry first, then `PIVOT_S`, `FORWARD_S`, `CENTER_DEG` |
+| 1.4a | ~~Re-tune homing on the trike~~ **done 2026-09-29** | - | pivot duty 50% (live slider), `PIVOT_S` 0.1 s ~6 deg, near step 0.1 s; first trike arrival 1109 -> 168 mm in 7 pulses |
 | 1.5 | Bench lap demo | all above | drive a lap around a clutter-free zone using markers as waypoints |
 
 ## Tier 2E - the Eufy path (issue #1; revised 2026-09-28)
@@ -70,6 +70,8 @@ and comes first.
 |---|---|---|---|
 | 3.1 | D1 Mini on the buck | wiring | removes ~0.5 W of linear-regulator heat |
 | 3.2 | Camera sleep | firmware | deep-sleep or stream-off when nobody is watching; wake on demand |
+| 3.2a | **Low-battery deep sleep** | firmware (rover + redcam) | below ~9.6 V with no command for 5 min, both ESPs deep-sleep and wake every 30 min to report voltage. The 9.3 V guard only stops *driving*; idle draw (~2.5 W: two ESPs + L298N regulator + buck) flattens a full pack in ~12 h, into cell-damage territory. Until this exists, Enoch switches the pack off when done (2026-09-29). |
+| 3.2b | **Hardware low-voltage cutoff** | check whether the 18650 holder has a protection BMS; else a 3S BMS/LVC module (~$3-5 budget) | the real fix - the ESPs can't cut the regulators' quiescent draw. Goes inline with the pack switch. |
 | 3.3 | Wheel odometry | 2 encoders or IR sensor + slotted disk (~$5-10 budget) | distance/heading without timing guesses; needed for anything beyond line-of-sight to a marker |
 | 3.4 | Forward range / obstacle sensing | **Benewake TFMini + SparkFun Qwiic adapter (inventory)** | Plan: on the D1 Mini's I2C bus (3.3 V logic, D1/D2, next to the MCP23008) at address 0x10 - write `01 02 07`, read 7 bytes (valid flag, -, dist LSB/MSB in cm, strength LSB/MSB, range type). Power the TFMini's 5 V pin from the buck (peaks ~800 mA; the adapter's 3.3 V boost can't run it from the D1 Mini). Firmware guard: refuse forward when range < ~35 cm and an obstacle is ahead. **Minimum range is 30 cm**, so the camera keeps the last 20 cm of a homing approach; the LiDAR owns the lane. ESPHome has no built-in component - read it with an I2C lambda in a template sensor, or a small external component. |
 | 3.5 | One-board consolidation | MCP23017 (inventory) + PCA9685 (~$3-5) | T-Camera drives the L298N over I2C; retire the D1 Mini; re-validate all safety behaviour |

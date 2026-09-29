@@ -37,7 +37,8 @@ PIVOT_MAX_S = 1.0       # adaptive cap: a pulse that doesn't turn the rover grow
                         # firmware now pivots at 100% and the two are symmetric.
 PIVOT_MIN_EFFECT = 1.5  # deg of bearing change that counts as "it turned"
 FORWARD_S = 0.3         # forward pulse length
-FORWARD_NEAR_S = 0.15   # shorter step inside NEAR_MM so the stop isn't overshot
+FORWARD_NEAR_S = 0.1    # shorter step inside NEAR_MM so the stop isn't overshot
+                        # (trike: 0.15 s went 247 -> 168 mm, past the 200 mm stop)
 NEAR_MM = 350.0
 STOP_MM = 200.0         # stop when the marker is this close
 ARRIVE_LATERAL_MM = 30.0  # ...or within this sideways offset (d*sin(bearing)) at the stop distance
