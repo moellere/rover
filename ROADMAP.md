@@ -68,7 +68,7 @@ and comes first.
 | 3.1 | D1 Mini on the buck | wiring | removes ~0.5 W of linear-regulator heat |
 | 3.2 | Camera sleep | firmware | deep-sleep or stream-off when nobody is watching; wake on demand |
 | 3.3 | Wheel odometry | 2 encoders or IR sensor + slotted disk (~$5-10 budget) | distance/heading without timing guesses; needed for anything beyond line-of-sight to a marker |
-| 3.4 | Forward range / obstacle sensing | **Benewake TFMini micro-LiDAR + Qwiic adapter (inventory)** | precise stop distance for homing/docking; stop before hitting the bench supply; HC-SR04 as the fallback |
+| 3.4 | Forward range / obstacle sensing | **Benewake TFMini + SparkFun Qwiic adapter (inventory)** | Plan: on the D1 Mini's I2C bus (3.3 V logic, D1/D2, next to the MCP23008) at address 0x10 - write `01 02 07`, read 7 bytes (valid flag, -, dist LSB/MSB in cm, strength LSB/MSB, range type). Power the TFMini's 5 V pin from the buck (peaks ~800 mA; the adapter's 3.3 V boost can't run it from the D1 Mini). Firmware guard: refuse forward when range < ~35 cm and an obstacle is ahead. **Minimum range is 30 cm**, so the camera keeps the last 20 cm of a homing approach; the LiDAR owns the lane. ESPHome has no built-in component - read it with an I2C lambda in a template sensor, or a small external component. |
 | 3.5 | One-board consolidation | MCP23017 (inventory) + PCA9685 (~$3-5) | T-Camera drives the L298N over I2C; retire the D1 Mini; re-validate all safety behaviour |
 | 3.6 | Brownout watch | - | log resets/WiFi drops; add the rail capacitor if they show |
 
