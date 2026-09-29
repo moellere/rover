@@ -1,5 +1,8 @@
 # Rover Project Instructions
 
+The rover's name is **Grover** (named 2026-09-29: blue Makeblock rails,
+and it spends its life doing "near... far"). Use it.
+
 This file is automatically loaded by Claude Code as project instructions
 whenever a session (any model) works in this repo. It's also the
 plain-language rulebook for the project, for a human reader.

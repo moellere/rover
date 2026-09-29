@@ -400,6 +400,10 @@ sudo, and the token-budget constraint.
   the script didn't consult it until the end. Rule added to `CLAUDE.md`:
   reverse is single short pulses with a bench-camera look before each one;
   the caster makes it unpredictable and there are no rear cliff sensors.
+- **The rover is named Grover.** Enoch called Claude "the big blue Grover
+  of your rover" (a Chef John-style rhyme); Claude read it as Sesame
+  Street's Grover, Enoch liked the near/far fit, and the blue Makeblock
+  rails sealed it.
 - Power management, on Enoch's question before bed: firmware only refuses to
   drive under 9.3 V; idle draw still flattens a pack. For now he switches the
   pack off; deep-sleep and a hardware LVC are on the roadmap (3.2a/3.2b).
