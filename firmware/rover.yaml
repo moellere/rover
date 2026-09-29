@@ -213,8 +213,10 @@ binary_sensor:
 
 # Battery voltage: 3S 18650 pack (~12.6V full, ~9.0V empty) through an external divider
 # into A0. A0 on the D1 mini already has an onboard divider extending it to ~0-3.2V;
-# divider wired pack+ -> A0 -> GND with R_top=100k, R_bottom=27k (scales 12.6V down to
-# ~2.7V, safely under the board's ~3.2V max). `multiply` below is calibrated - see it.
+# add your OWN divider from pack+ -> A0 -> GND with R_top=100k, R_bottom=27k (scales
+# 12.6V down to ~2.7V, safely under the board's ~3.2V max). The `multiply: 15.0` below
+# is a starting estimate for the combined ratio of both dividers - calibrate it against
+# a multimeter reading once wired (adjust the constant so the reported voltage matches).
 sensor:
   # NOTE: this file's top-level `sensor:` replaces (not merges with) the one pulled in
   # via `<<: !include common/sensor.yaml` above (that's a raw YAML merge-key, not
@@ -410,10 +412,10 @@ api:
           then:
             - output.set_level:
                 id: left_pwm
-                level: 75%
+                level: 100%
             - output.set_level:
                 id: right_pwm
-                level: 75%
+                level: 100%
             - output.turn_off: left_forward_pin
             - output.turn_on: right_forward_pin
             - output.turn_on: left_reverse_pin
@@ -446,10 +448,10 @@ api:
           then:
             - output.set_level:
                 id: left_pwm
-                level: 75%
+                level: 100%
             - output.set_level:
                 id: right_pwm
-                level: 75%
+                level: 100%
             - output.turn_on: left_forward_pin
             - output.turn_off: right_forward_pin
             - output.turn_off: left_reverse_pin

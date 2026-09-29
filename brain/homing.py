@@ -28,10 +28,11 @@ from brain.rover_client import RoverClient
 
 # Tunables - conservative on purpose.
 CENTER_DEG = 6.0        # "centred" if |bearing| <= this (pivot granularity is ~5-7 deg)
-PIVOT_S = 0.2           # initial pivot pulse length
+PIVOT_S = 0.15          # initial pivot pulse length (~12 deg at 100% duty on the bench)
 PIVOT_MAX_S = 1.0       # adaptive cap: a pulse that doesn't turn the rover grows by 1.5x
                         # (the server's MAX_PULSE_S). Left/right are tracked separately:
-                        # on this chassis a right pivot bites at 0.25 s, a left one needs ~1 s.
+                        # at 75% duty the left pivot needed ~4x the pulse of the right;
+                        # firmware now pivots at 100% and the two are symmetric.
 PIVOT_MIN_EFFECT = 1.5  # deg of bearing change that counts as "it turned"
 FORWARD_S = 0.3         # forward pulse length
 FORWARD_NEAR_S = 0.15   # shorter step inside NEAR_MM so the stop isn't overshot
