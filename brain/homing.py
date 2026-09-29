@@ -27,9 +27,13 @@ from brain.markers import find_markers, Marker
 from brain.rover_client import RoverClient
 
 # Tunables - conservative on purpose.
-CENTER_DEG = 3.0        # "centred" if |bearing| <= this
-PIVOT_S = 0.2           # pivot pulse length
+CENTER_DEG = 6.0        # "centred" if |bearing| <= this (pivot granularity is ~5-7 deg)
+PIVOT_S = 0.2           # initial pivot pulse length
+PIVOT_MAX_S = 0.6       # adaptive cap: a pulse that doesn't turn the rover grows by 1.5x
+PIVOT_MIN_EFFECT = 1.5  # deg of bearing change that counts as "it turned"
 FORWARD_S = 0.3         # forward pulse length
+FORWARD_NEAR_S = 0.15   # shorter step inside NEAR_MM so the stop isn't overshot
+NEAR_MM = 350.0
 STOP_MM = 200.0         # stop when the marker is this close
 SETTLE_S = 2.5          # wait after a pulse before trusting a frame (motion blur)
 MAX_PULSES = 20         # hard cap on drive pulses per run
@@ -61,6 +65,8 @@ async def home_to_marker(marker_id: int = 0, camera: str = "rover",
     pulses = 0
     lost = 0
     last: Marker | None = None
+    pivot_s = PIVOT_S
+    prev_bearing: float | None = None
     t0 = time.monotonic()
     try:
         while pulses < max_pulses:
@@ -92,13 +98,22 @@ async def home_to_marker(marker_id: int = 0, camera: str = "rover",
                 return HomingResult(False, "cliff sensor active", pulses, m.bearing_deg, m.distance_mm, log)
 
             if abs(m.bearing_deg) > CENTER_DEG:
+                # Adapt the pulse: stiction means short pulses often do nothing.
+                if prev_bearing is not None:
+                    if abs(m.bearing_deg - prev_bearing) < PIVOT_MIN_EFFECT:
+                        pivot_s = min(PIVOT_MAX_S, round(pivot_s * 1.5, 2))
+                    else:
+                        pivot_s = max(PIVOT_S, round(pivot_s / 1.5, 2))
+                prev_bearing = m.bearing_deg
                 # + bearing = marker is right of centre -> pivot right
                 direction = "right" if m.bearing_deg > 0 else "left"
-                await client.drive(direction, PIVOT_S)
-                log[-1]["pulse"] = f"{direction} {PIVOT_S}s"
+                await client.drive(direction, pivot_s)
+                log[-1]["pulse"] = f"{direction} {pivot_s}s"
             elif m.distance_mm is None or m.distance_mm > stop_mm:
-                await client.drive("forward", FORWARD_S)
-                log[-1]["pulse"] = f"forward {FORWARD_S}s"
+                prev_bearing = None
+                step = FORWARD_NEAR_S if (m.distance_mm is not None and m.distance_mm < NEAR_MM) else FORWARD_S
+                await client.drive("forward", step)
+                log[-1]["pulse"] = f"forward {step}s"
             pulses += 1
             await asyncio.sleep(SETTLE_S)
         await client.stop()

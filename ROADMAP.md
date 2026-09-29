@@ -26,7 +26,7 @@ parks nose-on within ~2 cm, unattended.
 | 1.1 | Printed marker | paper, `hardware/markers/` (done) | ArUco 4x4, id 0, 80 mm - printable page committed |
 | 1.2 | `find_marker` tool | camera mounted | detector already in `brain/markers.py`; returns id, pixel centre, apparent size, bearing |
 | 1.3 | Camera calibration | a ruler and the marker | focal length from marker size at known distances -> distance estimate |
-| 1.4 | `home_to_marker` | 1.2, 1.3, 0.5 | closed loop: pivot until centred, approach in pulses, stop at range; abort on cliff/battery/lost marker |
+| 1.4 | `home_to_marker` | 1.2, 1.3, 0.5 | **done 2026-09-29** - closed loop with adaptive pivots; first arrival: 12 pulses, 594 mm -> 90 mm |
 | 1.5 | Bench lap demo | all above | drive a lap around a clutter-free zone using markers as waypoints |
 
 ## Tier 2E - the Eufy path (issue #1; revised 2026-09-28)
@@ -68,7 +68,7 @@ and comes first.
 | 3.1 | D1 Mini on the buck | wiring | removes ~0.5 W of linear-regulator heat |
 | 3.2 | Camera sleep | firmware | deep-sleep or stream-off when nobody is watching; wake on demand |
 | 3.3 | Wheel odometry | 2 encoders or IR sensor + slotted disk (~$5-10 budget) | distance/heading without timing guesses; needed for anything beyond line-of-sight to a marker |
-| 3.4 | Bump/obstacle sensing | ultrasonic or ToF (~$3-8 budget) | stop before hitting the bench supply |
+| 3.4 | Forward range / obstacle sensing | **Benewake TFMini micro-LiDAR + Qwiic adapter (inventory)** | precise stop distance for homing/docking; stop before hitting the bench supply; HC-SR04 as the fallback |
 | 3.5 | One-board consolidation | MCP23017 (inventory) + PCA9685 (~$3-5) | T-Camera drives the L298N over I2C; retire the D1 Mini; re-validate all safety behaviour |
 | 3.6 | Brownout watch | - | log resets/WiFi drops; add the rail capacitor if they show |
 

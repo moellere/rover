@@ -37,7 +37,9 @@ and renders, but **needs six caliper measurements of the board** before
 slicing. Slicing itself is blocked on a one-line sudo apt install on the dev
 VM (Enoch offered; see the 2026-09-28 entry). The rover is powered off
 overnight. Proposed next goal after Phase 1: visual homing (in `CLAUDE.md`).
-Standing project rules live in [CLAUDE.md](CLAUDE.md) - read that first.
+**Visual homing (Tier 1) works as of 2026-09-29** - `home_to_marker` drove
+the rover to the marker unattended. Standing project rules live in
+[CLAUDE.md](CLAUDE.md) - read that first.
 
 ---
 
@@ -277,6 +279,19 @@ sudo, and the token-budget constraint.
   to 24 in: 57.3 px there -> ROVER_CAM_FOCAL_PX = 437 (~111 deg FOV).
   Verified 610 mm back at 24 in, bearing +10.2 deg. Generated a 160 mm
   id-1 marker page for longer range.
+
+- **MILESTONE: visual homing works.** Wrote `brain/homing.py` - a closed
+  loop (look, pivot toward the marker, step forward, settle, look again)
+  with hard caps, lost-marker abort, and battery/cliff checks before every
+  pulse - exposed as the `home_to_marker` MCP tool. First run stalled: a
+  0.2 s pivot is below stiction on the bench (12 pulses, 1.3 deg total).
+  Added adaptive pivot pulses (grow 1.5x when a pulse has no effect) and a
+  6 deg centre tolerance. **Second run arrived: 12 pulses, from 594 mm and
+  +4.9 deg to 90 mm and -4.4 deg, unattended.** The last 0.3 s step
+  overshot the 200 mm stop, so steps inside 350 mm are now 0.15 s.
+- Enoch found a Benewake TFMini micro-LiDAR with a Qwiic (I2C) adapter and
+  breakout in inventory - added to the roadmap as the forward range sensor
+  (better than the HC-SR04 for a precise stop distance and obstacle stop).
 
 ### Open for next session
 1. Enoch: measure the board (six numbers in the `.scad` header), build the
