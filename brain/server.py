@@ -34,7 +34,8 @@ _last_drive_end = 0.0
 @mcp.tool()
 async def status() -> dict:
     """Current rover state: motion, battery voltage, cliff sensors, uptime, WiFi,
-    and whether stops brake."""
+    whether stops brake, and the TFMini forward range (cm; valid=False under
+    30 cm or with no return) plus the firmware obstacle-stop threshold."""
     st = await RoverClient().state()
     return {
         "motion": st.motion,
@@ -44,6 +45,9 @@ async def status() -> dict:
         "uptime_s": st.uptime_s,
         "wifi_dbm": st.wifi_dbm,
         "brake_on_stop": st.brake_on_stop,
+        "front_range_cm": st.front_range_cm,
+        "front_range_valid": st.front_range_valid,
+        "obstacle_stop_cm": st.obstacle_stop_cm,
     }
 
 
@@ -110,6 +114,17 @@ async def set_brake(on: bool) -> dict:
     await RoverClient().set_switch("brake_on_stop", on)
     st = await RoverClient().state(timeout=3.0)
     return {"ok": st.brake_on_stop == on, "brake_on_stop": st.brake_on_stop}
+
+
+@mcp.tool()
+async def set_obstacle_stop(cm: float) -> dict:
+    """Set the firmware's forward obstacle guard (TFMini): forward is refused,
+    and a forward move stopped, while something is closer than `cm`. 0 turns
+    it off. The TFMini can't see under 30 cm, so a docking approach lowers or
+    clears this for its last stretch and relies on the camera there."""
+    await RoverClient().set_number("obstacle_stop", float(cm))
+    st = await RoverClient().state(timeout=3.0)
+    return {"ok": st.obstacle_stop_cm == float(cm), "obstacle_stop_cm": st.obstacle_stop_cm}
 
 
 @mcp.tool()

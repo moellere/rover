@@ -43,6 +43,18 @@ globals:
     type: bool
     restore_value: no
     initial_value: 'true'
+  # TFMini forward LiDAR: true while something is inside the "Obstacle stop"
+  # distance. Holds its last state through invalid frames, because the
+  # TFMini goes invalid under 30 cm - an object that crossed the threshold
+  # and kept coming must not clear the guard by getting too close to see.
+  - id: obstacle_ahead
+    type: bool
+    restore_value: no
+    initial_value: 'false'
+  - id: tfmini_errors
+    type: int
+    restore_value: no
+    initial_value: '0'
 
 # Pin map for awning
 #D0: 
@@ -105,6 +117,45 @@ script:
           state: "Stopped"
 
 interval:
+  # TFMini (SparkFun Qwiic, I2C 0x10, shares the bus with the MCP23008):
+  # write 01 02 07, read 7 bytes [valid, -, dist cm LE, strength LE, mode].
+  # With the guard enabled, a missing sensor (5 failed reads) counts as an
+  # obstacle - fail safe, forward refused - rather than as a clear lane.
+  - interval: 100ms
+    then:
+      - lambda: |-
+          const uint8_t cmd[3] = {0x01, 0x02, 0x07};
+          uint8_t buf[7] = {0};
+          const float thr = id(obstacle_stop_cm).state;
+          if (id(bus_a).write(0x10, cmd, 3) != i2c::ERROR_OK ||
+              id(bus_a).read(0x10, buf, 7) != i2c::ERROR_OK) {
+            if (++id(tfmini_errors) == 5) {
+              ESP_LOGW("tfmini", "no response at 0x10");
+              id(front_range).publish_state(NAN);
+            }
+            if (id(tfmini_errors) >= 5) id(obstacle_ahead) = thr > 0;
+            return;
+          }
+          id(tfmini_errors) = 0;
+          if (buf[0] != 0x01) {
+            id(front_range_valid).publish_state(false);
+            return;  // too close (<30 cm), no return, or weak: hold state
+          }
+          const float cm = buf[2] | (uint16_t(buf[3]) << 8);
+          const float strength = buf[4] | (uint16_t(buf[5]) << 8);
+          id(front_range_valid).publish_state(true);
+          id(front_range).publish_state(cm);
+          id(front_range_strength).publish_state(strength);
+          id(obstacle_ahead) = thr > 0 && cm < thr;
+      - if:
+          condition:
+            lambda: 'return id(obstacle_ahead) && id(motion_status).state == "Forward";'
+          then:
+            - script.execute: motor_stop
+            - text_sensor.template.publish:
+                id: motion_status
+                state: "Stopped (obstacle)"
+            - logger.log: "Obstacle ahead inside the stop distance, stopping"
   - interval: 200ms
     then:
       - if:
@@ -119,6 +170,7 @@ interval:
             - logger.log: "Watchdog: no command refresh in 1.5s, stopping motors"
 
 i2c:
+  id: bus_a
   sda: D2
   scl: D1
   scan: True
@@ -181,6 +233,9 @@ output:
 # surface (floor/bench) and high when there's nothing to reflect off (edge/drop-off) -
 # verify against the actual module datasheet once wired and flip `inverted` if backwards.
 binary_sensor:
+  - platform: template
+    name: "Front range valid"
+    id: front_range_valid
   - platform: gpio
     name: "Front Left Cliff"
     id: front_left_cliff
@@ -244,6 +299,24 @@ sensor:
   - platform: wifi_signal
     name: ${devicename} WiFi Signal
     update_interval: 60s
+  - platform: template
+    name: "Front range"
+    id: front_range
+    unit_of_measurement: "cm"
+    device_class: distance
+    state_class: measurement
+    accuracy_decimals: 0
+    filters:
+      - or:
+          - delta: 2
+          - throttle: 10s
+  - platform: template
+    name: "Front range strength"
+    id: front_range_strength
+    state_class: measurement
+    accuracy_decimals: 0
+    filters:
+      - throttle_average: 5s
   - platform: adc
     pin: A0
     name: "Battery Voltage"
@@ -276,6 +349,18 @@ sensor:
 # reflash. The trike pivots ~30 deg per 0.1 s at 100%; 50% is the starting
 # point. Values survive reboots.
 number:
+  # 0 = guard off. Boots off until the TFMini is mounted and verified; the
+  # brain lowers it for the last part of a docking approach.
+  - platform: template
+    name: "Obstacle stop"
+    id: obstacle_stop_cm
+    unit_of_measurement: "cm"
+    min_value: 0
+    max_value: 200
+    step: 5
+    initial_value: 0
+    optimistic: true
+    entity_category: config
   - platform: template
     name: "Drive duty"
     id: drive_duty
@@ -317,7 +402,7 @@ switch:
           id(last_command_ms) = millis();
       - if:
           condition:
-            lambda: 'return id(battery_ok) && !id(cliff_detected);'
+            lambda: 'return id(battery_ok) && !id(cliff_detected) && !id(obstacle_ahead);'
           then:
             - output.set_level:
                 id: left_pwm
@@ -358,7 +443,7 @@ api:
           id(last_command_ms) = millis();
       - if:
           condition:
-            lambda: 'return id(battery_ok) && !id(cliff_detected);'
+            lambda: 'return id(battery_ok) && !id(cliff_detected) && !id(obstacle_ahead);'
           then:
             - output.set_level:
                 id: left_pwm
@@ -378,7 +463,7 @@ api:
             - text_sensor.template.publish:
                 id: motion_status
                 state: "Stopped"
-            - logger.log: "Forward blocked (cliff detected or low battery)"
+            - logger.log: "Forward blocked (cliff, obstacle or low battery)"
     - action: backward
       then:
       - script.stop: motor_stop

@@ -29,6 +29,9 @@ class RoverState:
     uptime_s: Optional[float] = None
     wifi_dbm: Optional[float] = None
     brake_on_stop: Optional[bool] = None
+    front_range_cm: Optional[float] = None      # TFMini; None = no sensor/no reading
+    front_range_valid: Optional[bool] = None    # False under 30 cm or no return
+    obstacle_stop_cm: Optional[float] = None    # firmware guard threshold, 0 = off
     raw: dict = field(default_factory=dict)
 
 
@@ -85,6 +88,12 @@ class RoverClient:
                     out.wifi_dbm = float(val)
                 elif oid == "brake_on_stop":
                     out.brake_on_stop = bool(val)
+                elif oid == "front_range":
+                    out.front_range_cm = None if val is None or val != val else float(val)
+                elif oid == "front_range_valid":
+                    out.front_range_valid = bool(val)
+                elif oid == "obstacle_stop":
+                    out.obstacle_stop_cm = float(val)
             return out
         finally:
             await client.disconnect()
@@ -115,6 +124,19 @@ class RoverClient:
             if not match:
                 raise ValueError(f"no entity {object_id!r} on the rover")
             client.switch_command(match[0].key, on)
+            await asyncio.sleep(0.3)
+        finally:
+            await client.disconnect()
+
+    async def set_number(self, object_id: str, value: float) -> None:
+        """Set a firmware number entity (e.g. obstacle_stop)."""
+        client = await self._connect()
+        try:
+            entities, _ = await client.list_entities_services()
+            match = [e for e in entities if e.object_id == object_id]
+            if not match:
+                raise ValueError(f"no entity {object_id!r} on the rover")
+            client.number_command(match[0].key, value)
             await asyncio.sleep(0.3)
         finally:
             await client.disconnect()

@@ -113,6 +113,13 @@ fallback is to switch to Opus 5.5 or wait for the reset.
   2026-09-28 when the captured codes went in. Every other device still
   needs a check-in first.
 
+## Choosing the next step (Enoch, 2026-09-29)
+
+Claude picks what to work on next and moves through milestones without
+asking permission ("you tell me what you want to do next"). Say what's
+next and why, then do it. Physical work (soldering, assembly) is still
+discussed with Enoch first, and purchases still follow the budget rules.
+
 ## Resources on the table (Enoch, 2026-09-29)
 
 This is Claude's project to drive toward the goals; use whatever it needs:
