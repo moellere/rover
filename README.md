@@ -33,7 +33,7 @@ instructions, and readable as plain English by anyone.
 - **Camera rides on the rover** in a printed cradle bolted to the chassis
   via a printed adapter strip.
 - Firmware guards: command watchdog, disconnect-stop, low-battery refusal,
-  cliff-sensor refusal (sensors on order), brake-on-stop.
+  cliff-sensor refusal (sensors on order), optional brake-on-stop.
 - Known hazard: no rear cliff sensors, and reversing a trike is
   unpredictable (the caster flips) - one wheel went over the edge on
   2026-09-29. See the reversing rule in `CLAUDE.md`.
@@ -44,7 +44,7 @@ Three layers, decided early and still standing:
 
 | Layer | Hardware | Role |
 |---|---|---|
-| **Spinal cord** | Wemos D1 Mini (ESP8266), ESPHome | reflexes: watchdog, disconnect-stop, cliff and battery guards, brake-on-stop. Authoritative - nothing off-board can override them. |
+| **Spinal cord** | Wemos D1 Mini (ESP8266), ESPHome | reflexes: watchdog, disconnect-stop, cliff and battery guards, optional brake-on-stop. Authoritative - nothing off-board can override them. |
 | **Eyes** | TTGO T-Camera (ESP32-WROVER, OV2640), ESPHome | snapshot and stream endpoints; no decisions |
 | **Brain** | `brain/` - Python + OpenCV, off-board | everything with judgment: marker detection, the homing loop, bounded drive pulses. Exposed as an MCP server (`rover-brain`). |
 
@@ -74,8 +74,8 @@ settle, look again - talking to the rover over ESPHome's native API.
 - **Firmware:** ESPHome (`firmware/rover.yaml`, `firmware/eufy-ir.yaml` -
   reference copies; the live configs with secrets are in a private repo).
   Custom services `forward`/`backward`/`left`/`right`/`stop`; `Drive duty`
-  and `Pivot duty` sliders for live tuning; every stop path brakes.
-- **Brain:** `brain/` - MCP tools `status`, `snapshot(bench|rover)`,
+  and `Pivot duty` sliders for live tuning; a `Brake on stop` switch.
+- **Brain:** `brain/` - MCP tools `status`, `snapshot(bench|front|rover)`, `set_brake`,
   `drive` (capped at 1 s, refused on low battery or cliff), `find_marker`,
   `home_to_marker`, `stop`. Install with `scripts/install-brain.sh`; details
   in `brain/README.md`.
@@ -100,8 +100,10 @@ mean it." In the firmware, always on:
   pivots refused (backward stays allowed).
 - **Battery guard** - below 9.3 V the rover refuses to drive; resumes at
   9.6 V. Calibrated to within 0.02 V of a multimeter.
-- **Brake-on-stop** - every stop shorts the motor windings for 150 ms
-  before coasting, so a cliff stop is centimetres, not a coast.
+- **Brake-on-stop** (switch, currently off) - shorts the motor windings for
+  150 ms on every stop. A/B on 2026-09-29 showed no measurable difference on
+  0.25 s pulses (the gearmotors barely coast), so it stays off until a
+  cruise-speed test says otherwise.
 
 The brain adds courtesy limits on top (pulse cap, gap between pulses,
 lost-marker and stuck detection) but never replaces the firmware's.

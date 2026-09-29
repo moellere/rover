@@ -32,9 +32,13 @@ breakdown of the notable decisions. Newest entry on top.
 - **Camera adapter strip printed and fitted** (`hardware/camera-strip.scad`)
   - the cradle is bolted to the front standoffs now.
 - **Both ESPs on ESPHome 2026.8.1** (flashed 2026-09-29 once the pack
-  was back): the rover with brake-on-stop, redcam off 2024.9.2. The
-  first braked stop was followed by redcam dropping offline (hung, needs a
-  power cycle) - brake-vs-new-build cause still open.
+  was back), redcam off 2024.9.2. Brake-on-stop is now a firmware switch
+  and is **off**: an A/B on 0.25 s pulses showed no measurable effect.
+- **Three cameras:** `bench` (camv3, rear view), `front` (fishcam, moved
+  across the bench 2026-09-29, head-on view), `rover` (redcam). All three
+  plus the spinal cord are Claude's to flash/modify for now.
+- The running brain MCP needs a reconnect (`/mcp`) to pick up `front`,
+  `set_brake` and the CLAHE marker retry.
 - Firmware: watchdog, disconnect-stop, battery guard (calibrated) live;
   cliff-sensor guards live but sensors not yet installed (ordered). Camera
   (`redcam`) on rover power, fresh snapshots (5 fps idle).
@@ -399,6 +403,31 @@ sudo, and the token-budget constraint.
   camera's supply, or the new 2026.8.1 camera build being fragile; homing
   runs on the old build survived dozens of unbraked stops. Needs a power
   cycle by hand; test paused until then.
+- **Enoch power-cycled redcam** and widened the standing permission: the
+  spinal cord, redcam, camv3 and fishcam are all Claude's to flash/modify
+  for now. fishcam moved to the far side of the bench (head-on view).
+- **Brake A/B.** Added a `Brake on stop` switch (default on; the script
+  also now sets the pins to brake *before* EN goes to 100%, so there's no
+  full-duty instant in the old direction) and flashed it. The brain got a
+  `front` camera, a `set_brake` tool, and a CLAHE retry in marker detection
+  - head-on at ~1 m the backlit marker's border merged into dark clutter
+  and plain detection failed. Four 0.25 s forward pulses at 75% duty,
+  marker distance as the ruler (median of 3 frames, ~+-6 mm):
+
+  | Pulse | Brake | Travel |
+  |---|---|---|
+  | 1 | off | 128 mm |
+  | 2 | on | 152 mm |
+  | 3 | off | 153 mm |
+  | 4 | on | 141 mm |
+
+  Off averages 140 mm, on 146: pulse-to-pulse spread swamps any braking
+  effect, so these gearmotors coast little at this speed (the "~8 cm
+  coast" in the firmware comment was never measured). Camera trouble
+  after 2 of 3 braked stops (the hang, then one HTTP 500 that cleared on
+  retry) and 0 of 2 coasting ones - too few to call, but with no benefit
+  shown the brake is left **off**. Retest at cruise when there's room.
+  Rover left at 448 mm from the marker.
 - **Near miss, backing up.** Enoch asked for a test reverse toward the bench
   camera. Done in 0.3 s pulses with the marker as odometry and a stop at a
   known-safe distance - but the caster flipping on direction change dragged

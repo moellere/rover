@@ -70,6 +70,11 @@ the marker; `backward` drives *toward* the camera and the near edge. Claude
 got this backwards once (2026-09-28); check the frame before choosing a
 direction.
 
+The `front` camera (`fishcam`, since 2026-09-29) sits across the bench at
+the marker end and sees the rover **head-on**, with the bench's long
+open edge on the left of its frame (the rover's right). Use it to check the
+lane ahead and sideways drift before forward runs.
+
 ## Token budget
 
 Enoch's Claude usage has a limit per model. Work in bounded chunks, don't
@@ -101,12 +106,12 @@ fallback is to switch to Opus 5.5 or wait for the reset.
 
 ## Standing permissions
 
-- **The T-Camera (`redcam`) may be reflashed without asking** - firmware
-  updates, rewrites, config changes, all of it. Granted by Enoch 2026-09-28,
-  scoped to that one device.
+- **Dedicated to this project, flash/modify freely** (Enoch, 2026-09-29,
+  "for the time being"): the rover's spinal cord (D1 Mini), the T-Camera
+  (`redcam`), and both bench cameras, `camv3` and `fishcam`.
 - **The IR bridge (`eufy-ir`) may also be reflashed** - Enoch OK'd it
   2026-09-28 when the captured codes went in. Every other device still
-  needs a check-in first (the rover itself included).
+  needs a check-in first.
 
 ## Resources on the table (Enoch, 2026-09-29)
 

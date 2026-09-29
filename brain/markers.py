@@ -34,6 +34,7 @@ def focal_px(camera: str) -> Optional[float]:
 _DICT = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_4X4_50)
 _PARAMS = cv2.aruco.DetectorParameters()
 _DETECTOR = cv2.aruco.ArucoDetector(_DICT, _PARAMS)
+_CLAHE = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))
 
 
 @dataclass
@@ -62,6 +63,12 @@ def find_markers(jpeg: bytes, camera: str = "rover") -> list[Marker]:
         raise ValueError("could not decode image")
     h, w = img.shape[:2]
     corners, ids, _ = _DETECTOR.detectMarkers(img)
+    if ids is None:
+        # Backlit frames (open garage door) leave the marker dark and its
+        # border merged into dark clutter behind it; local contrast
+        # equalisation recovers it (2026-09-29: head-on at ~1 m, plain
+        # detection failed, CLAHE found it).
+        corners, ids, _ = _DETECTOR.detectMarkers(_CLAHE.apply(img))
     out: list[Marker] = []
     if ids is None:
         return out

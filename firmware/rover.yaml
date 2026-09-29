@@ -65,32 +65,39 @@ globals:
 # high with EN high shorts the motor winding; ~150 ms is enough to kill the
 # momentum at cruise (coast alone was ~8 cm). Then everything releases so
 # nothing sits in a braked short. Every stop path uses this - watchdog,
-# disconnect, cliff, battery, the stop action.
+# disconnect, cliff, battery, the stop action. The "Brake on stop" switch
+# (default on) turns the brake phase off for A/B tests; the stop still happens.
+# Pins go to brake before EN goes to 100%, so there is never a full-duty
+# instant in the old drive direction.
 script:
   - id: motor_stop
     mode: restart
     then:
+      - if:
+          condition:
+            switch.is_on: brake_on_stop
+          then:
+            - output.turn_on: left_forward_pin
+            - output.turn_on: left_reverse_pin
+            - output.turn_on: right_forward_pin
+            - output.turn_on: right_reverse_pin
+            - output.set_level:
+                id: left_pwm
+                level: 100%
+            - output.set_level:
+                id: right_pwm
+                level: 100%
+            - delay: 150ms
       - output.set_level:
           id: left_pwm
-          level: 100%
+          level: 0%
       - output.set_level:
           id: right_pwm
-          level: 100%
-      - output.turn_on: left_forward_pin
-      - output.turn_on: left_reverse_pin
-      - output.turn_on: right_forward_pin
-      - output.turn_on: right_reverse_pin
-      - delay: 150ms
+          level: 0%
       - output.turn_off: left_forward_pin
       - output.turn_off: right_forward_pin
       - output.turn_off: left_reverse_pin
       - output.turn_off: right_reverse_pin
-      - output.set_level:
-          id: left_pwm
-          level: 0%
-      - output.set_level:
-          id: right_pwm
-          level: 0%
       - text_sensor.template.publish:
           id: motion_status
           state: "Stopped"
@@ -289,6 +296,12 @@ number:
     optimistic: true
 
 switch:
+  - platform: template
+    name: "Brake on stop"
+    id: brake_on_stop
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+    entity_category: config
   - platform: template
     name: "Forward"
     lambda: |-
