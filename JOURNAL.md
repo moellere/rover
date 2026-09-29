@@ -432,7 +432,20 @@ sudo, and the token-budget constraint.
   falling ~0.07 V/min while Stopped (cameras + boards only). Far too fast
   for idle load - suspect a weak cell or a pack not fully charged. Asked
   Enoch to power off and charge, and to read per-cell voltages first if
-  handy. Rover work paused until then.
+  handy.
+- **Enoch swapped in a different pack** (he has several). 30-min idle
+  log: 11.84 -> 11.62 V, ~0.007 V/min and flattening - ten times slower
+  than the old pack, so the old cells were the fault (11.7 V is only
+  ~70% charge; the drain implied ~0.2 Ah usable). Neither pack went in
+  at full charge (4.2 V/cell = 12.6 V).
+- The brake switch came back **on** after the pack swap: ESP8266 switch
+  state isn't persisted, so it fell to its RESTORE_DEFAULT_ON. Firmware
+  now boots it off (`ALWAYS_OFF`), flashed and confirmed.
+- Battery options discussed with Enoch (asked what's in inventory before
+  pricing anything): a 3S BMS on matched 18650s (per-cell protection the
+  pack-level 9.3 V guard can't give), an INA219 for current, matched cells
+  charged full. Skipped for Grover: RC LiPo, USB-C PD bank + trigger,
+  LiFePO4 - the Eufy carries the recharging mission.
 - **Near miss, backing up.** Enoch asked for a test reverse toward the bench
   camera. Done in 0.3 s pulses with the marker as odometry and a stop at a
   known-safe distance - but the caster flipping on direction change dragged

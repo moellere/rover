@@ -105,8 +105,8 @@ async def home_to_marker(marker_id: int = 0, stop_mm: float = 200.0, max_pulses:
 
 @mcp.tool()
 async def set_brake(on: bool) -> dict:
-    """Turn the firmware's brake-on-stop on (default) or off. Off only for A/B
-    tests - every stop path still stops, it just coasts."""
+    """Turn the firmware's brake-on-stop on or off (it boots off). Every stop
+    path still stops either way; off just coasts."""
     await RoverClient().set_switch("brake_on_stop", on)
     st = await RoverClient().state(timeout=3.0)
     return {"ok": st.brake_on_stop == on, "brake_on_stop": st.brake_on_stop}

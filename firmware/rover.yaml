@@ -66,7 +66,9 @@ globals:
 # momentum at cruise (coast alone was ~8 cm). Then everything releases so
 # nothing sits in a braked short. Every stop path uses this - watchdog,
 # disconnect, cliff, battery, the stop action. The "Brake on stop" switch
-# (default on) turns the brake phase off for A/B tests; the stop still happens.
+# gates the brake phase; it boots OFF (a 2026-09-29 A/B showed no measurable
+# effect on short pulses, and the ESP8266 doesn't persist switch state
+# across power cycles anyway). The stop itself always happens.
 # Pins go to brake before EN goes to 100%, so there is never a full-duty
 # instant in the old drive direction.
 script:
@@ -300,7 +302,7 @@ switch:
     name: "Brake on stop"
     id: brake_on_stop
     optimistic: true
-    restore_mode: RESTORE_DEFAULT_ON
+    restore_mode: ALWAYS_OFF
     entity_category: config
   - platform: template
     name: "Forward"

@@ -26,7 +26,7 @@ in place watching the workbench.
 | Wemos D1 Mini (ESP8266) | 1 | Main controller | Inventory | Installed |
 | L298N dual H-bridge module | 1 | Motor driver; its onboard regulator also supplies the D1 Mini's 5V (~0.5A rating) | Inventory | Installed |
 | MCP23008 I2C GPIO expander | 1 | Drives the L298N's 4 direction pins - added because the D1 Mini didn't have enough spare GPIO | Inventory | Installed |
-| 18650 Li-ion cell | 3 (wired 3S) | Power, ~12.6V full / ~9.0V empty | Inventory | Installed |
+| 18650 Li-ion cell | 3 (wired 3S) | Power, ~12.6V full / ~9.0V empty | Inventory | Installed - pack swapped 2026-09-29 (the first set drained ~0.07 V/min at idle: weak cells); no BMS yet, so charge the set together and full |
 | Resistor, 100kΩ + 27kΩ | 1 each | Battery-voltage divider: pack+ (L298N +12V terminal) -> junction -> A0, junction -> 27kΩ -> GND | Inventory | Installed - divider wired and calibrated (`multiply: 15.618`, reads 11.77V vs. a multimeter's 11.79V) |
 | ONVIF camera, Thingino firmware ("camv3") | 1 | Fixed overhead workbench vision (not rover-mounted) | Inventory | Installed |
 | Wyze Cam Pan v2, Thingino firmware ("fishcam") | 1 | `front` camera: across the bench, head-on view of the rover (since 2026-09-29) | Inventory | Installed |
