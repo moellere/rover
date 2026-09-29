@@ -61,6 +61,40 @@ globals:
 
 
 
+# Stop = brief dynamic brake, then coast. Both inputs of each L298N bridge
+# high with EN high shorts the motor winding; ~150 ms is enough to kill the
+# momentum at cruise (coast alone was ~8 cm). Then everything releases so
+# nothing sits in a braked short. Every stop path uses this - watchdog,
+# disconnect, cliff, battery, the stop action.
+script:
+  - id: motor_stop
+    mode: restart
+    then:
+      - output.set_level:
+          id: left_pwm
+          level: 100%
+      - output.set_level:
+          id: right_pwm
+          level: 100%
+      - output.turn_on: left_forward_pin
+      - output.turn_on: left_reverse_pin
+      - output.turn_on: right_forward_pin
+      - output.turn_on: right_reverse_pin
+      - delay: 150ms
+      - output.turn_off: left_forward_pin
+      - output.turn_off: right_forward_pin
+      - output.turn_off: left_reverse_pin
+      - output.turn_off: right_reverse_pin
+      - output.set_level:
+          id: left_pwm
+          level: 0%
+      - output.set_level:
+          id: right_pwm
+          level: 0%
+      - text_sensor.template.publish:
+          id: motion_status
+          state: "Stopped"
+
 interval:
   - interval: 200ms
     then:
@@ -69,16 +103,7 @@ interval:
             lambda: |-
               return (id(motion_status).state != "Stopped") && (millis() - id(last_command_ms) > 1500);
           then:
-            - output.set_level:
-                id: left_pwm
-                level: 0%
-            - output.set_level:
-                id: right_pwm
-                level: 0%
-            - output.turn_off: left_forward_pin
-            - output.turn_off: right_forward_pin
-            - output.turn_off: left_reverse_pin
-            - output.turn_off: right_reverse_pin
+            - script.execute: motor_stop
             - text_sensor.template.publish:
                 id: motion_status
                 state: "Stopped"
@@ -162,16 +187,7 @@ binary_sensor:
     on_press:
       - lambda: |-
           id(cliff_detected) = true;
-      - output.set_level:
-          id: left_pwm
-          level: 0%
-      - output.set_level:
-          id: right_pwm
-          level: 0%
-      - output.turn_off: left_forward_pin
-      - output.turn_off: right_forward_pin
-      - output.turn_off: left_reverse_pin
-      - output.turn_off: right_reverse_pin
+      - script.execute: motor_stop
       - text_sensor.template.publish:
           id: motion_status
           state: "Stopped (cliff)"
@@ -194,16 +210,7 @@ binary_sensor:
     on_press:
       - lambda: |-
           id(cliff_detected) = true;
-      - output.set_level:
-          id: left_pwm
-          level: 0%
-      - output.set_level:
-          id: right_pwm
-          level: 0%
-      - output.turn_off: left_forward_pin
-      - output.turn_off: right_forward_pin
-      - output.turn_off: left_reverse_pin
-      - output.turn_off: right_reverse_pin
+      - script.execute: motor_stop
       - text_sensor.template.publish:
           id: motion_status
           state: "Stopped (cliff)"
@@ -246,16 +253,7 @@ sensor:
         then:
           - lambda: |-
               id(battery_ok) = false;
-          - output.set_level:
-              id: left_pwm
-              level: 0%
-          - output.set_level:
-              id: right_pwm
-              level: 0%
-          - output.turn_off: left_forward_pin
-          - output.turn_off: right_forward_pin
-          - output.turn_off: left_reverse_pin
-          - output.turn_off: right_reverse_pin
+          - script.execute: motor_stop
           - text_sensor.template.publish:
               id: motion_status
               state: "Stopped (low battery)"
@@ -320,16 +318,7 @@ switch:
                 id: motion_status
                 state: "Forward"
     turn_off_action:
-      - output.set_level:
-          id: left_pwm
-          level: 0%
-      - output.set_level:
-          id: right_pwm
-          level: 0%
-      - output.turn_off: left_forward_pin
-      - output.turn_off: right_forward_pin
-      - output.turn_off: left_reverse_pin
-      - output.turn_off: right_reverse_pin
+      - script.execute: motor_stop
       - text_sensor.template.publish:
           id: motion_status
           state: "Stopped"
@@ -341,16 +330,7 @@ text_sensor:
 
 api:
   on_client_disconnected:
-    - output.set_level:
-        id: left_pwm
-        level: 0%
-    - output.set_level:
-        id: right_pwm
-        level: 0%
-    - output.turn_off: left_forward_pin
-    - output.turn_off: right_forward_pin
-    - output.turn_off: left_reverse_pin
-    - output.turn_off: right_reverse_pin
+    - script.execute: motor_stop
     - text_sensor.template.publish:
         id: motion_status
         state: "Stopped"
@@ -358,6 +338,7 @@ api:
   actions:
     - action: forward
       then:
+      - script.stop: motor_stop
       - lambda: |-
           id(last_command_ms) = millis();
       - if:
@@ -378,22 +359,14 @@ api:
                 id: motion_status
                 state: "Forward"
           else:
-            - output.set_level:
-                id: left_pwm
-                level: 0%
-            - output.set_level:
-                id: right_pwm
-                level: 0%
-            - output.turn_off: left_forward_pin
-            - output.turn_off: right_forward_pin
-            - output.turn_off: left_reverse_pin
-            - output.turn_off: right_reverse_pin
+            - script.execute: motor_stop
             - text_sensor.template.publish:
                 id: motion_status
                 state: "Stopped"
             - logger.log: "Forward blocked (cliff detected or low battery)"
     - action: backward
       then:
+      - script.stop: motor_stop
       - lambda: |-
           id(last_command_ms) = millis();
       - if:
@@ -414,22 +387,14 @@ api:
                 id: motion_status
                 state: "Backward"
           else:
-            - output.set_level:
-                id: left_pwm
-                level: 0%
-            - output.set_level:
-                id: right_pwm
-                level: 0%
-            - output.turn_off: left_forward_pin
-            - output.turn_off: right_forward_pin
-            - output.turn_off: left_reverse_pin
-            - output.turn_off: right_reverse_pin
+            - script.execute: motor_stop
             - text_sensor.template.publish:
                 id: motion_status
                 state: "Stopped"
             - logger.log: "Backward blocked (low battery)"
     - action: left
       then:
+      - script.stop: motor_stop
       - lambda: |-
           id(last_command_ms) = millis();
       - if:
@@ -450,22 +415,14 @@ api:
                 id: motion_status
                 state: "Left"
           else:
-            - output.set_level:
-                id: left_pwm
-                level: 0%
-            - output.set_level:
-                id: right_pwm
-                level: 0%
-            - output.turn_off: left_forward_pin
-            - output.turn_off: right_forward_pin
-            - output.turn_off: left_reverse_pin
-            - output.turn_off: right_reverse_pin
+            - script.execute: motor_stop
             - text_sensor.template.publish:
                 id: motion_status
                 state: "Stopped"
             - logger.log: "Left blocked (cliff detected or low battery)"
     - action: right
       then:
+      - script.stop: motor_stop
       - lambda: |-
           id(last_command_ms) = millis();
       - if:
@@ -486,32 +443,14 @@ api:
                 id: motion_status
                 state: "Right"
           else:
-            - output.set_level:
-                id: left_pwm
-                level: 0%
-            - output.set_level:
-                id: right_pwm
-                level: 0%
-            - output.turn_off: left_forward_pin
-            - output.turn_off: right_forward_pin
-            - output.turn_off: left_reverse_pin
-            - output.turn_off: right_reverse_pin
+            - script.execute: motor_stop
             - text_sensor.template.publish:
                 id: motion_status
                 state: "Stopped"
             - logger.log: "Right blocked (cliff detected or low battery)"
     - action: stop
       then:
-      - output.set_level:
-          id: left_pwm
-          level: 0%
-      - output.set_level:
-          id: right_pwm
-          level: 0%
-      - output.turn_off: left_forward_pin
-      - output.turn_off: right_forward_pin
-      - output.turn_off: left_reverse_pin
-      - output.turn_off: right_reverse_pin
+      - script.execute: motor_stop
       - text_sensor.template.publish:
           id: motion_status
           state: "Stopped"
