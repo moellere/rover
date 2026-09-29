@@ -428,6 +428,11 @@ sudo, and the token-budget constraint.
   retry) and 0 of 2 coasting ones - too few to call, but with no benefit
   shown the brake is left **off**. Retest at cruise when there's room.
   Rover left at 448 mm from the marker.
+- **Pack draining fast at idle:** 11.7 V at ~09:20 -> 9.67 V at 09:45,
+  falling ~0.07 V/min while Stopped (cameras + boards only). Far too fast
+  for idle load - suspect a weak cell or a pack not fully charged. Asked
+  Enoch to power off and charge, and to read per-cell voltages first if
+  handy. Rover work paused until then.
 - **Near miss, backing up.** Enoch asked for a test reverse toward the bench
   camera. Done in 0.3 s pulses with the marker as odometry and a stop at a
   known-safe distance - but the caster flipping on direction change dragged
