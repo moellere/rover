@@ -71,12 +71,16 @@ module part() {
     translate([plate_w / 2, plate_t + pcb_hole_in, shelf_bot_z - boss_h]) cylinder(d = boss_d, h = boss_h);
     translate([plate_w / 2, plate_t + pcb_hole_in, shelf_bot_z - boss_h - 1]) cylinder(d = pcb_hole_d, h = boss_h + 2);
   }
-  // side ribs: thin walls along both PCB edges from the rear end to 4 mm
-  // past the screw, so the board can't pivot on its single screw (v2 -
-  // Enoch's fit check of v1, whose ribs stopped short of the hole)
+  // side ribs: thin walls either side of the PCB, from the rear end to 4 mm
+  // past the screw, and reaching DOWN past the board (boss + PCB + 2 mm)
+  // so they bracket its edges - that is what stops it pivoting on its one
+  // screw. v1/v2 ribs were only boss-high and never reached the edges
+  // (Enoch's fit checks, 2026-10-03).
   rib_l = pcb_hole_in + 4;
-  translate([plate_w / 2 - pcb_w / 2 - 1.5, plate_t, shelf_bot_z - boss_h]) cube([1.5, rib_l, boss_h]);
-  translate([plate_w / 2 + pcb_w / 2, plate_t, shelf_bot_z - boss_h]) cube([1.5, rib_l, boss_h]);
+  rib_h = boss_h + pcb_t + 2;
+  rib_gap = 0.3;
+  translate([plate_w / 2 - pcb_w / 2 - rib_gap - 1.5, plate_t, shelf_bot_z - rib_h]) cube([1.5, rib_l, rib_h]);
+  translate([plate_w / 2 + pcb_w / 2 + rib_gap, plate_t, shelf_bot_z - rib_h]) cube([1.5, rib_l, rib_h]);
 }
 
 module pcb_ghost() {
