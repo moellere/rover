@@ -548,7 +548,14 @@ in his hands.
   sideways at pulse start) still worth a look.
 - redcam came back on a new DHCP address; `~/.rover-brain.env` updated.
 - Enoch: the IR node's ESP32 devkit is to become the new spinal cord
-  (3.4d) - IR work stops; the port starts next.
+  (3.4d) - IR work stops. **Port done and compiled** (`rover32.yaml`,
+  esp-idf): MCP23008 on bus_a (GPIO21/22), TFMini on its own bus_b
+  (GPIO25/26, 100 kHz, 20 ms timeout), PWM on GPIO16/17 (ledc), battery
+  divider straight into GPIO34 (12 dB attenuation, x4.704 - needs
+  calibrating against a meter; the D1 Mini had an extra onboard divider).
+  Device name `rover32` so both boards can coexist during the swap. First
+  flash by USB from the HA ESPHome dashboard, then OTA. Wiring moves
+  listed in README/BOM.
 - **Lesson/risk:** on a shared bus a stuck TFMini takes the MCP23008
   (motor direction pins, cliff inputs) with it. Decision: move the spinal
   cord to an ESP32 (two hardware I2C controllers -> TFMini on its own

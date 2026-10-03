@@ -1,0 +1,556 @@
+# Reference copy - the canonical, live-flashed version of this file lives in a
+# private homelab ESPHome config repo (which is where `!include common/...` and
+# `!secret api_key` actually resolve from). This copy won't compile standalone;
+# it's here for history/documentation of the rover project.
+substitutions:
+  devicename: rover
+
+esp8266:
+  board: d1_mini
+  
+esphome:
+  name: $devicename
+  on_boot:
+      - output.set_level:
+          id: left_pwm
+          level: 0%
+      - output.set_level:
+          id: right_pwm
+          level: 0%
+      - output.turn_off: left_forward_pin
+      - output.turn_off: right_forward_pin
+      - output.turn_off: left_reverse_pin
+      - output.turn_off: right_reverse_pin
+
+<<: !include common/base.yaml
+<<: !include common/sensor.yaml
+
+
+time:
+  - platform: homeassistant
+    id: homeassistant_time
+
+globals:
+  - id: last_command_ms
+    type: uint32_t
+    restore_value: no
+    initial_value: '0'
+  - id: cliff_detected
+    type: bool
+    restore_value: no
+    initial_value: 'false'
+  - id: battery_ok
+    type: bool
+    restore_value: no
+    initial_value: 'true'
+  # TFMini forward LiDAR: true while something is inside the "Obstacle stop"
+  # distance. Holds its last state through invalid frames, because the
+  # TFMini goes invalid under 30 cm - an object that crossed the threshold
+  # and kept coming must not clear the guard by getting too close to see.
+  - id: obstacle_ahead
+    type: bool
+    restore_value: no
+    initial_value: 'false'
+  - id: tfmini_errors
+    type: int
+    restore_value: no
+    initial_value: '0'
+
+# Pin map for awning
+#D0: 
+#D1: SCL - MCP23008 Pin 1
+#D2: SDA - MCP23008 Pin 2
+#D5: left_pwm
+#D6: right_pwm
+#MCP0: Connected to L298N IN1
+#MCP1: Connected to L298N IN2 
+#MCP2: Connected to L298N IN3
+#MCP3: Connected to L298N IN4
+#MCP4:
+#MCP5: 
+#MCP6: 
+#MCP7: 
+
+
+
+# Stop = brief dynamic brake, then coast. Both inputs of each L298N bridge
+# high with EN high shorts the motor winding; ~150 ms is enough to kill the
+# momentum at cruise (coast alone was ~8 cm). Then everything releases so
+# nothing sits in a braked short. Every stop path uses this - watchdog,
+# disconnect, cliff, battery, the stop action. The "Brake on stop" switch
+# gates the brake phase; it boots OFF (a 2026-09-29 A/B showed no measurable
+# effect on short pulses, and the ESP8266 doesn't persist switch state
+# across power cycles anyway). The stop itself always happens.
+# Pins go to brake before EN goes to 100%, so there is never a full-duty
+# instant in the old drive direction.
+script:
+  - id: motor_stop
+    mode: restart
+    then:
+      - if:
+          condition:
+            switch.is_on: brake_on_stop
+          then:
+            - output.turn_on: left_forward_pin
+            - output.turn_on: left_reverse_pin
+            - output.turn_on: right_forward_pin
+            - output.turn_on: right_reverse_pin
+            - output.set_level:
+                id: left_pwm
+                level: 100%
+            - output.set_level:
+                id: right_pwm
+                level: 100%
+            - delay: 150ms
+      - output.set_level:
+          id: left_pwm
+          level: 0%
+      - output.set_level:
+          id: right_pwm
+          level: 0%
+      - output.turn_off: left_forward_pin
+      - output.turn_off: right_forward_pin
+      - output.turn_off: left_reverse_pin
+      - output.turn_off: right_reverse_pin
+      - text_sensor.template.publish:
+          id: motion_status
+          state: "Stopped"
+
+interval:
+  # TFMini (SparkFun Qwiic, I2C 0x10, shares the bus with the MCP23008):
+  # write 01 02 07, read 7 bytes [valid, -, dist cm LE, strength LE, mode].
+  # With the guard enabled, a missing sensor (5 failed reads) counts as an
+  # obstacle - fail safe, forward refused - rather than as a clear lane.
+  - interval: 100ms
+    then:
+      - lambda: |-
+          const uint8_t cmd[3] = {0x01, 0x02, 0x07};
+          uint8_t buf[7] = {0};
+          const float thr = id(obstacle_stop_cm).state;
+          if (id(bus_a).write(0x10, cmd, 3) != i2c::ERROR_OK ||
+              id(bus_a).read(0x10, buf, 7) != i2c::ERROR_OK) {
+            if (++id(tfmini_errors) == 5) {
+              ESP_LOGW("tfmini", "no response at 0x10");
+              id(front_range).publish_state(NAN);
+            }
+            if (id(tfmini_errors) >= 5) id(obstacle_ahead) = thr > 0;
+            return;
+          }
+          id(tfmini_errors) = 0;
+          if (buf[0] != 0x01) {
+            id(front_range_valid).publish_state(false);
+            return;  // too close (<30 cm), no return, or weak: hold state
+          }
+          const float cm = buf[2] | (uint16_t(buf[3]) << 8);
+          const float strength = buf[4] | (uint16_t(buf[5]) << 8);
+          id(front_range_valid).publish_state(true);
+          id(front_range).publish_state(cm);
+          id(front_range_strength).publish_state(strength);
+          id(obstacle_ahead) = thr > 0 && cm < thr;
+      - if:
+          condition:
+            lambda: 'return id(obstacle_ahead) && id(motion_status).state == "Forward";'
+          then:
+            - script.execute: motor_stop
+            - text_sensor.template.publish:
+                id: motion_status
+                state: "Stopped (obstacle)"
+            - logger.log: "Obstacle ahead inside the stop distance, stopping"
+  - interval: 200ms
+    then:
+      - if:
+          condition:
+            lambda: |-
+              return (id(motion_status).state != "Stopped") && (millis() - id(last_command_ms) > 1500);
+          then:
+            - script.execute: motor_stop
+            - text_sensor.template.publish:
+                id: motion_status
+                state: "Stopped"
+            - logger.log: "Watchdog: no command refresh in 1.5s, stopping motors"
+
+i2c:
+  id: bus_a
+  sda: D2
+  scl: D1
+  scan: True
+
+# Example configuration entry
+mcp23008:
+  - id: 'mcp23008_hub'
+    address: 0x20
+
+output:
+  # Trike build (2026-09-29): the motors sit on the opposite sides, facing the
+  # opposite way, compared with the tank build. Electrically that is a swap of
+  # channels AND polarity, so the "left" outputs below drive L298N channel B
+  # in what the board calls reverse, and vice versa. Pivots were already
+  # correct on the trike; forward/backward were inverted - this fixes that.
+  - platform: esp8266_pwm
+    pin: D6
+    frequency: 1000 Hz
+    id: left_pwm
+  - platform: esp8266_pwm
+    pin: D5
+    frequency: 1000 Hz
+    id: right_pwm
+  - platform: gpio
+    id: left_forward_pin
+    pin:
+      mcp23xxx: mcp23008_hub
+      number: 3
+      mode:
+        output: true
+      inverted: false
+  - platform: gpio
+    id: left_reverse_pin
+    pin:
+      mcp23xxx: mcp23008_hub
+      number: 2
+      mode:
+        output: true
+      inverted: false
+  - platform: gpio
+    id: right_forward_pin
+    pin:
+      mcp23xxx: mcp23008_hub
+      number: 1
+      mode:
+        output: true
+      inverted: false
+  - platform: gpio
+    id: right_reverse_pin
+    pin:
+      mcp23xxx: mcp23008_hub
+      number: 0
+      mode:
+        output: true
+      inverted: false
+
+# Downward-facing IR reflectance ("cliff") sensors on the free MCP23008 pins.
+# Wiring: VCC/GND + digital OUT of each IR module -> MCP4 (front-left), MCP5 (front-right).
+# `inverted: false` assumes the module drives OUT low when it sees a close reflective
+# surface (floor/bench) and high when there's nothing to reflect off (edge/drop-off) -
+# verify against the actual module datasheet once wired and flip `inverted` if backwards.
+binary_sensor:
+  - platform: template
+    name: "Front range valid"
+    id: front_range_valid
+  - platform: gpio
+    name: "Front Left Cliff"
+    id: front_left_cliff
+    device_class: safety
+    pin:
+      mcp23xxx: mcp23008_hub
+      number: 4
+      mode:
+        input: true
+      inverted: false
+    filters:
+      - delayed_on_off: 50ms
+    on_press:
+      - lambda: |-
+          id(cliff_detected) = true;
+      - script.execute: motor_stop
+      - text_sensor.template.publish:
+          id: motion_status
+          state: "Stopped (cliff)"
+      - logger.log: "Cliff detected (front-left), emergency stop"
+    on_release:
+      - lambda: |-
+          id(cliff_detected) = id(front_left_cliff).state || id(front_right_cliff).state;
+  - platform: gpio
+    name: "Front Right Cliff"
+    id: front_right_cliff
+    device_class: safety
+    pin:
+      mcp23xxx: mcp23008_hub
+      number: 5
+      mode:
+        input: true
+      inverted: false
+    filters:
+      - delayed_on_off: 50ms
+    on_press:
+      - lambda: |-
+          id(cliff_detected) = true;
+      - script.execute: motor_stop
+      - text_sensor.template.publish:
+          id: motion_status
+          state: "Stopped (cliff)"
+      - logger.log: "Cliff detected (front-right), emergency stop"
+    on_release:
+      - lambda: |-
+          id(cliff_detected) = id(front_left_cliff).state || id(front_right_cliff).state;
+
+# Battery voltage: 3S 18650 pack (~12.6V full, ~9.0V empty) through an external divider
+# into A0. A0 on the D1 mini already has an onboard divider extending it to ~0-3.2V;
+# add your OWN divider from pack+ -> A0 -> GND with R_top=100k, R_bottom=27k (scales
+# 12.6V down to ~2.7V, safely under the board's ~3.2V max). The `multiply: 15.0` below
+# is a starting estimate for the combined ratio of both dividers - calibrate it against
+# a multimeter reading once wired (adjust the constant so the reported voltage matches).
+sensor:
+  # NOTE: this file's top-level `sensor:` replaces (not merges with) the one pulled in
+  # via `<<: !include common/sensor.yaml` above (that's a raw YAML merge-key, not
+  # ESPHome `packages:`, so same-key blocks don't combine) - the uptime/wifi_signal
+  # entries are duplicated here so they aren't lost.
+  - platform: uptime
+    name: ${devicename} Uptime
+  - platform: wifi_signal
+    name: ${devicename} WiFi Signal
+    update_interval: 60s
+  - platform: template
+    name: "Front range"
+    id: front_range
+    unit_of_measurement: "cm"
+    device_class: distance
+    state_class: measurement
+    accuracy_decimals: 0
+    filters:
+      - or:
+          - delta: 2
+          - throttle: 10s
+  - platform: template
+    name: "Front range strength"
+    id: front_range_strength
+    state_class: measurement
+    accuracy_decimals: 0
+    filters:
+      - throttle_average: 5s
+  - platform: adc
+    pin: A0
+    name: "Battery Voltage"
+    id: battery_voltage
+    update_interval: 30s
+    filters:
+      # Calibrated 2026-09-27: multiply:15.0 reported 11.3232V while a
+      # multimeter read 11.79V across the pack. Corrected factor:
+      # 11.79 / (11.3232 / 15.0) = 15.618
+      - multiply: 15.618
+      - sliding_window_moving_average:
+          window_size: 5
+          send_every: 5
+    on_value_range:
+      - below: 9.3
+        then:
+          - lambda: |-
+              id(battery_ok) = false;
+          - script.execute: motor_stop
+          - text_sensor.template.publish:
+              id: motion_status
+              state: "Stopped (low battery)"
+          - logger.log: "Battery critical, disabling drive"
+      - above: 9.6
+        then:
+          - lambda: |-
+              id(battery_ok) = true;
+
+# Motor duty, adjustable live over the API so the brain can tune without a
+# reflash. The trike pivots ~30 deg per 0.1 s at 100%; 50% is the starting
+# point. Values survive reboots.
+number:
+  # 0 = guard off. Boots off until the TFMini is mounted and verified; the
+  # brain lowers it for the last part of a docking approach.
+  - platform: template
+    name: "Obstacle stop"
+    id: obstacle_stop_cm
+    unit_of_measurement: "cm"
+    min_value: 0
+    max_value: 200
+    step: 5
+    initial_value: 0
+    optimistic: true
+    entity_category: config
+  - platform: template
+    name: "Drive duty"
+    id: drive_duty
+    unit_of_measurement: "%"
+    min_value: 20
+    max_value: 100
+    step: 5
+    initial_value: 75
+    restore_value: true
+    optimistic: true
+  - platform: template
+    name: "Pivot duty"
+    id: pivot_duty
+    unit_of_measurement: "%"
+    min_value: 20
+    max_value: 100
+    step: 5
+    initial_value: 50
+    restore_value: true
+    optimistic: true
+
+switch:
+  - platform: template
+    name: "Brake on stop"
+    id: brake_on_stop
+    optimistic: true
+    restore_mode: ALWAYS_OFF
+    entity_category: config
+  - platform: template
+    name: "Forward"
+    lambda: |-
+      if (id(motion_status).state == "Forward") {
+        return true;
+      } else {
+        return false;
+      }
+    turn_on_action:
+      - lambda: |-
+          id(last_command_ms) = millis();
+      - if:
+          condition:
+            lambda: 'return id(battery_ok) && !id(cliff_detected) && !id(obstacle_ahead);'
+          then:
+            - output.set_level:
+                id: left_pwm
+                level: !lambda 'return id(drive_duty).state / 100.0;'
+            - output.set_level:
+                id: right_pwm
+                level: !lambda 'return id(drive_duty).state / 100.0;'
+            - output.turn_on: left_forward_pin
+            - output.turn_on: right_forward_pin
+            - output.turn_off: left_reverse_pin
+            - output.turn_off: right_reverse_pin
+            - text_sensor.template.publish:
+                id: motion_status
+                state: "Forward"
+    turn_off_action:
+      - script.execute: motor_stop
+      - text_sensor.template.publish:
+          id: motion_status
+          state: "Stopped"
+
+text_sensor:
+  - platform: template
+    name: "Motion"
+    id: motion_status
+
+api:
+  on_client_disconnected:
+    - script.execute: motor_stop
+    - text_sensor.template.publish:
+        id: motion_status
+        state: "Stopped"
+    - logger.log: "API client disconnected, stopping motors"
+  actions:
+    - action: forward
+      then:
+      - script.stop: motor_stop
+      - lambda: |-
+          id(last_command_ms) = millis();
+      - if:
+          condition:
+            lambda: 'return id(battery_ok) && !id(cliff_detected) && !id(obstacle_ahead);'
+          then:
+            - output.set_level:
+                id: left_pwm
+                level: !lambda 'return id(drive_duty).state / 100.0;'
+            - output.set_level:
+                id: right_pwm
+                level: !lambda 'return id(drive_duty).state / 100.0;'
+            - output.turn_on: left_forward_pin
+            - output.turn_on: right_forward_pin
+            - output.turn_off: left_reverse_pin
+            - output.turn_off: right_reverse_pin
+            - text_sensor.template.publish:
+                id: motion_status
+                state: "Forward"
+          else:
+            - script.execute: motor_stop
+            - text_sensor.template.publish:
+                id: motion_status
+                state: "Stopped"
+            - logger.log: "Forward blocked (cliff, obstacle or low battery)"
+    - action: backward
+      then:
+      - script.stop: motor_stop
+      - lambda: |-
+          id(last_command_ms) = millis();
+      - if:
+          condition:
+            lambda: 'return id(battery_ok);'
+          then:
+            - output.set_level:
+                id: left_pwm
+                level: !lambda 'return id(drive_duty).state / 100.0;'
+            - output.set_level:
+                id: right_pwm
+                level: !lambda 'return id(drive_duty).state / 100.0;'
+            - output.turn_off: left_forward_pin
+            - output.turn_off: right_forward_pin
+            - output.turn_on: left_reverse_pin
+            - output.turn_on: right_reverse_pin
+            - text_sensor.template.publish:
+                id: motion_status
+                state: "Backward"
+          else:
+            - script.execute: motor_stop
+            - text_sensor.template.publish:
+                id: motion_status
+                state: "Stopped"
+            - logger.log: "Backward blocked (low battery)"
+    - action: left
+      then:
+      - script.stop: motor_stop
+      - lambda: |-
+          id(last_command_ms) = millis();
+      - if:
+          condition:
+            lambda: 'return id(battery_ok) && !id(cliff_detected);'
+          then:
+            - output.set_level:
+                id: left_pwm
+                level: !lambda 'return id(pivot_duty).state / 100.0;'
+            - output.set_level:
+                id: right_pwm
+                level: !lambda 'return id(pivot_duty).state / 100.0;'
+            - output.turn_off: left_forward_pin
+            - output.turn_on: right_forward_pin
+            - output.turn_on: left_reverse_pin
+            - output.turn_off: right_reverse_pin
+            - text_sensor.template.publish:
+                id: motion_status
+                state: "Left"
+          else:
+            - script.execute: motor_stop
+            - text_sensor.template.publish:
+                id: motion_status
+                state: "Stopped"
+            - logger.log: "Left blocked (cliff detected or low battery)"
+    - action: right
+      then:
+      - script.stop: motor_stop
+      - lambda: |-
+          id(last_command_ms) = millis();
+      - if:
+          condition:
+            lambda: 'return id(battery_ok) && !id(cliff_detected);'
+          then:
+            - output.set_level:
+                id: left_pwm
+                level: !lambda 'return id(pivot_duty).state / 100.0;'
+            - output.set_level:
+                id: right_pwm
+                level: !lambda 'return id(pivot_duty).state / 100.0;'
+            - output.turn_on: left_forward_pin
+            - output.turn_off: right_forward_pin
+            - output.turn_off: left_reverse_pin
+            - output.turn_on: right_reverse_pin
+            - text_sensor.template.publish:
+                id: motion_status
+                state: "Right"
+          else:
+            - script.execute: motor_stop
+            - text_sensor.template.publish:
+                id: motion_status
+                state: "Stopped"
+            - logger.log: "Right blocked (cliff detected or low battery)"
+    - action: stop
+      then:
+      - script.execute: motor_stop
+      - text_sensor.template.publish:
+          id: motion_status
+          state: "Stopped"
