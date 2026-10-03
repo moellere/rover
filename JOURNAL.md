@@ -533,9 +533,12 @@ in his hands.
   35; `home_to_marker` relaxes it to 0 once the camera has the marker
   inside 35 cm (camera owns the last stretch) and restores it on exit,
   and reports "obstacle ahead at N cm" instead of grinding on a refusal.
-- **Oddity:** three "forward" pulses turned Grover ~90 deg left. The left
-  wheel is moving much less than the right - check its motor connector
-  after the power rework before the next run.
+- The ~90 deg left swing over three "forward" pulses was **not** the
+  motors: both ran fine lifted (10 s test), and a repeat on the bench
+  showed two straight pulses then a swing when, as Enoch saw, a wheel
+  clipped an obstruction on the bench. The TFMini can't see low or
+  off-axis objects (2.3 deg beam at ~5 cm height) - the lane check on the
+  cameras stays mandatory.
 - **Lesson/risk:** on a shared bus a stuck TFMini takes the MCP23008
   (motor direction pins, cliff inputs) with it. Decision: move the spinal
   cord to an ESP32 (two hardware I2C controllers -> TFMini on its own
