@@ -248,6 +248,9 @@ binary_sensor:
   - platform: template
     name: "Front range valid"
     id: front_range_valid
+    filters:
+      # at 10 Hz the odd read comes back not-ready even on a steady target
+      - delayed_off: 400ms
   - platform: gpio
     name: "Front Left Cliff"
     id: front_left_cliff
@@ -361,8 +364,10 @@ sensor:
 # reflash. The trike pivots ~30 deg per 0.1 s at 100%; 50% is the starting
 # point. Values survive reboots.
 number:
-  # 0 = guard off. Boots off until the TFMini is mounted and verified; the
-  # brain lowers it for the last part of a docking approach.
+  # 0 = guard off. Boots at 35 cm (verified 2026-10-03: forward refused and
+  # a forward move cut once the range dropped under it). The TFMini goes
+  # invalid under 30 cm, so 35 is about as close as the guard can act; the
+  # brain lowers it for the last part of a homing/docking approach.
   - platform: template
     name: "Obstacle stop"
     id: obstacle_stop_cm
@@ -370,7 +375,7 @@ number:
     min_value: 0
     max_value: 200
     step: 5
-    initial_value: 0
+    initial_value: 35
     optimistic: true
     entity_category: config
   - platform: template

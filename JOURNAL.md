@@ -525,7 +525,17 @@ in his hands.
   limit; the ESP8266 default is 230 us). Each try needed Enoch to
   power-cycle the rover because an OTA reboot doesn't reset the sensor.
 - Result: reads in ~2 ms, valid frames, 77 cm at strength ~434 on the
-  bench. Back to 10 Hz; guard still boots off.
+  bench. Back to 10 Hz. The sensor was already in the printed bracket
+  (fits; centred, level). **Calibration: 78 cm by TFMini vs 77 cm by
+  tape to the marker** - within spec, no correction.
+- **Guard verified:** set 35 cm, pulsed forward; at 30 cm the firmware
+  logged "Forward blocked" and the motors stayed off. Guard now boots at
+  35; `home_to_marker` relaxes it to 0 once the camera has the marker
+  inside 35 cm (camera owns the last stretch) and restores it on exit,
+  and reports "obstacle ahead at N cm" instead of grinding on a refusal.
+- **Oddity:** three "forward" pulses turned Grover ~90 deg left. The left
+  wheel is moving much less than the right - check its motor connector
+  after the power rework before the next run.
 - **Lesson/risk:** on a shared bus a stuck TFMini takes the MCP23008
   (motor direction pins, cliff inputs) with it. Decision: move the spinal
   cord to an ESP32 (two hardware I2C controllers -> TFMini on its own

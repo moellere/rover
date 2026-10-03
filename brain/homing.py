@@ -99,6 +99,11 @@ async def home_to_marker(marker_id: int = 0, camera: str = "rover",
     prev_dir: str | None = None
     stuck = 0
     prev_obs: tuple[float, float | None] | None = None
+    # The firmware's TFMini guard (Obstacle stop, cm) refuses forward inside
+    # its distance - normally 35 cm, which is inside STOP_MM. Once the camera
+    # has the marker closer than that, the camera is the range sensor for the
+    # rest of the approach: relax the guard, and put it back when we leave.
+    guard_saved: float | None = None
     t0 = time.monotonic()
     try:
         while pulses < max_pulses:
@@ -155,6 +160,16 @@ async def home_to_marker(marker_id: int = 0, camera: str = "rover",
             if st.front_left_cliff or st.front_right_cliff:
                 await client.stop()
                 return HomingResult(False, "cliff sensor active", pulses, m.bearing_deg, m.distance_mm, log)
+            guard_cm = st.obstacle_stop_cm or 0.0
+            if guard_cm > 0 and m.distance_mm is not None and m.distance_mm < guard_cm * 10:
+                guard_saved = guard_cm
+                await client.set_number("obstacle_stop", 0)
+                log[-1]["guard"] = "relaxed"
+            elif guard_cm > 0 and st.front_range_valid and st.front_range_cm is not None \
+                    and st.front_range_cm < guard_cm:
+                await client.stop()
+                return HomingResult(False, f"obstacle ahead at {st.front_range_cm:.0f} cm", pulses,
+                                    m.bearing_deg, m.distance_mm, log)
 
             if abs(m.bearing_deg) > CENTER_DEG:
                 # + bearing = marker is right of centre -> pivot right
@@ -188,6 +203,12 @@ async def home_to_marker(marker_id: int = 0, camera: str = "rover",
             pass
         return HomingResult(False, f"error: {e}", pulses,
                             last.bearing_deg if last else None, last.distance_mm if last else None, log)
+    finally:
+        if guard_saved:
+            try:
+                await client.set_number("obstacle_stop", guard_saved)
+            except Exception:
+                pass
 
 
 if __name__ == "__main__":

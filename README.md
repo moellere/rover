@@ -33,7 +33,8 @@ instructions, and readable as plain English by anyone.
 - **Camera rides on the rover** in a printed cradle bolted to the chassis
   via a printed adapter strip.
 - Firmware guards: command watchdog, disconnect-stop, low-battery refusal,
-  cliff-sensor refusal (sensors on order), optional brake-on-stop.
+  cliff-sensor refusal (sensors on order), TFMini obstacle stop (35 cm,
+  since 2026-10-03), optional brake-on-stop.
 - Known hazard: no rear cliff sensors, and reversing a trike is
   unpredictable (the caster flips) - one wheel went over the edge on
   2026-09-29. See the reversing rule in `CLAUDE.md`.
