@@ -10,7 +10,7 @@
 # Pin map (ESP32 devkit, "esp32dev"):
 #   GPIO25 SDA / GPIO26 SCL  bus_b: TFMini (0x10) - the only I2C device
 #   GPIO16  left EN (PWM)    GPIO17  right EN (PWM)        -> L298N ENA/ENB
-#   GPIO18/19  left IN1/IN2   GPIO23/27  right IN1/IN2     -> L298N direction
+#   GPIO18/19  left IN1/IN2   GPIO23/22  right IN1/IN2     -> L298N direction
 #   GPIO35 / GPIO32  front-left / front-right cliff (35 is input-only)
 #   GPIO33 / GPIO13  reserved: rear cliff sensors
 #   GPIO34  battery divider (ADC1, input-only; no onboard divider on this
@@ -223,7 +223,7 @@ output:
     pin: GPIO23
   - platform: gpio
     id: right_reverse_pin
-    pin: GPIO27
+    pin: GPIO22
 
 # Downward-facing IR reflectance ("cliff") sensors on the free MCP23008 pins.
 # Wiring: VCC/GND + digital OUT of each IR module -> MCP4 (front-left), MCP5 (front-right).
