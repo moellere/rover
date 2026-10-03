@@ -319,9 +319,10 @@ sensor:
     id: battery_voltage
     update_interval: 30s
     filters:
-      # External divider only (100k top / 27k bottom): (100+27)/27 = 4.704.
-      # CALIBRATE against a multimeter on first power-up, as on the D1 Mini.
-      - multiply: 4.704
+      # External divider only (100k top / 27k bottom): nominal 4.704.
+      # Calibrated 2026-10-03: 4.704 reported 12.002 V with the meter at
+      # 11.90 V across the pack -> 4.704 * 11.90 / 12.002 = 4.664.
+      - multiply: 4.664
       - sliding_window_moving_average:
           window_size: 5
           send_every: 5
