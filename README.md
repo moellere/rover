@@ -75,7 +75,7 @@ settle, look again - talking to the rover over ESPHome's native API.
 - **Firmware:** ESPHome (`firmware/rover.yaml`, `firmware/eufy-ir.yaml` -
   reference copies; the live configs with secrets are in a private repo).
   Custom services `forward`/`backward`/`left`/`right`/`stop`; `Drive duty`
-  and `Pivot duty` sliders for live tuning; a `Brake on stop` switch.
+  `Pivot duty` and `Left trim` (+6 %, calibrated) sliders; a `Brake on stop` switch; `Obstacle stop` distance (35 cm).
 - **Brain:** `brain/` - MCP tools `status`, `snapshot(bench|front|rover)`, `set_brake`,
   `drive` (capped at 1 s, refused on low battery or cliff), `find_marker`,
   `home_to_marker`, `stop`. Install with `scripts/install-brain.sh`; details

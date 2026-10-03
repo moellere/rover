@@ -378,6 +378,20 @@ number:
     initial_value: 35
     optimistic: true
     entity_category: config
+  # Per-side balance for straight driving: scales the LEFT motor's duty on
+  # forward/backward (pivots untouched). + = more left. Calibrated
+  # 2026-10-03 on the bench with fishcam: 0 -> ~7 deg/pulse left,
+  # +10 -> ~5 deg/pulse right, +6 -> straight over 3 pulses.
+  - platform: template
+    name: "Left trim"
+    id: left_trim
+    unit_of_measurement: "%"
+    min_value: -30
+    max_value: 30
+    step: 1
+    initial_value: 6
+    optimistic: true
+    entity_category: config
   - platform: template
     name: "Drive duty"
     id: drive_duty
@@ -423,7 +437,7 @@ switch:
           then:
             - output.set_level:
                 id: left_pwm
-                level: !lambda 'return id(drive_duty).state / 100.0;'
+                level: !lambda 'return std::min(1.0f, id(drive_duty).state / 100.0f * (1.0f + id(left_trim).state / 100.0f));'
             - output.set_level:
                 id: right_pwm
                 level: !lambda 'return id(drive_duty).state / 100.0;'
@@ -464,7 +478,7 @@ api:
           then:
             - output.set_level:
                 id: left_pwm
-                level: !lambda 'return id(drive_duty).state / 100.0;'
+                level: !lambda 'return std::min(1.0f, id(drive_duty).state / 100.0f * (1.0f + id(left_trim).state / 100.0f));'
             - output.set_level:
                 id: right_pwm
                 level: !lambda 'return id(drive_duty).state / 100.0;'
@@ -492,7 +506,7 @@ api:
           then:
             - output.set_level:
                 id: left_pwm
-                level: !lambda 'return id(drive_duty).state / 100.0;'
+                level: !lambda 'return std::min(1.0f, id(drive_duty).state / 100.0f * (1.0f + id(left_trim).state / 100.0f));'
             - output.set_level:
                 id: right_pwm
                 level: !lambda 'return id(drive_duty).state / 100.0;'

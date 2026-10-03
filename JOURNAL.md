@@ -539,6 +539,16 @@ in his hands.
   clipped an obstruction on the bench. The TFMini can't see low or
   off-axis objects (2.3 deg beam at ~5 cm height) - the lane check on the
   cameras stays mandatory.
+- ...but a slight real drift remained (Enoch), and a later run swung
+  hard left at the start of a pulse. Added a **Left trim** number
+  (scales the left motor's duty on forward/backward) and calibrated it
+  on fishcam: 0 -> ~7 deg/pulse left, +10 -> ~5 deg/pulse right, **+6
+  -> straight** over three pulses; now the firmware default. Mechanical
+  suspects for the hard swings (left wheel set screw, caster sitting
+  sideways at pulse start) still worth a look.
+- redcam came back on a new DHCP address; `~/.rover-brain.env` updated.
+- Enoch: the IR node's ESP32 devkit is to become the new spinal cord
+  (3.4d) - IR work stops; the port starts next.
 - **Lesson/risk:** on a shared bus a stuck TFMini takes the MCP23008
   (motor direction pins, cliff inputs) with it. Decision: move the spinal
   cord to an ESP32 (two hardware I2C controllers -> TFMini on its own
