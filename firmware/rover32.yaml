@@ -9,8 +9,8 @@
 #
 # Pin map (ESP32 devkit, "esp32dev"):
 #   GPIO25 SDA / GPIO26 SCL  bus_b: TFMini (0x10) - the only I2C device
-#   GPIO16  left EN (PWM)    GPIO17  right EN (PWM)        -> L298N ENA/ENB
-#   GPIO18/19  left IN1/IN2   GPIO23/22  right IN1/IN2     -> L298N direction
+#   GPIO17  left EN (PWM)    GPIO16  right EN (PWM)        -> L298N ENB/ENA
+#   GPIO22/23  left fwd/rev   GPIO19/18  right fwd/rev     -> L298N direction
 #   GPIO35 / GPIO32  front-left / front-right cliff (35 is input-only)
 #   GPIO33 / GPIO13  reserved: rear cliff sensors
 #   GPIO34  battery divider (ADC1, input-only; no onboard divider on this
@@ -153,11 +153,11 @@ interval:
             return;
           }
           id(tfmini_errors) = 0;
-          if (buf[0] != 0x01) {
+          const float cm = buf[2] | (uint16_t(buf[3]) << 8);
+          if (buf[0] != 0x01 || cm >= 65535) {  // 0xFFFF = no return
             id(front_range_valid).publish_state(false);
             return;  // too close (<30 cm), no return, or weak: hold state
           }
-          const float cm = buf[2] | (uint16_t(buf[3]) << 8);
           const float strength = buf[4] | (uint16_t(buf[5]) << 8);
           id(front_range_valid).publish_state(true);
           id(front_range).publish_state(cm);
@@ -204,26 +204,29 @@ output:
   # channels AND polarity, so the "left" outputs below drive L298N channel B
   # in what the board calls reverse, and vice versa. Pivots were already
   # correct on the trike; forward/backward were inverted - this fixes that.
+  # As wired 2026-10-03 (bench-verified): the motor on GPIO17 (EN) with
+  # GPIO22 forward / GPIO23 reverse is the LEFT one; GPIO16 with GPIO19
+  # forward / GPIO18 reverse is the RIGHT. Fixed here, not in the wires.
   - platform: ledc
-    pin: GPIO16
+    pin: GPIO17
     frequency: 1000 Hz
     id: left_pwm
   - platform: ledc
-    pin: GPIO17
+    pin: GPIO16
     frequency: 1000 Hz
     id: right_pwm
   - platform: gpio
     id: left_forward_pin
-    pin: GPIO18
+    pin: GPIO22
   - platform: gpio
     id: left_reverse_pin
-    pin: GPIO19
-  - platform: gpio
-    id: right_forward_pin
     pin: GPIO23
   - platform: gpio
+    id: right_forward_pin
+    pin: GPIO19
+  - platform: gpio
     id: right_reverse_pin
-    pin: GPIO22
+    pin: GPIO18
 
 # Downward-facing IR reflectance ("cliff") sensors on the free MCP23008 pins.
 # Wiring: VCC/GND + digital OUT of each IR module -> MCP4 (front-left), MCP5 (front-right).
