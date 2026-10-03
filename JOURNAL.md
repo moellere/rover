@@ -557,8 +557,25 @@ in his hands.
   flash by USB from the HA ESPHome dashboard, then OTA. Wiring moves
   listed in README/BOM. Enoch asked whether to keep the MCP23008 now that
   pins aren't scarce: **dropped** - direction on GPIO18/19/23/27, front
-  cliff on GPIO35/36, rear cliff reserved on 39/33. No I2C left in the
-  motor path at all; the TFMini is the only bus device.
+  cliff on GPIO35/32, rear cliff reserved on 33/13 (36/39 are only
+  labelled VP/VN on this devkit). No I2C left in the motor path at all;
+  the TFMini is the only bus device.
+- **rover32 brought up** (flashed OTA onto the IR node's board while it
+  still ran eufy-ir - no USB needed). TFMini found on bus_b once SDA/SCL
+  were the right way round (first "shifted by a pin", then swapped);
+  battery sense needed its wire moved, then calibrated x4.664 (12.00 V
+  read vs 11.90 V meter). Buck set to 5.198 V. Lifted motor test, then
+  on the bench: forward ran backward and left pivoted right = both
+  polarities flipped as wired -> fixed in config (swap fwd/rev pins per
+  side; the channel ids also crossed to match the wiring). Verified by
+  LiDAR range falling on forward and the marker swinging into view on a
+  left pivot; Enoch confirmed. Brain now points at `rover32`; the D1 Mini
+  is retired. TFMini 0xFFFF (no return) now counts as invalid.
+- **Cliff sensors arrived** (HW-870 / TCRT5000, 31.5 x 14 mm, hole 7.5 mm
+  from the pin end). Mounts designed (`hardware/cliff-mount.scad`, L
+  bracket from the beam's end holes, sensor ~8 mm above the bench on a
+  6 mm spacer boss) and printed on Enoch's "print them". Wire DO (not AO)
+  to GPIO35/32, VCC 5 V.
 - **Lesson/risk:** on a shared bus a stuck TFMini takes the MCP23008
   (motor direction pins, cliff inputs) with it. Decision: move the spinal
   cord to an ESP32 (two hardware I2C controllers -> TFMini on its own

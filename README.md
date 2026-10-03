@@ -45,7 +45,7 @@ Three layers, decided early and still standing:
 
 | Layer | Hardware | Role |
 |---|---|---|
-| **Spinal cord** | Wemos D1 Mini (ESP8266), ESPHome | reflexes: watchdog, disconnect-stop, cliff and battery guards, optional brake-on-stop. Authoritative - nothing off-board can override them. |
+| **Spinal cord** | ESP32 devkit (`rover32`, since 2026-10-03; was a Wemos D1 Mini), ESPHome | reflexes: watchdog, disconnect-stop, cliff and battery guards, optional brake-on-stop. Authoritative - nothing off-board can override them. |
 | **Eyes** | TTGO T-Camera (ESP32-WROVER, OV2640), ESPHome | snapshot and stream endpoints; no decisions |
 | **Brain** | `brain/` - Python + OpenCV, off-board | everything with judgment: marker detection, the homing loop, bounded drive pulses. Exposed as an MCP server (`rover-brain`). |
 
