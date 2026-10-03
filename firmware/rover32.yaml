@@ -11,8 +11,8 @@
 #   GPIO25 SDA / GPIO26 SCL  bus_b: TFMini (0x10) - the only I2C device
 #   GPIO16  left EN (PWM)    GPIO17  right EN (PWM)        -> L298N ENA/ENB
 #   GPIO18/19  left IN1/IN2   GPIO23/27  right IN1/IN2     -> L298N direction
-#   GPIO35 / GPIO36  front-left / front-right cliff (input-only pins)
-#   GPIO39 / GPIO33  reserved: rear cliff sensors
+#   GPIO35 / GPIO32  front-left / front-right cliff (35 is input-only)
+#   GPIO33 / GPIO13  reserved: rear cliff sensors
 #   GPIO34  battery divider (ADC1, input-only; no onboard divider on this
 #           board, so the external 100k/27k alone: ~4.7x, calibrate)
 #   Avoid 0/2/12/15 (strapping), 6-11 (flash). 34-39 are input-only.
@@ -262,7 +262,7 @@ binary_sensor:
     id: front_right_cliff
     device_class: safety
     pin:
-      number: GPIO36   # input-only; the sensor module drives it
+      number: GPIO32
       inverted: false
     filters:
       - delayed_on_off: 50ms
