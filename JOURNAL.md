@@ -555,7 +555,10 @@ in his hands.
   calibrating against a meter; the D1 Mini had an extra onboard divider).
   Device name `rover32` so both boards can coexist during the swap. First
   flash by USB from the HA ESPHome dashboard, then OTA. Wiring moves
-  listed in README/BOM.
+  listed in README/BOM. Enoch asked whether to keep the MCP23008 now that
+  pins aren't scarce: **dropped** - direction on GPIO18/19/23/27, front
+  cliff on GPIO35/36, rear cliff reserved on 39/33. No I2C left in the
+  motor path at all; the TFMini is the only bus device.
 - **Lesson/risk:** on a shared bus a stuck TFMini takes the MCP23008
   (motor direction pins, cliff inputs) with it. Decision: move the spinal
   cord to an ESP32 (two hardware I2C controllers -> TFMini on its own

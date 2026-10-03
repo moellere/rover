@@ -5,12 +5,14 @@
 # Grover's spinal cord on an ESP32 devkit (port of rover.yaml, 2026-10-03).
 # Why: the TFMini shares the ESP8266's only I2C bus with the MCP23008; a stuck
 # TFMini froze the motor direction pins and cliff inputs until a power cycle.
-# The ESP32 has two I2C controllers, so the TFMini gets its own bus.
+# The ESP32 has pins to spare: no expander at all, TFMini alone on I2C.
 #
 # Pin map (ESP32 devkit, "esp32dev"):
-#   GPIO21 SDA / GPIO22 SCL  bus_a: MCP23008 (0x20) - motor direction, cliff
-#   GPIO25 SDA / GPIO26 SCL  bus_b: TFMini (0x10)
+#   GPIO25 SDA / GPIO26 SCL  bus_b: TFMini (0x10) - the only I2C device
 #   GPIO16  left EN (PWM)    GPIO17  right EN (PWM)        -> L298N ENA/ENB
+#   GPIO18/19  left IN1/IN2   GPIO23/27  right IN1/IN2     -> L298N direction
+#   GPIO35 / GPIO36  front-left / front-right cliff (input-only pins)
+#   GPIO39 / GPIO33  reserved: rear cliff sensors
 #   GPIO34  battery divider (ADC1, input-only; no onboard divider on this
 #           board, so the external 100k/27k alone: ~4.7x, calibrate)
 #   Avoid 0/2/12/15 (strapping), 6-11 (flash). 34-39 are input-only.
@@ -184,14 +186,10 @@ interval:
             - logger.log: "Watchdog: no command refresh in 1.5s, stopping motors"
 
 i2c:
-  - id: bus_a
-    sda: GPIO21
-    scl: GPIO22
-    scan: true
-    frequency: 100kHz
-  # TFMini on its own controller: repeated-start reads, 100 kHz, and a
-  # generous timeout (it stretches the clock while it prepares a reply).
-  # If it ever wedges, only the range reading is lost.
+  # Only the TFMini lives on I2C now (the MCP23008 is gone - direction and
+  # cliff pins are direct on the ESP32), so a wedged sensor costs nothing
+  # but the range reading. Repeated-start reads, 100 kHz, generous timeout
+  # (it stretches the clock while it prepares a reply).
   - id: bus_b
     sda: GPIO25
     scl: GPIO26
@@ -200,11 +198,6 @@ i2c:
     timeout: 20ms
 
 # Example configuration entry
-mcp23008:
-  - id: 'mcp23008_hub'
-    address: 0x20
-    i2c_id: bus_a
-
 output:
   # Trike build (2026-09-29): the motors sit on the opposite sides, facing the
   # opposite way, compared with the tank build. Electrically that is a swap of
@@ -221,36 +214,16 @@ output:
     id: right_pwm
   - platform: gpio
     id: left_forward_pin
-    pin:
-      mcp23xxx: mcp23008_hub
-      number: 3
-      mode:
-        output: true
-      inverted: false
+    pin: GPIO18
   - platform: gpio
     id: left_reverse_pin
-    pin:
-      mcp23xxx: mcp23008_hub
-      number: 2
-      mode:
-        output: true
-      inverted: false
+    pin: GPIO19
   - platform: gpio
     id: right_forward_pin
-    pin:
-      mcp23xxx: mcp23008_hub
-      number: 1
-      mode:
-        output: true
-      inverted: false
+    pin: GPIO23
   - platform: gpio
     id: right_reverse_pin
-    pin:
-      mcp23xxx: mcp23008_hub
-      number: 0
-      mode:
-        output: true
-      inverted: false
+    pin: GPIO27
 
 # Downward-facing IR reflectance ("cliff") sensors on the free MCP23008 pins.
 # Wiring: VCC/GND + digital OUT of each IR module -> MCP4 (front-left), MCP5 (front-right).
@@ -269,10 +242,7 @@ binary_sensor:
     id: front_left_cliff
     device_class: safety
     pin:
-      mcp23xxx: mcp23008_hub
-      number: 4
-      mode:
-        input: true
+      number: GPIO35   # input-only; the sensor module drives it (no pull-up on 34-39)
       inverted: false
     filters:
       - delayed_on_off: 50ms
@@ -292,10 +262,7 @@ binary_sensor:
     id: front_right_cliff
     device_class: safety
     pin:
-      mcp23xxx: mcp23008_hub
-      number: 5
-      mode:
-        input: true
+      number: GPIO36   # input-only; the sensor module drives it
       inverted: false
     filters:
       - delayed_on_off: 50ms

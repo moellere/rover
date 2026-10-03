@@ -27,6 +27,7 @@ in place watching the workbench.
 | Makeblock Starter Robot Kit, **trike configuration** (two driven wheels + trailing caster; was the tank until 2026-09-29) | 1 kit (chassis + 2 DC gear motors) | Drivetrain | Inventory | Installed |
 | Wemos D1 Mini (ESP8266) | 1 | Main controller | Inventory | Installed |
 | L298N dual H-bridge module | 1 | Motor driver; its onboard regulator also supplies the D1 Mini's 5V (~0.5A rating) | Inventory | Installed |
+| ~~MCP23008~~ (retired with the ESP32 spinal cord, 2026-10-03; direction and cliff pins go direct)
 | MCP23008 I2C GPIO expander | 1 | Drives the L298N's 4 direction pins - added because the D1 Mini didn't have enough spare GPIO | Inventory | Installed |
 | 18650 Li-ion cell | 3 (wired 3S) | Power, ~12.6V full / ~9.0V empty | Inventory | Installed - pack swapped 2026-09-29 (the first set drained ~0.07 V/min at idle: weak cells); no BMS yet, so charge the set together and full |
 | Resistor, 100kΩ + 27kΩ | 1 each | Battery-voltage divider: pack+ (L298N +12V terminal) -> junction -> A0, junction -> 27kΩ -> GND | Inventory | Installed - divider wired and calibrated (`multiply: 15.618`, reads 11.77V vs. a multimeter's 11.79V) |
