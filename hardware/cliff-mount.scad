@@ -14,7 +14,7 @@
 // forward, +Z up. Origin: the beam's top-front edge at the foot's inboard
 // end. `side = "right"` / `"left"` mirrors.
 //
-// Print: on its back (the drop plate's front face down), no supports.
+// Print: on its side (see print_orient), no supports, no brim.
 //
 // Render:  openscad -D side=\"right\" -o cliff-mount-right.stl cliff-mount.scad
 //          openscad -D side=\"left\"  -o cliff-mount-left.stl  cliff-mount.scad
@@ -22,17 +22,17 @@
 side = "right";
 
 // ---- Beam (Makeblock 0824 flat; MEASURE) ----------------------------------
-beam_top_h   = 45;    // beam top face above the bench, mm  <-- MEASURE
+beam_top_h   = 51;    // beam top face above the bench, mm (Enoch, 2026-10-03)
 beam_depth   = 24;    // top face, front-to-back
 hole_pitch   = 16;    // along the beam, within one row
 hole_row_y   = -6;    // row centreline from the front edge (front row); back row ~ -18
 m4_hole      = 4.5;
 
 // ---- Sensor module (HW-870; MEASURE) ---------------------------------------
-pcb_l        = 32;    // along Y when mounted (pins at the rear)
+pcb_l        = 31.5;  // measured (Enoch, 2026-10-03); along Y when mounted, pins at the rear
 pcb_w        = 14;
 pcb_hole_d   = 3.2;   // M3 clearance
-pcb_hole_in  = 8.5;   // hole centre from the pin-end edge
+pcb_hole_in  = 7.5;   // hole centre from the pin-end edge (near edge at 6 mm, Enoch)
 boss_h       = 6;     // spacer: clears the pot (~5 mm) and solder tails
 boss_d       = 8;
 sensor_face_h = 8;    // target: sensor face above the bench (TCRT5000 likes 2-10 mm)
@@ -80,5 +80,9 @@ module pcb_ghost() {
   translate([plate_w / 2 - pcb_w / 2, plate_t, shelf_bot_z - boss_h - pcb_t]) cube([pcb_w, pcb_l, pcb_t]);
 }
 
-if (side == "left") mirror([1, 0, 0]) part(); else part();
-%pcb_ghost();
+// Print orientation: on its SIDE (the L profile extruded upward along X), so
+// the foot and shelf are both flat on the bed's plane - no overhangs.
+print_orient = true;
+module oriented() { if (side == "left") mirror([1, 0, 0]) part(); else part(); }
+if (print_orient) { if (side == "left") rotate([0, 90, 0]) oriented(); else rotate([0, -90, 0]) oriented(); }
+else { oriented(); %pcb_ghost(); }
