@@ -499,6 +499,65 @@ sudo, and the token-budget constraint.
   prorated share is $0.40 (budget: $3.29 spent, $96.71 left). The Qwiic
   chain + LD33V remains a stopgap until the kit arrives. Bracket printed
   meanwhile (print-warden: done, 36 min).
+
+## 2026-10-01 .. 10-03 - TFMini bring-up, IR node debugging, BMS arrives
+
+**Model:** Claude Fable 5.1. Enoch at the bench throughout, doing the
+wiring; Claude flashing and reading logs. Auto mode was switched off
+mid-way (Claude had flashed the IR node while Enoch was repositioning it,
+which rolled the OTA back); rover, cameras and IR node stay Claude's to
+flash, but Claude now says what it's about to do to a device Enoch has
+in his hands.
+
+### TFMini (done - reading)
+- First attempts: with the TFMini's I2C wires on, the D1 Mini crawled
+  (API handshake 5 s, status reads timing out) and the boot scan reported
+  "SCL is held low" - no devices at all, MCP23008 included. First cause:
+  the TFMini chain was unpowered (pack out, LD33V fed from the buck), an
+  unpowered device clamps the bus. Then with the kit lead (direct 5 V,
+  no Qwiic adapter) the scan found 0x10 and 0x20, but every transaction
+  took 3 s: write NACKed, read timed out, and the sensor was left holding
+  SCL low until a power cycle.
+- Diagnosis by instrumenting the read (1 s poll, timing + raw bytes).
+  Fix needed all three: **repeated-start** write/read (`write_readv`, as
+  in SparkFun's example - a stop between command and read is refused),
+  **100 kHz** (bus was 50), and an i2c `timeout: 20ms` (clock-stretch
+  limit; the ESP8266 default is 230 us). Each try needed Enoch to
+  power-cycle the rover because an OTA reboot doesn't reset the sensor.
+- Result: reads in ~2 ms, valid frames, 77 cm at strength ~434 on the
+  bench. Back to 10 Hz; guard still boots off.
+- **Lesson/risk:** on a shared bus a stuck TFMini takes the MCP23008
+  (motor direction pins, cliff inputs) with it. Decision: move the spinal
+  cord to an ESP32 (two hardware I2C controllers -> TFMini on its own
+  bus; spare UARTs) - roadmap item, not blocking.
+
+### IR node (open)
+- New IR LED and receiver installed. Receiver first sprayed ~25 frames/s:
+  Enoch had a 100 ohm from OUT to GND (Claude's diagram was misread - the
+  resistor is the LED's); then dead quiet. Rewired correctly, it decodes
+  the remote cleanly, and near the dock it decodes the dock's beacon
+  (NEC-style 9/4.5 ms header, payload 0xD6, ~5/s).
+- Fresh captures vs the 09/28 set revealed the **frame format**: 6 bytes
+  `68 cmd 00 FIELD FF sum`, sum = low byte of the first five. FIELD was
+  0x13-0x14 on 09/28 and 0x07 on 10/02 on every button - a slow clock or
+  counter. Command bytes: Fwd 2C, Back 7C, Left 3C, Right 6C, Home EF,
+  Start/Stop 4F (two unlabelled buttons today: AD, 5D).
+- Firmware: `eufy_send(command, field, carrier_hz)` builds any frame with
+  the checksum; carrier_hz <0 generates the 38 kHz carrier in software.
+  Receiver `rmt_symbols: 512` after a crash (log ring buffer, from the
+  receiver loop) on the first loopback frame.
+- **Transmitter still unproven:** nothing it sends is decoded by the
+  node's own receiver (direct aim, bounce, 30-56 kHz sweep, software
+  carrier, bigger LED), and the vacuum ignored Start/Stop in all four
+  forms (hw/sw carrier x field 07/14). The dock beacon floods the
+  receiver whenever the node is near the dock, so most loopbacks were
+  contaminated. Next: loopback in another room; if still nothing,
+  scope the LED pin.
+- OTA gotcha: the ESP32 rolls back if it resets within 60 s of a new
+  image - unplugging the node right after a flash undid it twice.
+
+### BMS
+- 3S 40A boards arrived; pad map in BOM. Deferred (Enoch: rover first).
 - **Near miss, backing up.** Enoch asked for a test reverse toward the bench
   camera. Done in 0.3 s pulses with the marker as odometry and a stop at a
   known-safe distance - but the caster flipping on direction change dragged

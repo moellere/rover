@@ -127,8 +127,13 @@ interval:
           const uint8_t cmd[3] = {0x01, 0x02, 0x07};
           uint8_t buf[7] = {0};
           const float thr = id(obstacle_stop_cm).state;
-          if (id(bus_a).write(0x10, cmd, 3) != i2c::ERROR_OK ||
-              id(bus_a).read(0x10, buf, 7) != i2c::ERROR_OK) {
+          // SparkFun's sequence: command, then read with a repeated start (no
+          // stop in between). A plain write-then-read was NACKed every time
+          // and left the sensor holding SCL low (2026-10-03).
+          auto ew = id(bus_a).write_readv(0x10, cmd, 3, buf, 7);
+          ESP_LOGVV("tfmini", "wr=%d raw=%02X %02X %02X %02X %02X %02X %02X", (int) ew,
+                    buf[0], buf[1], buf[2], buf[3], buf[4], buf[5], buf[6]);
+          if (ew != i2c::ERROR_OK) {
             if (++id(tfmini_errors) == 5) {
               ESP_LOGW("tfmini", "no response at 0x10");
               id(front_range).publish_state(NAN);
@@ -173,6 +178,13 @@ i2c:
   id: bus_a
   sda: D2
   scl: D1
+  # TFMini needs all three: repeated-start reads (see the interval), 100 kHz,
+  # and a clock-stretch limit above the ESP8266 default of 230 us. Without
+  # them every transaction failed (NACK + timeout) and the sensor was left
+  # holding SCL low, which took the MCP23008 - motors and cliff inputs - down
+  # with it until a power cycle.
+  timeout: 20ms
+  frequency: 100kHz
   scan: True
 
 # Example configuration entry
