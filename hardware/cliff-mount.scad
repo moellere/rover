@@ -71,9 +71,12 @@ module part() {
     translate([plate_w / 2, plate_t + pcb_hole_in, shelf_bot_z - boss_h]) cylinder(d = boss_d, h = boss_h);
     translate([plate_w / 2, plate_t + pcb_hole_in, shelf_bot_z - boss_h - 1]) cylinder(d = pcb_hole_d, h = boss_h + 2);
   }
-  // anti-rotation rib: a thin wall the PCB's rear (pin) edge rests against
-  translate([plate_w / 2 - pcb_w / 2 - 1.5, plate_t, shelf_bot_z - boss_h]) cube([1.5, 6, boss_h]);
-  translate([plate_w / 2 + pcb_w / 2, plate_t, shelf_bot_z - boss_h]) cube([1.5, 6, boss_h]);
+  // side ribs: thin walls along both PCB edges from the rear end to 4 mm
+  // past the screw, so the board can't pivot on its single screw (v2 -
+  // Enoch's fit check of v1, whose ribs stopped short of the hole)
+  rib_l = pcb_hole_in + 4;
+  translate([plate_w / 2 - pcb_w / 2 - 1.5, plate_t, shelf_bot_z - boss_h]) cube([1.5, rib_l, boss_h]);
+  translate([plate_w / 2 + pcb_w / 2, plate_t, shelf_bot_z - boss_h]) cube([1.5, rib_l, boss_h]);
 }
 
 module pcb_ghost() {
