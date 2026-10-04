@@ -635,8 +635,12 @@ usage limit; the fallback CLAUDE.md names). Enoch at the bench.
      EF, Start/Stop 4F (+ 5C, 1D, AD, 5D unlabelled).
   - **Home (0xEF) also worked** (16:01) - the vacuum returned to its dock.
     Two commands now confirmed: Forward and Home.
-  - Range is the open item: a 20 mA LED decodes with bit errors at 50 cm.
-    Next: NPN driver (~100 mA from 5 V) and a dedicated IR board.
+  - Range: a 20 mA LED decoded with bit errors at 50 cm. **NPN driver
+    added** (GPIO4 -> 1k -> base, emitter GND, 5 V -> 33 ohm -> LED ->
+    collector, ~105 mA): loopback 18/24 frames clean, and **Forward worked
+    from ~1 m** (16:16). Test burst cut to 1 s so the 20 mA-rated LED
+    isn't held at ~50 mA average. Next: find the max range, then move the
+    IR to its own ESP32 node and strip the temporary rig off rover32.
 - **Lesson/risk:** on a shared bus a stuck TFMini takes the MCP23008
   (motor direction pins, cliff inputs) with it. Decision: move the spinal
   cord to an ESP32 (two hardware I2C controllers -> TFMini on its own
