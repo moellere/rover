@@ -71,6 +71,10 @@ globals:
     type: int
     restore_value: no
     initial_value: '0'
+  - id: last_good_cm
+    type: float
+    restore_value: no
+    initial_value: '1000'
 
 # Pin map for awning
 #MCP0: Connected to L298N IN1
@@ -156,11 +160,17 @@ interval:
           const float cm = buf[2] | (uint16_t(buf[3]) << 8);
           if (buf[0] != 0x01 || cm >= 65535) {  // 0xFFFF = no return
             id(front_range_valid).publish_state(false);
-            return;  // too close (<30 cm), no return, or weak: hold state
+            // Invalid usually means "too close" (<30 cm) or "nothing out
+            // there". If the last good reading was already close, assume
+            // the former: a wall met at an angle went from "far" to
+            // invalid without tripping the guard (2026-10-04, dining room).
+            if (thr > 0 && id(last_good_cm) < 60) id(obstacle_ahead) = true;
+            return;
           }
           const float strength = buf[4] | (uint16_t(buf[5]) << 8);
           id(front_range_valid).publish_state(true);
           id(front_range).publish_state(cm);
+          id(last_good_cm) = cm;
           id(front_range_strength).publish_state(strength);
           id(obstacle_ahead) = thr > 0 && cm < thr;
       - if:

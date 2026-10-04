@@ -654,6 +654,19 @@ usage limit; the fallback CLAUDE.md names). Enoch at the bench.
   the earlier 5 V note). GPIO35 front-left / GPIO32 front-right (wires
   were swapped at first; Enoch fixed). Both read clear on the bench and
   cliff when lifted. Edge-stop drive test next.
+- **First floor run (dining room, hardwood).** Cliff sensors read clear on
+  hardwood; ~22 cm per 0.3 s pulse, straight with the +6 % trim; TFMini
+  tracked 3.9 -> 3.2 m. Then a 12-pulse scripted run toward the window
+  ended **nose to a wall corner**: Grover drifted off line, met the wall
+  at an angle, and the TFMini went from "far" straight to invalid (<30
+  cm) - the firmware guard holds state on invalid readings, so it never
+  tripped, and Claude's loop only checked valid readings, ran without a
+  camera frame per pulse (weak WiFi, -82 dBm, made it slow) and timed out.
+  A light bump at ~22 cm/pulse at most. **Fixes:** firmware now treats
+  invalid-after-close (last good < 60 cm) as an obstacle; driving loops
+  take a frame per pulse and stop on weak WiFi. One 0.3 s reverse
+  (Enoch: safe) backed it to 53 cm. Cliff mounts v4 (sensor on the tyre
+  centreline, 65 mm ahead of the axle) printing.
 - **Lesson/risk:** on a shared bus a stuck TFMini takes the MCP23008
   (motor direction pins, cliff inputs) with it. Decision: move the spinal
   cord to an ESP32 (two hardware I2C controllers -> TFMini on its own
