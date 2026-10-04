@@ -638,7 +638,7 @@ usage limit; the fallback CLAUDE.md names). Enoch at the bench.
   - Range: a 20 mA LED decoded with bit errors at 50 cm. **NPN driver
     added** (GPIO4 -> 1k -> base, emitter GND, 5 V -> 33 ohm -> LED ->
     collector, ~105 mA): loopback 18/24 frames clean, and **Forward worked
-    from ~1 m** (16:16). Test burst cut to 1 s so the 20 mA-rated LED
+    from ~1 m** (16:16) **and from 2 m** (16:17). Test burst cut to 1 s so the 20 mA-rated LED
     isn't held at ~50 mA average. Next: find the max range, then move the
     IR to its own ESP32 node and strip the temporary rig off rover32.
 - **Lesson/risk:** on a shared bus a stuck TFMini takes the MCP23008
