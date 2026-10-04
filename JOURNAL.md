@@ -641,6 +641,19 @@ usage limit; the fallback CLAUDE.md names). Enoch at the bench.
     from ~1 m** (16:16) **and from 2 m** (16:17). Test burst cut to 1 s so the 20 mA-rated LED
     isn't held at ~50 mA average. Next: find the max range, then move the
     IR to its own ESP32 node and strip the temporary rig off rover32.
+- **IR's permanent home: blackcam** (Enoch's spare T-Camera V1.7, which
+  powers from its bottom header unlike redcam). Flashed as the Eufy's lid
+  board: camera + IR on IO22 (OLED dropped; IO21 untouched so no I2C
+  START can happen on that bus), SNTP-stamped frames, buttons + an
+  `eufy_command` action. Boot log clean (no FAILED). A C3 Super Mini
+  config (`eufy-ir-c3`) is kept as a spare IR node.
+- **Grover's direction set** (Claude, 2026-10-04): Grover becomes the
+  bench test platform for the brain; the Eufy carries Phases 2-3.
+- **Cliff sensors installed on Grover**, powered from **3.3 V** (DO is
+  pulled up to VCC; 5 V would exceed the ESP32's inputs - corrected from
+  the earlier 5 V note). GPIO35 front-left / GPIO32 front-right (wires
+  were swapped at first; Enoch fixed). Both read clear on the bench and
+  cliff when lifted. Edge-stop drive test next.
 - **Lesson/risk:** on a shared bus a stuck TFMini takes the MCP23008
   (motor direction pins, cliff inputs) with it. Decision: move the spinal
   cord to an ESP32 (two hardware I2C controllers -> TFMini on its own
