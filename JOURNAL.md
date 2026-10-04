@@ -681,6 +681,18 @@ usage limit; the fallback CLAUDE.md names). Enoch at the bench.
   and soft - the TFMini and a rover-height camera can't clear that, which
   would risk the "never harm an animal" rule. House roaming stays the
   Eufy's job (bumpers); Grover remains the bench platform.
+- Enoch: Taters ignores robots (lies on her bed, maybe barks) - so the
+  run went on into the living room (hardwood and rugs fine; rug edges
+  climbed; cliff sensors read rugs as floor). Stopped by sun glare toward
+  the French doors (camera blinded, and sunlight affects the TCRT5000s)
+  and parked at the TV stand. Battery 11.3 V after ~10 m of driving.
+- **blackcam drove the Eufy.** Enoch wired the NPN driver to its header
+  (diagram `hardware/blackcam-ir-wiring.png`) and aimed it from above; a
+  single `eufy_command(0x7C)` (Backward, SNTP time-stamped) backed the
+  Eufy off its dock, seen through blackcam itself. Lid board proven:
+  camera + IR on one T-Camera. (Claude first proposed Forward from a
+  flipped camera view - Enoch corrected it; the T-Camera image is
+  mirrored/flipped, mind the orientation.)
 - **Lesson/risk:** on a shared bus a stuck TFMini takes the MCP23008
   (motor direction pins, cliff inputs) with it. Decision: move the spinal
   cord to an ESP32 (two hardware I2C controllers -> TFMini on its own
