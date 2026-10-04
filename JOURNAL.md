@@ -633,6 +633,8 @@ usage limit; the fallback CLAUDE.md names). Enoch at the bench.
      ~3 cm off the bumper with the vacuum off the dock; Start/Stop was
      ambiguous. Command bytes: Fwd 2C, Back 7C, Left 3C, Right 6C, Home
      EF, Start/Stop 4F (+ 5C, 1D, AD, 5D unlabelled).
+  - **Home (0xEF) also worked** (16:01) - the vacuum returned to its dock.
+    Two commands now confirmed: Forward and Home.
   - Range is the open item: a 20 mA LED decodes with bit errors at 50 cm.
     Next: NPN driver (~100 mA from 5 V) and a dedicated IR board.
 - **Lesson/risk:** on a shared bus a stuck TFMini takes the MCP23008
