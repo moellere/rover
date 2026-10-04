@@ -693,6 +693,14 @@ usage limit; the fallback CLAUDE.md names). Enoch at the bench.
   camera + IR on one T-Camera. (Claude first proposed Forward from a
   flipped camera view - Enoch corrected it; the T-Camera image is
   mirrored/flipped, mind the orientation.)
+- blackcam also sent **Home**: the Eufy re-docked (charging light on).
+- Grover to the kitchen: Enoch gave the route (slight right, forward,
+  left into the doorway). Passed Taters on her bed at >1 m; a dog sitting
+  up inside the doorway stopped Claude until Enoch said he was watching;
+  ended on the doormat at the kitchen threshold and stopped there - two
+  people standing ~1.5 m ahead, and a rover at their feet is a trip
+  hazard. Whole run ~12-14 m, dining room -> foyer -> living room ->
+  kitchen doorway, battery still 11.3 V.
 - **Lesson/risk:** on a shared bus a stuck TFMini takes the MCP23008
   (motor direction pins, cliff inputs) with it. Decision: move the spinal
   cord to an ESP32 (two hardware I2C controllers -> TFMini on its own
