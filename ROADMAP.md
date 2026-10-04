@@ -49,7 +49,7 @@ and comes first.
 |---|---|---|---|
 | 2E.1 | Health check | Enoch: does it run and dock-charge; is the remote around | a dead pack changes the plan (~$20-30 from budget) |
 | 2E.2 | Codes | captured from the 12's own remote via the node's receiver - the 11S set shares the protocol and address prefix but **not** the command payloads, so the published codes didn't apply after all | done: 6 codes (forward/back/left/right/home/start-stop) in `firmware/eufy-ir.yaml` |
-| 2E.3 | IR transmitter node | ESP32 devkit (Enoch has several) + IR LED on GPIO4 (100R), IR receiver on GPIO14; first flash by USB via the HA ESPHome dashboard, OTA after | flashed and online; 6 captured-code buttons + an 8 s test-burst button; drive path proven with a visible LED - **blocked on working IR LEDs** (on order) |
+| 2E.3 | IR transmitter node - **Eufy drove on command 2026-10-04** (ESP32 RMT carrier, clock-stamped frame) | ESP32 devkit (Enoch has several) + IR LED on GPIO4 (100R), IR receiver on GPIO14; first flash by USB via the HA ESPHome dashboard, OTA after | flashed and online; 6 captured-code buttons + an 8 s test-burst button; drive path proven with a visible LED - **blocked on working IR LEDs** (on order) |
 | 2E.4 | Brain backend | 2E.3 | same `drive`/`stop` tools; `status` limited to what the camera sees until 2E.6 |
 | 2E.5 | Camera on the lid | mount, power | its own 3.7 V cell via the IP5306 at first; charged by USB |
 | 2E.6 | Inside-the-shell telemetry (later) | open it up: battery voltage via divider, charging signal | published 11S wiring exists; gives low-battery and docked state |

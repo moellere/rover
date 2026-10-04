@@ -612,6 +612,29 @@ usage limit; the fallback CLAUDE.md names). Enoch at the bench.
   - Next: meter GPIO4 during a burst on rover32; swap to another emitter;
     if still fragments, buy a known-good IR transmitter module. rover32
     carries a temporary IR rig (TX GPIO4, raw RX GPIO33) to remove later.
+- **IR SOLVED (10/04, 16:00): the Eufy drove forward on our command.**
+  Three causes, all found the same afternoon:
+  1. **Claude's bug:** on 10/02 the ESP32 receiver went to 512 RMT
+     symbols to stop a crash - the chip only has 512 in total, so the
+     transmitter failed to initialise ("out of RMT symbol memory",
+     component FAILED) and every ESP32 send since logged "send" but put
+     nothing on the pin. Enoch's meter on GPIO4 (0 V) found it. Fix: RX
+     256 + TX 192. Lesson: read the boot log for FAILED components before
+     debugging hardware.
+  2. **The ESP8266's software carrier** never produced a decodable frame
+     on a VS1838B; the ESP32's hardware (RMT) carrier did at once
+     (`68 4F 00 07 FF BD` decoded back exactly). Use the ESP32.
+  3. **The frame carries the remote's clock.** Format, confirmed against
+     a fresh capture: `68 CMD HH MM 5C SUM`, HH = 12-hour hour, MM =
+     minute (both binary), SUM = low byte of the first five. (The "5C"
+     byte drifted between sessions too - 00/FF earlier - so treat it as
+     "copy the latest capture".) Old captures with stale times were
+     ignored. Forward (0x2C) stamped with the current time worked from
+     ~3 cm off the bumper with the vacuum off the dock; Start/Stop was
+     ambiguous. Command bytes: Fwd 2C, Back 7C, Left 3C, Right 6C, Home
+     EF, Start/Stop 4F (+ 5C, 1D, AD, 5D unlabelled).
+  - Range is the open item: a 20 mA LED decodes with bit errors at 50 cm.
+    Next: NPN driver (~100 mA from 5 V) and a dedicated IR board.
 - **Lesson/risk:** on a shared bus a stuck TFMini takes the MCP23008
   (motor direction pins, cliff inputs) with it. Decision: move the spinal
   cord to an ESP32 (two hardware I2C controllers -> TFMini on its own
