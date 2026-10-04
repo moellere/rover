@@ -146,8 +146,10 @@ interval:
           // stop in between). A plain write-then-read was NACKed every time
           // and left the sensor holding SCL low (2026-10-03).
           auto ew = id(bus_b).write_readv(0x10, cmd, 3, buf, 7);
-          ESP_LOGVV("tfmini", "wr=%d raw=%02X %02X %02X %02X %02X %02X %02X", (int) ew,
-                    buf[0], buf[1], buf[2], buf[3], buf[4], buf[5], buf[6]);
+          static uint8_t dbg = 0;
+          if (++dbg >= 20)  // one line per 2 s: result code (0 = ok) and raw frame
+            dbg = 0, ESP_LOGD("tfmini", "wr=%d raw=%02X %02X %02X %02X %02X %02X %02X", (int) ew,
+                              buf[0], buf[1], buf[2], buf[3], buf[4], buf[5], buf[6]);
           if (ew != i2c::ERROR_OK) {
             if (++id(tfmini_errors) == 5) {
               ESP_LOGW("tfmini", "no response at 0x10");
