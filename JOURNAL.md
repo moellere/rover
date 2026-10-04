@@ -667,6 +667,20 @@ usage limit; the fallback CLAUDE.md names). Enoch at the bench.
   take a frame per pulse and stop on weak WiFi. One 0.3 s reverse
   (Enoch: safe) backed it to 53 cm. Cliff mounts v4 (sensor on the tyre
   centreline, 65 mm ahead of the axle) printing.
+- **House run, continued** (Enoch: "keep going until you'd break one of
+  the original rules"; reversing/pivoting allowed - no fall hazard; light
+  on; Taters elsewhere). Short legs, a camera frame per pulse, stops on
+  close range, invalid-after-close, cliff or weak WiFi. Dining room ->
+  past the sideboard -> foyer, ~4-5 m. Findings: the TFMini's 2.3 deg beam
+  misses anything off-centre (caught a sideboard leg at 52 cm; pushed
+  into an orange object at the front-left corner it never saw); dark
+  furniture returns weak/invalid readings; ~1-2 deg/pulse left drift on
+  hardwood even with the +6 % trim. Stop rule refined: invalid readings
+  stop only when the last good one was < 150 cm. **Stopped at the
+  living-room opening:** Taters' position unknown and a lying dog is low
+  and soft - the TFMini and a rover-height camera can't clear that, which
+  would risk the "never harm an animal" rule. House roaming stays the
+  Eufy's job (bumpers); Grover remains the bench platform.
 - **Lesson/risk:** on a shared bus a stuck TFMini takes the MCP23008
   (motor direction pins, cliff inputs) with it. Decision: move the spinal
   cord to an ESP32 (two hardware I2C controllers -> TFMini on its own
