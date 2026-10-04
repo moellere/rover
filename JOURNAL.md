@@ -576,6 +576,42 @@ in his hands.
   bracket from the beam's end holes, sensor ~8 mm above the bench on a
   6 mm spacer boss) and printed on Enoch's "print them". Wire DO (not AO)
   to GPIO35/32, VCC 5 V.
+
+## 2026-10-03 .. 10-04 - cliff mounts v3, IR node on the D1 Mini
+
+**Model:** Claude Fable 5.1, then Claude Opus 5.5 from late 10/04 (Fable's
+usage limit; the fallback CLAUDE.md names). Enoch at the bench.
+
+- **Cliff mounts:** v1 ribs stopped short of the screw; v2 lengthened them
+  along the shelf but they were only boss-high and never touched the
+  board's edges (Enoch caught both). v3 ribs drop past the board on both
+  sides; Claude rendered a three-view drawing (`hardware/cliff-mount-
+  drawing.png`) for Enoch to validate before printing. Right v3 fits well;
+  left v3 printed too (Enoch had said to skip it, but it had already
+  started - cancelling is his gesture, not Claude's).
+- **Battery:** one cell in the current pack is bad (Enoch found it after
+  rover32 kept browning out). Swap that cell before the next long session.
+- **IR, still unsolved.** The retired D1 Mini is now `eufy-ir8266` (D5
+  receiver, D2 LED). Findings:
+  - The first receiver was off-band or failing; a VS1838B (38 kHz)
+    decodes the remote perfectly - so the remote is 38 kHz.
+  - Our transmissions (8266 software carrier, ESP32 hardware carrier via
+    rover32 on GPIO4, 36-60 kHz sweeps, 10 and 50 cm, bounce) only ever
+    produce short fragments on that receiver - never a frame. A frame
+    sent with NO carrier gives the same fragments, which means the
+    receiver isn't seeing a 38 kHz-modulated light from our LED.
+  - On the 8266, D2 averages 1.43 V and the 100 ohm drops 0.79 V during a
+    burst, i.e. the pin toggles and the LED conducts. LEDs are kit
+    940 nm clear emitters (Enoch confirmed).
+  - A raw pin recorder on rover32 (GPIO33 jumpered to GPIO4) saw nothing
+    during an 8 s burst - either the jumper or GPIO4's output; not
+    resolved.
+  - The remote's frame is `68 cmd XX YY ZZ sum`; the three middle bytes
+    change between sessions (00 14, 00 07, 05 1B FF, 03 12 00) - looks
+    like the remote's clock. Command bytes are stable.
+  - Next: meter GPIO4 during a burst on rover32; swap to another emitter;
+    if still fragments, buy a known-good IR transmitter module. rover32
+    carries a temporary IR rig (TX GPIO4, raw RX GPIO33) to remove later.
 - **Lesson/risk:** on a shared bus a stuck TFMini takes the MCP23008
   (motor direction pins, cliff inputs) with it. Decision: move the spinal
   cord to an ESP32 (two hardware I2C controllers -> TFMini on its own
