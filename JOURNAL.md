@@ -701,6 +701,14 @@ usage limit; the fallback CLAUDE.md names). Enoch at the bench.
   people standing ~1.5 m ahead, and a rover at their feet is a trip
   hazard. Whole run ~12-14 m, dining room -> foyer -> living room ->
   kitchen doorway, battery still 11.3 V.
+- Back on the bench: rover32's temporary IR rig removed (IR lives on
+  blackcam). **Guard test aborted:** aimed at a cardboard box, Grover
+  swung ~90 deg on the second pulse (camv3 + rover cam). That is the
+  fourth sudden swing at a pulse start (bench x2, floor x1, now), with
+  the wheels mechanically fine and both motors fine lifted - suspect an
+  intermittent connection on one motor channel (GPIO16/17/18/19/22/23
+  jumpers, L298N terminals, motor connectors). Driving paused until
+  checked. Cliff mount v4: right printed, left printing.
 - **Lesson/risk:** on a shared bus a stuck TFMini takes the MCP23008
   (motor direction pins, cliff inputs) with it. Decision: move the spinal
   cord to an ESP32 (two hardware I2C controllers -> TFMini on its own
