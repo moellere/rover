@@ -76,6 +76,15 @@ breakdown of the notable decisions. Newest entry on top.
   cause; the free swivel caster remains the prime suspect (skid printed,
   to fit), with the kick start's extra speed feeding it - trim the kick
   (50 ms or 85 %) after the skid test.
+- **Pause: Enoch travelling ~2 weeks from 10/05.** Hardware state left:
+  caster skid printing (fit when back); Grover should be powered off
+  (the firmware guard only stops driving - idle draw still drains the
+  pack; no BMS fitted yet); Eufy on its dock; blackcam powered from the
+  bench. Pick-up list on return: (1) fit the skid, overhead lane test;
+  (2) trim the kick start; (3) ArUco marker on Grover's top for overhead
+  heading; (4) cliff edge-stop test; (5) Eufy lid plate - needs a
+  top-down photo with a ruler, the IR receiver location (tape test),
+  camv3 off the bench, the C3 IR node flashed, a power bank.
 
 Standing project rules live in [CLAUDE.md](CLAUDE.md) - read that first;
 decisions and their reasoning are in the dated entries below. The
