@@ -46,6 +46,15 @@ breakdown of the notable decisions. Newest entry on top.
   (kick start + battery-guard fix are the current suspects' remedies,
   untested); edge-stop test with the v4 cliff mounts; brain as a hosted
   service; Eufy battery/charging telemetry; BMS boards in hand, deferred.
+- **Swing diagnosis (10/05, late):** battery-guard fix verified
+  (`battery_ok=1`); TFMini guard verified (refuses forward; raised to
+  50 cm and polled at 50 ms after a kicked pulse ended 15 cm from a box).
+  Enoch saw the drift happen *after* a pulse stops, "like the right wheel
+  freewheeling". Brake on vs off: both still turned ~20-30 deg on the
+  stopping pulse; **with the swivel caster zip-tied straight, Grover
+  stopped square**. Leading cause: the swivel caster twisting the rear on
+  stops. Fix: Makeblock ball caster if in inventory, else a printed PETG
+  fixed skid in the caster's holes (needs hole spacing and mount height).
 
 Standing project rules live in [CLAUDE.md](CLAUDE.md) - read that first;
 decisions and their reasoning are in the dated entries below. The
