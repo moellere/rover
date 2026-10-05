@@ -94,6 +94,18 @@ breakdown of the notable decisions. Newest entry on top.
   initialize handshake OK), and a fix to `install-brain.sh` (a comment
   mid-line meant fresh installs got only `mcp`). Placement request sent
   to the homelab-helper session; camv3-to-Eufy note sent too.
+- **The brain is hosted** (Enoch: deploy where homelab-helper recommends).
+  Its answer: own Argo CD app mirroring unifi-network-mcp, namespace
+  `rover-brain`, ghcr image, Traefik basic auth + cert-manager TLS,
+  SealedSecrets. Added proxy host settings to the server and a GHCR build
+  workflow (tag v0.1.0 -> public `ghcr.io/moellere/rover:0.1.0`), sealed
+  the credentials and basic-auth users with kubeseal, validated with
+  kubeconform (9/9), merged moellere/argocd#151. Live: pod Running, cert
+  Ready, external-dns record, 401 without auth / 200 with; from the pod
+  it reaches fishcam, blackcam and blackcam's ESPHome API. `claude mcp`
+  entry `rover-brain` now points at the hosted endpoint
+  (`rover-brain-local` keeps the stdio copy). homelab-helper also moved
+  print-warden's printer-camera plan off camv3 (fishcam as an overview).
 
 Standing project rules live in [CLAUDE.md](CLAUDE.md) - read that first;
 decisions and their reasoning are in the dated entries below. The

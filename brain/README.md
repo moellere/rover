@@ -41,6 +41,15 @@ the loop - see the reversing rule in the project `CLAUDE.md`.
 
 ## Hosting
 
+**Hosted since 2026-10-05** on the home Kubernetes cluster: Argo CD app
+`app-rover-brain` (moellere/argocd, `applications/rover-brain/`), namespace
+`rover-brain`, image `ghcr.io/moellere/rover:X.Y.Z` (built by
+`.github/workflows/brain-image.yml` on `v*` tags - bump the tag in the
+argocd manifest to deploy), endpoint `https://rover-brain.dorktool.com/mcp`
+behind Traefik basic auth; credentials as SealedSecrets. Placement chosen by
+the homelab-helper session. The user-scope `claude mcp` entry `rover-brain`
+points there; `rover-brain-local` is the stdio copy on the dev VM.
+
 `brain/Dockerfile` builds a container that serves **Streamable HTTP on
 :8000 at `/mcp`** (`BRAIN_TRANSPORT=http`). Locally it still runs over
 stdio via `brain/run.sh`. Every host, key and password comes from the

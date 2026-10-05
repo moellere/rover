@@ -80,7 +80,7 @@ and comes first.
 | 3.4a | Brake on stop - switchable, **boots off**: no measurable change in distance (09-29) and no cure for the end-of-pulse yaw (10-05 - the caster, see 0.7) | rover firmware (Enoch OK'd) | `stop` shorts the windings for ~150 ms (both IN pins on, EN high) before releasing - cuts the coast from ~8 cm to ~3 cm at cruise; matters most for the cliff stop |
 | 3.4d | Spinal cord on an ESP32 - **done 2026-10-03: `rover32` live, no expander, TFMini on its own bus, battery calibrated, drive verified on the bench** | ESP32 devkit (inventory); port of `rover.yaml`, first flash by USB | TFMini on its own I2C bus so a stuck sensor can't take the MCP23008 (motors, cliff) down; spare UARTs; prerequisite for one-board consolidation (3.5) |
 | 3.4b | Rear cliff sensors | 2 more IR modules, GPIO33/13 reserved | reversing is blind today; near miss 2026-09-29 |
-| 3.4c | Brain as a hosted service | container + MCP endpoint; placement via homelab-helper | for unattended runs and persistent state (Phase 3); the dev-VM script is a bench-phase arrangement |
+| 3.4c | ~~Brain as a hosted service~~ **done 2026-10-05** (k8s app `rover-brain`, ghcr image, basic-auth ingress; placement by homelab-helper) | container + MCP endpoint; placement via homelab-helper | for unattended runs and persistent state (Phase 3); the dev-VM script is a bench-phase arrangement |
 | 3.5 | One-board consolidation | - | partly moot: the ESP32 spinal cord has pins to spare; folding the camera in is the remaining step, and blackcam already shows a T-Camera can carry an extra job |
 | 3.6 | Brownout watch | - | log resets/WiFi drops; add the rail capacitor if they show |
 
