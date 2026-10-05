@@ -63,7 +63,8 @@ breakdown of the notable decisions. Newest entry on top.
   now the brain's `bench` camera; camv3 moves to the Eufy as its lid
   camera (Enoch's choice; the ESP32-C3 takes the IR job). First overhead
   test: two straight pulses, then a 20-25 deg yaw exactly where the front
-  wheels met the **bench hatch's lip** (Enoch confirmed a slight lip).
+  wheels met the **bench hatch's lip** (Enoch confirmed a slight lip; the
+  black T-shape Claude first called its hinge is his solder fan).
   Revised picture of the swings: the swivel caster lets the rear swing,
   and bumps/seams (the hatch lip) or the stop transient start it. Fixes:
   the caster skid (printing) and a no-go/cross-square rule for the hatch
