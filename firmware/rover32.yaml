@@ -75,6 +75,10 @@ globals:
     type: float
     restore_value: no
     initial_value: '1000'
+  - id: kick
+    type: bool
+    restore_value: no
+    initial_value: 'false'
 
 # Pin map for awning
 #MCP0: Connected to L298N IN1
@@ -472,12 +476,17 @@ api:
           condition:
             lambda: 'return id(battery_ok) && !id(cliff_detected) && !id(obstacle_ahead);'
           then:
+            # Kick start (2026-10-05): from rest, both motors at 100% for the
+            # first 100 ms so both wheels break stiction together - a short
+            # pulse at 75% could free one wheel and not the other, pivoting
+            # Grover hard. Then drop to the normal duty + trim.
+            - lambda: 'id(kick) = id(motion_status).state == "Stopped" || id(motion_status).state == "";'
             - output.set_level:
                 id: left_pwm
-                level: !lambda 'return std::min(1.0f, id(drive_duty).state / 100.0f * (1.0f + id(left_trim).state / 100.0f));'
+                level: !lambda 'return id(kick) ? 1.0f : std::min(1.0f, id(drive_duty).state / 100.0f * (1.0f + id(left_trim).state / 100.0f));'
             - output.set_level:
                 id: right_pwm
-                level: !lambda 'return id(drive_duty).state / 100.0;'
+                level: !lambda 'return id(kick) ? 1.0f : id(drive_duty).state / 100.0f;'
             - output.turn_on: left_forward_pin
             - output.turn_on: right_forward_pin
             - output.turn_off: left_reverse_pin
@@ -485,6 +494,21 @@ api:
             - text_sensor.template.publish:
                 id: motion_status
                 state: "Forward"
+            - if:
+                condition:
+                  lambda: 'return id(kick);'
+                then:
+                  - delay: 100ms
+                  - if:
+                      condition:
+                        lambda: 'return id(motion_status).state == "Forward";'
+                      then:
+                        - output.set_level:
+                            id: left_pwm
+                            level: !lambda 'return std::min(1.0f, id(drive_duty).state / 100.0f * (1.0f + id(left_trim).state / 100.0f));'
+                        - output.set_level:
+                            id: right_pwm
+                            level: !lambda 'return id(drive_duty).state / 100.0f;'
           else:
             - script.execute: motor_stop
             - text_sensor.template.publish:
@@ -500,12 +524,17 @@ api:
           condition:
             lambda: 'return id(battery_ok);'
           then:
+            # Kick start (2026-10-05): from rest, both motors at 100% for the
+            # first 100 ms so both wheels break stiction together - a short
+            # pulse at 75% could free one wheel and not the other, pivoting
+            # Grover hard. Then drop to the normal duty + trim.
+            - lambda: 'id(kick) = id(motion_status).state == "Stopped" || id(motion_status).state == "";'
             - output.set_level:
                 id: left_pwm
-                level: !lambda 'return std::min(1.0f, id(drive_duty).state / 100.0f * (1.0f + id(left_trim).state / 100.0f));'
+                level: !lambda 'return id(kick) ? 1.0f : std::min(1.0f, id(drive_duty).state / 100.0f * (1.0f + id(left_trim).state / 100.0f));'
             - output.set_level:
                 id: right_pwm
-                level: !lambda 'return id(drive_duty).state / 100.0;'
+                level: !lambda 'return id(kick) ? 1.0f : id(drive_duty).state / 100.0f;'
             - output.turn_off: left_forward_pin
             - output.turn_off: right_forward_pin
             - output.turn_on: left_reverse_pin
@@ -513,6 +542,21 @@ api:
             - text_sensor.template.publish:
                 id: motion_status
                 state: "Backward"
+            - if:
+                condition:
+                  lambda: 'return id(kick);'
+                then:
+                  - delay: 100ms
+                  - if:
+                      condition:
+                        lambda: 'return id(motion_status).state == "Backward";'
+                      then:
+                        - output.set_level:
+                            id: left_pwm
+                            level: !lambda 'return std::min(1.0f, id(drive_duty).state / 100.0f * (1.0f + id(left_trim).state / 100.0f));'
+                        - output.set_level:
+                            id: right_pwm
+                            level: !lambda 'return id(drive_duty).state / 100.0f;'
           else:
             - script.execute: motor_stop
             - text_sensor.template.publish:
