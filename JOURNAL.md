@@ -70,7 +70,12 @@ breakdown of the notable decisions. Newest entry on top.
   the caster skid (printing) and a no-go/cross-square rule for the hatch
   in CLAUDE.md. Next: an ArUco marker taped on Grover's top so the
   overhead camera measures heading exactly (colour-segmenting the thin
-  blue beam wasn't reliable).
+  blue beam wasn't reliable). A second overhead run in the lane *above* the hatch (Enoch moved
+  Grover there) still pivoted ~90 deg left over two pulses, and a kicked
+  0.3 s pulse now covers ~45 cm. So the hatch lip is a trigger, not the
+  cause; the free swivel caster remains the prime suspect (skid printed,
+  to fit), with the kick start's extra speed feeding it - trim the kick
+  (50 ms or 85 %) after the skid test.
 
 Standing project rules live in [CLAUDE.md](CLAUDE.md) - read that first;
 decisions and their reasoning are in the dated entries below. The
