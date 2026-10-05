@@ -140,7 +140,7 @@ interval:
   # write 01 02 07, read 7 bytes [valid, -, dist cm LE, strength LE, mode].
   # With the guard enabled, a missing sensor (5 failed reads) counts as an
   # obstacle - fail safe, forward refused - rather than as a clear lane.
-  - interval: 100ms
+  - interval: 50ms   # was 100 ms: at kicked speed ~10 cm passed per poll (2026-10-05)
     then:
       - lambda: |-
           const uint8_t cmd[3] = {0x01, 0x02, 0x07};
@@ -151,7 +151,7 @@ interval:
           // and left the sensor holding SCL low (2026-10-03).
           auto ew = id(bus_b).write_readv(0x10, cmd, 3, buf, 7);
           static uint8_t dbg = 0;
-          if (++dbg >= 20)  // one line per 2 s: result code (0 = ok) and raw frame
+          if (++dbg >= 40)  // one line per 2 s: result code (0 = ok) and raw frame
             dbg = 0, ESP_LOGD("tfmini", "wr=%d raw=%02X %02X %02X %02X %02X %02X %02X", (int) ew,
                               buf[0], buf[1], buf[2], buf[3], buf[4], buf[5], buf[6]);
           if (ew != i2c::ERROR_OK) {
@@ -372,7 +372,7 @@ number:
     min_value: 0
     max_value: 200
     step: 5
-    initial_value: 35
+    initial_value: 50   # was 35: a kicked pulse ended 15 cm from a box (2026-10-05)
     optimistic: true
     entity_category: config
   # Per-side balance for straight driving: scales the LEFT motor's duty on
