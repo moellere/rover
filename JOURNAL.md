@@ -54,7 +54,11 @@ breakdown of the notable decisions. Newest entry on top.
   stopping pulse; **with the swivel caster zip-tied straight, Grover
   stopped square**. Leading cause: the swivel caster twisting the rear on
   stops. Fix: Makeblock ball caster if in inventory, else a printed PETG
-  fixed skid in the caster's holes (needs hole spacing and mount height).
+  fixed skid in the caster's holes (needs hole spacing and mount height). No ball caster in inventory, so: `hardware/caster-skid.scad` - a domed
+  22 mm PETG puck, 36 mm tall, on one M5 bolt with a captive nut; staged.
+  Also answered Enoch on the BMS: balance pads are taps only (no cutting
+  between cells); the only re-route is the pack negative, which now goes
+  to the board's 0V/B- while the load's negative moves to P-.
 
 Standing project rules live in [CLAUDE.md](CLAUDE.md) - read that first;
 decisions and their reasoning are in the dated entries below. The
