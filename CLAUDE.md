@@ -30,8 +30,9 @@ cliff sensors installed.
 
 ## Architecture (decided 2026-09-28)
 
-Three layers: the D1 Mini is the **spinal cord** (ESPHome; watchdog,
-disconnect-stop, cliff and battery guards in firmware - authoritative), the
+Three layers: an ESP32 (`rover32`, since 2026-10-03; was a D1 Mini) is the
+**spinal cord** (ESPHome; watchdog, disconnect-stop, cliff, battery and
+TFMini obstacle guards in firmware - authoritative), the
 T-Camera is the **eyes** (ESPHome; snapshot/stream), and `brain/` is the
 **brain** - an off-board MCP server where autonomy lives. Drive the rover
 through the `rover-brain` MCP tools, not ad-hoc scripts. Consolidating both
@@ -41,15 +42,17 @@ ESPs onto one board is a known later step (see BOM.md), not now.
 **trike** (two driven wheels + trailing caster), not the tank. Tank tracks
 had to skid sideways to pivot, which caused stiction and left/right
 asymmetry. Steering is still differential, so `left`/`right` mean the same
-thing. The kit's Me Orion board is *not* used - the D1 Mini + ESPHome
-stays (Orion has no WiFi and the safety firmware is proven).
+thing. The kit's Me Orion board is *not* used - an ESP + ESPHome stays
+(Orion has no WiFi and the safety firmware is proven). The swivel caster
+twists the rear on stops; a fixed printed skid replaces it (2026-10-05).
 
 ## Homing runs need a clear lane
 
-`home_to_marker` has no obstacle sensing yet (the TFMini is the plan): it
-will drive over cables, mats and small objects between it and the marker.
-Check the lane on the bench camera before a run, and keep the marker
-placed so the approach path is clear.
+The TFMini guard stops for things **straight ahead** above ~5 cm, but its
+2.3 deg beam misses anything off-centre or low (cables, mats, a box corner,
+a table leg seen at an angle). Check the lane on a bench camera before a
+run, keep the marker's approach clear, and when driving anywhere else take
+a camera frame after every pulse (house run, 2026-10-04).
 
 ## Reversing the trike
 
@@ -107,11 +110,13 @@ fallback is to switch to Opus 5.5 or wait for the reset.
 ## Standing permissions
 
 - **Dedicated to this project, flash/modify freely** (Enoch, 2026-09-29,
-  "for the time being"): the rover's spinal cord (D1 Mini), the T-Camera
-  (`redcam`), and both bench cameras, `camv3` and `fishcam`.
-- **The IR bridge (`eufy-ir`) may also be reflashed** - Enoch OK'd it
-  2026-09-28 when the captured codes went in. Every other device still
-  needs a check-in first.
+  "for the time being"): the rover's spinal cord (`rover32`), the
+  T-Camera (`redcam`), both bench cameras (`camv3`, `fishcam`), the
+  Eufy's lid board (`blackcam`) and the IR test nodes (`eufy-ir8266`,
+  `eufy-ir-c3`). Every other device still needs a check-in first.
+- **Physical setup is Enoch's to confirm.** When a test needs him to move,
+  aim or wire something, describe the setup and wait for his "go" before
+  capturing or sending - don't start while he's still placing things.
 
 ## Choosing the next step (Enoch, 2026-09-29)
 

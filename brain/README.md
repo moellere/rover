@@ -5,8 +5,9 @@ MCP client) talks to instead of poking ESPHome services and camera URLs by
 hand. It runs off-board - on the dev VM today, on the cluster later - and
 is where autonomy (visual homing, docking) will be written.
 
-Architecture, for the record: the D1 Mini stays the *spinal cord* (ESPHome;
-watchdog, disconnect-stop, cliff and battery guards in firmware), the
+Architecture, for the record: an ESP32 (`rover32`) is the *spinal cord*
+(ESPHome; watchdog, disconnect-stop, cliff, battery and obstacle guards in
+firmware), the
 T-Camera stays the *eyes* (ESPHome; snapshot/stream), and this service is
 the *brain*. The firmware guards are authoritative; this server only adds a
 courtesy layer that refuses obviously bad requests early.
@@ -15,12 +16,12 @@ courtesy layer that refuses obviously bad requests early.
 
 | Tool | What it does | Limits |
 |---|---|---|
-| `status` | motion, battery voltage, both cliff sensors, uptime, WiFi dBm, `brake_on_stop` | - |
+| `status` | motion, battery voltage, both cliff sensors, uptime, WiFi dBm, `brake_on_stop`, TFMini `front_range_cm`/`front_range_valid`, `obstacle_stop_cm` | - |
 | `snapshot(camera)` | JPEG from `bench` (camv3, behind the rover), `front` (fishcam, across the bench, head-on) or `rover` (onboard T-Camera) | - |
 | `drive(direction, seconds)` | pulse `forward`/`backward`/`left`/`right`, then stop | capped at 1.0 s per call, 0.3 s gap between pulses, refused below 9.6 V or when a cliff sensor is active (backward still allowed) |
 | `find_marker(camera)` | ArUco 4x4_50 markers in a fresh frame: id, pixel centre, apparent size, bearing (+ = right), distance in mm (per-camera calibration via `BENCH_CAM_FOCAL_PX` / `ROVER_CAM_FOCAL_PX`; bench cam calibrated 2026-09-29 at 1062 px, rover cam at 437 px, front cam not yet (`FRONT_CAM_FOCAL_PX`). A CLAHE contrast pass retries frames where plain detection finds nothing (backlit marker) - a ~111 deg fisheye, so the 80 mm marker decodes only within ~1 m; use the 160 mm id-1 marker beyond that) | - |
-| `set_obstacle_stop(cm)` | firmware TFMini guard distance; 0 = off. Boots at 35; `home_to_marker` relaxes it inside 35 cm and restores it after | - |
-| `set_brake(on)` | firmware `Brake on stop` switch (off = coast, for A/B tests) | - |
+| `set_obstacle_stop(cm)` | firmware TFMini guard distance; 0 = off. Boots at 50; `home_to_marker` relaxes it once the camera has the marker inside that distance, and restores it after | - |
+| `set_brake(on)` | firmware `Brake on stop` switch (boots off) | - |
 | `stop` | stop now | - |
 
 Orientation note: on the bench, `forward` moves the rover away from the fixed

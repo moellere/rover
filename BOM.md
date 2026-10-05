@@ -9,7 +9,7 @@ to just go buy something himself (as with the IR sensors below), it doesn't
 draw against it. Update the running total every time something *is* drawn
 from it - don't let it go stale.
 
-**Budget spent so far: $3.29 — remaining: $96.71** (as of 2026-09-29)
+**Budget spent so far: $3.29 — remaining: $96.71** (as of 2026-10-05)
 
 | Date | Item | Cost |
 |---|---|---|
@@ -17,91 +17,42 @@ from it - don't let it go stale.
 | 2026-09-29 | 3S 40A BMS protection/balance board (Gebildet, Amazon B0G6JQ8ZFN) - Enoch bought a 3-pack for $8.66 for inventory; one is Grover's, so 1/3 is charged here | $2.89 |
 | 2026-09-28 | ~~Eufy RoboVac 12 replacement battery (Amazon)~~ ordered at $18.10, then cancelled the same evening - the vacuum's bottom power switch was off, the pack is fine | $0.00 |
 
-## Bill of Materials (currently in the design)
+## Bill of Materials - Grover (as built, 2026-10-05)
 
-Everything below is either installed on the rover or, for the camera, fixed
-in place watching the workbench.
+All from Enoch's inventory unless the Source column says otherwise.
 
 | Component | Qty | Role | Source | Status |
 |---|---|---|---|---|
-| Makeblock Starter Robot Kit, **trike configuration** (two driven wheels + trailing caster; was the tank until 2026-09-29) | 1 kit (chassis + 2 DC gear motors) | Drivetrain | Inventory | Installed |
-| Wemos D1 Mini (ESP8266) | 1 | Main controller | Inventory | Installed |
-| L298N dual H-bridge module | 1 | Motor driver; its onboard regulator also supplies the D1 Mini's 5V (~0.5A rating) | Inventory | Installed |
-| ~~MCP23008~~ (retired with the ESP32 spinal cord, 2026-10-03; direction and cliff pins go direct)
-| MCP23008 I2C GPIO expander | 1 | Drives the L298N's 4 direction pins - added because the D1 Mini didn't have enough spare GPIO | Inventory | Installed |
-| 18650 Li-ion cell | 3 (wired 3S) | Power, ~12.6V full / ~9.0V empty | Inventory | Installed - pack swapped 2026-09-29 (the first set drained ~0.07 V/min at idle: weak cells); no BMS yet, so charge the set together and full |
-| Resistor, 100kΩ + 27kΩ | 1 each | Battery-voltage divider: pack+ (L298N +12V terminal) -> junction -> A0, junction -> 27kΩ -> GND | Inventory | Installed - divider wired and calibrated (`multiply: 15.618`, reads 11.77V vs. a multimeter's 11.79V) |
-| ONVIF camera, Thingino firmware ("camv3") | 1 | Fixed overhead workbench vision (not rover-mounted) | Inventory | Installed |
-| Wyze Cam Pan v2, Thingino firmware ("fishcam") | 1 | `front` camera: across the bench, head-on view of the rover (since 2026-09-29) | Inventory | Installed |
-| ESP32-WROVER T-Camera | 1 | Spare board, earmarked for a possible future onboard FPV/vision upgrade | Inventory | Owned, not deployed |
+| Makeblock Starter Robot Kit, **trike** (two driven wheels + trailing caster; tank until 2026-09-29) | 1 | Chassis and two DC gear motors | Inventory | Installed |
+| ESP32 devkit (WROOM-32D, 38-pin) - `rover32` | 1 | Spinal cord (ESPHome): enables GPIO16/17, direction GPIO18/19/22/23, cliff GPIO35/32, TFMini I2C GPIO25/26, battery GPIO34 | Inventory (was the Eufy IR node's board) | Installed 2026-10-03 |
+| L298N dual H-bridge | 1 | Motor driver | Inventory | Installed |
+| 18650 Li-ion cells | 3 (3S) | Power, 12.6 V full / ~9 V empty | Inventory | Installed; one weak set retired 09-29, one bad cell found 10-04 - charge the set together and full |
+| LM2596 buck, set to 5.2 V | 1 | 5 V for the ESP32 (VIN), the camera (spliced micro-USB) and the TFMini | Inventory | Installed |
+| Resistors 100k + 27k | 1 each | Battery divider into GPIO34 (x4.664, calibrated 10-03 against a meter) | Inventory | Installed |
+| Benewake TFMini (SparkFun SEN-14786) | 1 | Forward LiDAR: obstacle stop 50 cm, range for homing | Inventory | Installed on the printed bracket; direct GH1.25 lead, 5 V |
+| GH1.25-to-Dupont lead (kit B087N4GY8Z) | 1 | TFMini direct connection (replaced the Qwiic boost chain and LD33V) | $0.40 prorated (budget) | Installed |
+| TCRT5000 cliff modules (HW-870) | 2 | Front cliff detection, DO at 3.3 V | Enoch's purchase (not budget) | Installed on v4 mounts |
+| TTGO T-Camera (`redcam`) | 1 | Rover camera | Inventory | Installed (printed cradle + adapter strip) |
+| Printed parts (PETG): camera cradle, adapter strip, TFMini bracket, cliff mounts v4 (L+R) | - | see `hardware/README.md` | $0 | Installed |
+| Printed caster skid (`hardware/caster-skid.scad`) + M5 bolt 25-30 mm + nut | 1 | Replaces the swivel caster (it yaws the rear on stops) | $0 | Staged to print |
+| 3S BMS 40A board (1 of a 3-pack, B0G6JQ8ZFN) | 1 | Per-cell protection + balancing | $2.89 prorated (budget) | In hand, install deferred |
+| Bench cameras: `camv3` (Thingino), `fishcam` (Wyze Pan v2, Thingino PTZ) | 2 | Watch the bench from behind and head-on | Inventory | Installed |
 
-## Shopping list (needed, not yet installed)
+Retired: Wemos D1 Mini (now the bench IR test node `eufy-ir8266`), MCP23008
+expander, LD33V regulator (TFMini now on 5 V directly), the Qwiic adapter
+chain.
 
-Firmware support for all of these is already written and waiting (see
-`firmware/rover.yaml`) - driving is unaffected until they're wired in.
+## Bill of Materials - the Eufy (house chassis)
 
-| Item | Qty | Purpose | Est. cost | Status |
+| Component | Qty | Role | Source | Status |
 |---|---|---|---|---|
-| IR reflectance sensor module (e.g. TCRT5000-based) | 2 | Front-left / front-right cliff detection, into MCP23008 pins 4 and 5 | N/A - purchased directly by Enoch, not drawn from Claude's budget | **Ordered**, awaiting delivery/install |
-| 3S BMS protection/balance board, 40A (Gebildet 3-pack, Amazon B0G6JQ8ZFN) | 1 of 3 | Per-cell over-discharge/overcharge/short protection and top balancing for the 18650 pack - the firmware's 9.3 V guard only sees the pack total. Not a charger: still needs a 12.6 V CC/CV source. Wiring: B-, B1 (cell 1-2 junction), B2 (cell 2-3), B+ to the cells; P-/P+ to the load, with the voltage divider on the P side. The holder likely needs two balance taps soldered on - plan with Enoch first. Drill-style boards may ship latched off until charge voltage is applied once | $2.89 (1/3 of $8.66) | **In hand** 2026-10-03. Pads: `0V` cell1-, `4.2V` cell1/2 junction, `8.4V` cell2/3 junction, `12.6V` pack+, bottom-centre pads = P-/P+ (shared charge/discharge port). Connect 0V -> 4.2V -> 8.4V -> 12.6V, then the load; may need a charge pulse to wake. Balance = 43 ohm bleeders, charging only. Bench PSU at 12.6 V CC/CV is the charger. **Deferred** (Enoch, 2026-10-03): rover first |
-| Electrolytic capacitor, 470-1000µF (contingency) | 1 | Only if brownouts/WiFi drops show up once the cliff sensors share the L298N's 5V rail with the radio | ~$1, would draw from budget if needed | Not needed unless that happens |
-
-First budget draw: the BMS board ($2.89), 2026-09-29.
-
-## In progress: onboard camera (next milestone after cliff sensors)
-
-Goal: mount an existing TTGO T-Camera (ESP32-WROVER-B, OV2640, hostname
-`redcam`) on the rover so it has its own eyes, ahead of Phase 3 (house-wide
-roaming, where the fixed workbench camera won't help). It already runs a
-working ESPHome build - camera streaming (SXGA, ports 8080 stream / 8081
-snapshot), a 0.96" OLED status display, a PIR motion sensor, and a restart
-switch - currently deployed fixed/USB-powered elsewhere. See
-[JOURNAL.md](JOURNAL.md) for the reasoning.
-
-**Power plan (researched, not yet built):** the T-Camera has its own onboard
-IP5306 power-management chip whose battery JST connector expects a
-**single-cell 3.7V LiPo** - wiring the rover's 3S pack (9-12.6V) into that
-connector would damage the charge IC. Safe path instead: buck converter ->
-5.0V -> the board's **micro-USB input** (a documented, standard power path
-for this board), not the battery connector. Buck input taps the L298N's
-+12V/GND terminals (downstream of the rover's power switch, so the camera
-powers off with the rover). Set and verify 5.0V output with a multimeter
-before connecting the camera.
-
-| Item | Qty | Purpose | Est. cost | Status |
-|---|---|---|---|---|
-| LM2596 adjustable buck converter (e.g. [Addicore LM2596](https://www.addicore.com/products/lm2596-step-down-adjustable-dc-dc-switching-buck-converter)) | 1 | Battery pack -> 5.0V for the camera, isolated from the L298N's already-tight 0.5A regulator | $0 - Enoch has these in inventory | Confirmed available; output needs setting to 5.0V and verifying with a multimeter before connecting |
-| Spare micro-USB cable, spliced | 1 | Buck converter 5V output -> T-Camera micro-USB power input (identify VBUS/GND by continuity to the plug's outer pins; data wires unconnected). The board's 5-pin bottom connector does NOT accept 5 V power - USB is the only input | $0 - Enoch has spares | Soldered to the buck; **no voltage at the plug yet** - cable/splice being diagnosed |
-| 3.7V single-cell Li-ion pack (on the T-Camera's own JST battery connector) | 1 | Backup power: USB runs the board and charges this cell via the onboard IP5306; if the main pack dies, the camera keeps running so a stranded rover can still report where it is | $0 - Enoch has a spare | Planned - add only after the USB path is built and verified; measure the IP5306's charge-current draw on the main pack first (can reach ~2A) |
-| Benewake TFMini micro-LiDAR (SparkFun Qwiic SEN-14786) + SparkFun Qwiic Adapter (pass-through, no regulator) + Qwiic breadboard breakout | 1 | Forward range for homing stop distance and obstacle stop (roadmap 3.4) | Inventory | Firmware ready (guard boots off). Power plan 2026-09-29: Qwiic 3.3 V line from its own LD33V (below), **not** the D1 Mini's 3V3; SDA -> D2, SCL -> D1 alongside the MCP23008. Mount: `hardware/tfmini-bracket.scad` (staged, not printed); M2 screws x2 for the ears, M4 x 20 + nuts x2 for the beam |
-| GH1.25 4-pin to Dupont 2.54 lead (from kit B087N4GY8Z) | 1 | TFMini direct: sensor's GH socket -> breadboard, so the Qwiic boost board, adapter and LD33V drop out (red 5 V from the buck, black GND, white SDA -> D2, green SCL -> D1). Assemble from the kit's pre-crimped wires; map wires by **pin position** against the stock cable's GH plug, not by colour. Kit Dupont ends may be female - male-male jumpers into the breadboard if so | $0.40 (prorated) | **Ordered** 2026-09-29 by Enoch; the stock cable stays uncut |
-| LD33V (LD1117V33) 3.3 V LDO, TO-220, + 10 uF out / in caps | 1 | Dedicated 3.3 V for the TFMini's Qwiic line, fed from the buck's 5 V - keeps the TFMini's boost off the D1 Mini's small regulator | Inventory (Enoch used it for the TFMini before) | Interim only - retired once the GH lead arrives (direct 5 V) |
-| Second 5 V lead from the buck | 1 | Buck OUT -> D1 Mini 5V/G; the D1 comes off the L298N's linear 5 V regulator (disconnect it - never two regulators on one rail) | Inventory | Planned, with the TFMini wiring |
-| 3D-printed camera mount (`hardware/camera-mount.scad`) | 1 | Pedestal cradle standing the T-Camera upright on the Makeblock plate (8mm M4 grid), lens/PIR/OLED forward, 10° down-tilt, open front, open gap under the board for the bottom-edge micro-USB plug, rear cable window | $0 (~17 g PETG, ~1h15m print) | **v5 printed and in use** (`hardware/prints/camera-mount_v5`) |
-| 3D-printed camera adapter strip (`hardware/camera-strip.scad`) | 1 | Bolts the cradle to the two front M4 standoffs (64 mm c-c) so the camera stops shifting on pulses | $0 (8.8 g PETG, 21 min) | **Printed 2026-09-29 and fitted** |
-| M4 x 8-10mm screws + nuts + washers | 4 | Two into the standoffs, two through the cradle base into the strip | $0 - Makeblock kit hardware | Fitted |
-
-## Candidate: Eufy RoboVac 12 house chassis (issue #1)
-
-| Item | Qty | Purpose | Source | Status |
-|---|---|---|---|---|
-| Eufy RoboVac 12 (+ its dock and IR remote) | 1 | House chassis with native docking/charging, cliff and bumper behaviour; driven by IR | Inventory | Confirmed working: it had simply been switched off at the bottom power switch |
-| IR receiver module (VS1838B-type) | 1 | Captured the remote's codes; stays for adding buttons | Inventory | Wired, GPIO14 |
-| IR LED (940 nm) + 100R resistor | 1 | Transmit codes to the vacuum's receiver from the lid | Inventory - the two on hand turned out dead/wrong; replacements ordered by Enoch (not from Claude's budget) | Wired on IO4; drive path proven with a visible LED; awaiting working IR LEDs |
-| ESP32-WROOM-32D devkit (`esp32dev`) | 1 | IR bridge node `eufy-ir` (`firmware/eufy-ir.yaml`) | Inventory | Flashed, online, 6 captured-code buttons |
+| Eufy RoboVac 12 + dock + remote | 1 | House chassis: its own docking, charging, cliff and bumper behaviour | Inventory | Working |
+| TTGO T-Camera V1.7 (`blackcam`) | 1 | Lid board: camera + IR (IO22), powered from its header 5 V | Inventory (spare) | Flashed and proven 2026-10-04; lid mounting/power next |
+| 940 nm IR LED + NPN (2N2222/2N3904) + 1k base + 33R | 1 set | IR driver, ~105 mA, 2 m range | Inventory (LED/receiver kit) | Wired on blackcam |
+| VS1838B 38 kHz receiver + Wemos D1 Mini (`eufy-ir8266`) | 1 | Bench tool for capturing/decoding remote frames | Inventory | In use |
+| ESP32-C3 Super Mini (`eufy-ir-c3` config) | 1 | Spare IR node if needed | Inventory | Config ready, not flashed |
 
 (The Roomba plan - mini-DIN plug, level shifter - is shelved; the Roomba was gone.)
-
-## Later: one-board consolidation (after visual homing)
-
-Option Enoch raised, kept on file: drive the L298N from the T-Camera over its
-I2C bus instead of the D1 Mini. Direction pins via an MCP23008/MCP23017
-(both in inventory); the two PWM speed lines via a PCA9685 16-channel PWM
-board (~$3-5, not in inventory - would draw from budget), or the PCA9685
-alone for all six lines. Saves ~0.9 W idle (about a third more idle
-runtime) and one WiFi client. Deferred until the safety firmware doesn't
-need re-validating mid-phase. Cheaper interim win: power the D1 Mini from
-the buck converter instead of the L298N's linear regulator (~0.5 W of heat).
 
 ## How to keep this current
 
