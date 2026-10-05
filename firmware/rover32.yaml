@@ -336,33 +336,30 @@ sensor:
     attenuation: 12db
     name: "Battery Voltage"
     id: battery_voltage
-    update_interval: 30s
+    update_interval: 5s
     filters:
       # External divider only (100k top / 27k bottom): nominal 4.704.
       # Calibrated 2026-10-03: 4.704 reported 12.002 V with the meter at
       # 11.90 V across the pack -> 4.704 * 11.90 / 12.002 = 4.664.
       - multiply: 4.664
+      # Rolling 25 s average, published every sample. (Was send_every 5 at
+      # 30 s: one bad first sample after a reboot latched "low battery"
+      # and nothing could clear it for 2.5 min - 2026-10-05.)
       - sliding_window_moving_average:
           window_size: 5
-          send_every: 5
-    on_value_range:
-      - below: 9.3
-        then:
-          - lambda: |-
-              id(battery_ok) = false;
-          - script.execute: motor_stop
-          - text_sensor.template.publish:
-              id: motion_status
-              state: "Stopped (low battery)"
-          - logger.log: "Battery critical, disabling drive"
-      - above: 9.6
-        then:
-          - lambda: |-
-              id(battery_ok) = true;
-
-# Motor duty, adjustable live over the API so the brain can tune without a
-# reflash. The trike pivots ~30 deg per 0.1 s at 100%; 50% is the starting
-# point. Values survive reboots.
+          send_every: 1
+    on_value:
+      - lambda: |-
+          if (millis() < 20000) return;          // ignore the boot transient
+          if (x < 9.3f && id(battery_ok)) {
+            id(battery_ok) = false;
+            id(motor_stop).execute();
+            id(motion_status).publish_state("Stopped (low battery)");
+            ESP_LOGW("battery", "Battery critical (%.2f V), disabling drive", x);
+          } else if (x > 9.6f && !id(battery_ok)) {
+            id(battery_ok) = true;
+            ESP_LOGI("battery", "Battery recovered (%.2f V), drive enabled", x);
+          }
 number:
   # 0 = guard off. Boots at 35 cm (verified 2026-10-03: forward refused and
   # a forward move cut once the range dropped under it). The TFMini goes
@@ -514,7 +511,7 @@ api:
             - text_sensor.template.publish:
                 id: motion_status
                 state: "Stopped"
-            - logger.log: "Forward blocked (cliff, obstacle or low battery)"
+            - lambda: 'ESP_LOGW("guard", "Forward blocked: battery_ok=%d cliff=%d obstacle=%d range=%.0f last_good=%.0f", id(battery_ok), id(cliff_detected), id(obstacle_ahead), id(front_range).state, id(last_good_cm));' 
     - action: backward
       then:
       - script.stop: motor_stop
