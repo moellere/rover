@@ -119,7 +119,19 @@ breakdown of the notable decisions. Newest entry on top.
   watchdog would turn *on*), so instead the IR queue is capped at one
   sending + one waiting, so a vision loop can't have a stale backlog fire
   late. Navigation plan: brain-side step-and-measure loop (nudge, frame,
-  re-plan), optional IMU on the lid board for closed-loop turns.
+  re-plan), IMU on the lid board only if turns can be interrupted.
+- **Can a nudge be cut short?** (Enoch asked how a gyro helps if a turn is
+  a fixed 30-45 deg.) Test: Left, then Start/Stop 300 ms later on the same
+  API connection. The turn completed to about the baseline angle (in
+  progress at 0.5 s, done by 1 s), and Start/Stop neither stopped it nor
+  started a cleaning cycle - ignored mid-nudge. Read by eye: ORB matching
+  on the glossy lid gave too few inliers; the id-2 marker on the lid would
+  make this exact. Not yet tried: interrupting with the opposite turn.
+  Home from ~10 cm off the dock, rotated: docked and charging within 30 s.
+  Working conclusion: turns are fixed ~30 deg quanta; the gyro is shelved
+  (it could only measure them), navigation is nudge-and-look with the
+  camera correcting, and finer control would mean driving the wheel
+  motors directly - Enoch's call.
 
 Standing project rules live in [CLAUDE.md](CLAUDE.md) - read that first;
 decisions and their reasoning are in the dated entries below. The
