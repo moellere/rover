@@ -59,6 +59,17 @@ breakdown of the notable decisions. Newest entry on top.
   Also answered Enoch on the BMS: balance pads are taps only (no cutting
   between cells); the only re-route is the pack negative, which now goes
   to the board's 0V/B- while the load's negative moves to P-.
+- **fishcam remounted overhead** (Enoch), looking straight down the bench -
+  now the brain's `bench` camera; camv3 moves to the Eufy as its lid
+  camera (Enoch's choice; the ESP32-C3 takes the IR job). First overhead
+  test: two straight pulses, then a 20-25 deg yaw exactly where the front
+  wheels met the **bench hatch's lip** (Enoch confirmed a slight lip).
+  Revised picture of the swings: the swivel caster lets the rear swing,
+  and bumps/seams (the hatch lip) or the stop transient start it. Fixes:
+  the caster skid (printing) and a no-go/cross-square rule for the hatch
+  in CLAUDE.md. Next: an ArUco marker taped on Grover's top so the
+  overhead camera measures heading exactly (colour-segmenting the thin
+  blue beam wasn't reliable).
 
 Standing project rules live in [CLAUDE.md](CLAUDE.md) - read that first;
 decisions and their reasoning are in the dated entries below. The

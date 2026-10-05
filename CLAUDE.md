@@ -75,6 +75,11 @@ outline - check it, and the lane, before every run and before any reverse.
 `camv3` (until now the rear view) is moving to the Eufy's lid; the brain's
 `front` name points at it until it's renamed `eufy`.
 
+**The bench has a hatch** (the outlined panel with a hinge, in the middle
+of the overhead frame) whose edge has a slight lip. A wheel catching it
+yaws Grover 20-30 deg (seen from overhead 2026-10-05). Plan runs around
+it, or cross it square and slowly.
+
 (History: camv3 used to watch Grover's rear at bench level, and Claude got
 `forward`/`backward` backwards once from that view, 2026-09-28. With the
 overhead view, read the direction from the frame each time.)
