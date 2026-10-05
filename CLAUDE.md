@@ -67,16 +67,17 @@ one** - never a scripted sequence checked only through the rover camera.
 
 ## Rover orientation on the bench
 
-The bench camera looks at the rover's **rear** (the 18650 pack faces the
-camera). So `forward` drives *away* from the camera toward the pegboard and
-the marker; `backward` drives *toward* the camera and the near edge. Claude
-got this backwards once (2026-09-28); check the frame before choosing a
-direction.
+Since 2026-10-05 the `bench` camera is **fishcam, mounted overhead looking
+straight down** (PTZ; pan sweeps along the bench). In its frame the marker
+end is on the **left**, the open garage-side edge along the **top**, the
+pegboard along the **bottom**. Grover's heading reads directly off its
+outline - check it, and the lane, before every run and before any reverse.
+`camv3` (until now the rear view) is moving to the Eufy's lid; the brain's
+`front` name points at it until it's renamed `eufy`.
 
-The `front` camera (`fishcam`, since 2026-09-29) sits across the bench at
-the marker end and sees the rover **head-on**, with the bench's long
-open edge on the left of its frame (the rover's right). Use it to check the
-lane ahead and sideways drift before forward runs.
+(History: camv3 used to watch Grover's rear at bench level, and Claude got
+`forward`/`backward` backwards once from that view, 2026-09-28. With the
+overhead view, read the direction from the frame each time.)
 
 ## Token budget
 
