@@ -108,7 +108,12 @@ remote_transmitter:
 
 script:
   - id: eufy_tx
+    # Commands are fixed nudges that finish within ~1 s (measured 2026-10-05),
+    # so nothing is ever left "running" for a disconnect watchdog to stop.
+    # The real hazard for a vision loop is a stale backlog firing late, so
+    # cap the queue: one sending, one waiting, extras dropped.
     mode: queued
+    max_runs: 2
     parameters:
       command: int
     then:

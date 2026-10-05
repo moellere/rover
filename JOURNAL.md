@@ -106,6 +106,20 @@ breakdown of the notable decisions. Newest entry on top.
   entry `rover-brain` now points at the hosted endpoint
   (`rover-brain-local` keeps the stdio copy). homelab-helper also moved
   print-warden's printer-camera plan off camv3 (fishcam as an overview).
+- **Eufy motion characterised** (Enoch: "I believe the movements will be
+  fixed nudges... validate now"). Garage floor, docked, lights on via HA;
+  one IR command each, blackcam frames at 1 s and 4 s. Every command is a
+  **fixed nudge, finished within 1 s**: Backward ~5-10 cm off the dock,
+  Left a ~30-45 deg rotation, Right roughly undid it, Forward drove it
+  straight back onto the dock contacts (charging LED). Home wasn't needed.
+  Rough numbers from a camera on the lid itself - a calibrated run with
+  the overhead camera and the id-2 marker is still to do. Consequence: the
+  disconnect-stop watchdog planned for blackcam would protect nothing (no
+  command leaves the vacuum moving; Start/Stop is a toggle that a blind
+  watchdog would turn *on*), so instead the IR queue is capped at one
+  sending + one waiting, so a vision loop can't have a stale backlog fire
+  late. Navigation plan: brain-side step-and-measure loop (nudge, frame,
+  re-plan), optional IMU on the lid board for closed-loop turns.
 
 Standing project rules live in [CLAUDE.md](CLAUDE.md) - read that first;
 decisions and their reasoning are in the dated entries below. The
