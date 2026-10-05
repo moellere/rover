@@ -85,6 +85,15 @@ breakdown of the notable decisions. Newest entry on top.
   heading; (4) cliff edge-stop test; (5) Eufy lid plate - needs a
   top-down photo with a ruler, the IR receiver location (tape test),
   camv3 off the bench, the C3 IR node flashed, a power bank.
+- **Software while Enoch is away** (his go-ahead; deploy the brain where
+  homelab-helper recommends). Done 10/05: `locate` (overhead pose from
+  ArUco id 2 taped on Grover's top - page generated; self-test within
+  0.2 deg; live frame finds the homing marker), `eufy` tool + `eufy`
+  camera (service lookup verified; no command sent - nobody home to
+  watch the vacuum), Streamable HTTP mode + Dockerfile (image builds,
+  initialize handshake OK), and a fix to `install-brain.sh` (a comment
+  mid-line meant fresh installs got only `mcp`). Placement request sent
+  to the homelab-helper session; camv3-to-Eufy note sent too.
 
 Standing project rules live in [CLAUDE.md](CLAUDE.md) - read that first;
 decisions and their reasoning are in the dated entries below. The
