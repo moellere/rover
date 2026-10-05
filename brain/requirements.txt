@@ -1,0 +1,6 @@
+# rover brain runtime deps (installed by scripts/install-brain.sh and the Dockerfile)
+mcp[cli]>=1.2,<2        # 2.x renamed FastMCP->MCPServer; migrate deliberately
+aioesphomeapi>=24
+opencv-python-headless>=4.8
+numpy
+pyyaml

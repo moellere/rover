@@ -3,7 +3,9 @@ Rover brain - an MCP server that is the high-level front door to the rover.
 
 Tools:
     status              motion, battery, cliff sensors, link quality
-    snapshot(camera)    a JPEG from the bench camera or the rover's own camera
+    snapshot(camera)    a JPEG from bench (overhead), front, rover or eufy
+    locate(camera)      overhead marker poses - Grover's position and heading
+    eufy(command)       drive the Eufy RoboVac over IR via its lid board
     drive(direction, s) a bounded pulse: forward/backward/left/right for at
                         most MAX_PULSE_S, always followed by stop
     stop                immediate stop
@@ -16,6 +18,7 @@ Run (stdio, for Claude Code):  brain/.venv/bin/python -m brain.server
 All hosts and credentials come from environment variables - see
 rover_client.py and cameras.py.
 """
+import os
 import time
 
 from mcp.server.fastmcp import FastMCP, Image
@@ -27,7 +30,10 @@ MAX_PULSE_S = 1.0          # longest single drive pulse this server will issue
 MIN_GAP_S = 0.3            # breathing room between pulses
 LOW_BATTERY_V = 9.6        # refuse to drive below this (firmware cuts at 9.3)
 
-mcp = FastMCP("rover-brain")
+# Transport: stdio by default (Claude Code launches brain/run.sh); set
+# BRAIN_TRANSPORT=http to serve Streamable HTTP at /mcp (the container).
+mcp = FastMCP("rover-brain", host=os.environ.get("BRAIN_HOST", "0.0.0.0"),
+              port=int(os.environ.get("BRAIN_PORT", "8000")))
 _last_drive_end = 0.0
 
 
@@ -128,6 +134,36 @@ async def set_obstacle_stop(cm: float) -> dict:
 
 
 @mcp.tool()
+def locate(camera: str = "bench") -> dict:
+    """Where are the markers on the bench, seen from the overhead camera?
+    Grover carries ArUco id 2 (60 mm) on its top, FRONT edge toward its nose,
+    so id 2's heading is Grover's heading. Angles are in the image frame:
+    0 = image right, 90 = image up (CCW +); with fishcam's mount the homing
+    marker end is 180 and the open garage-side edge is 90. mm_per_px is the
+    local scale from the marker's printed size (approximate away from the
+    image centre - wide lens)."""
+    from brain.overhead import poses_as_dicts, ROVER_TOP_ID
+    if camera not in CAMERAS:
+        raise ValueError(f"camera must be one of {CAMERAS}")
+    found = poses_as_dicts(_snapshot(camera))
+    rover = next((p for p in found if p["id"] == ROVER_TOP_ID), None)
+    return {"camera": camera, "rover": rover, "markers": found}
+
+
+@mcp.tool()
+async def eufy(command: str) -> dict:
+    """Drive the Eufy RoboVac 12 over IR via its lid board: forward, backward,
+    left, right, home (return to dock) or start_stop (start/stop cleaning).
+    Each command is one remote button press. The Eufy works on the FLOOR only
+    - it has no bench guards (CLAUDE.md). Watch it with snapshot('eufy')."""
+    from brain.eufy_client import COMMANDS, EufyClient
+    if command not in COMMANDS:
+        raise ValueError(f"command must be one of {sorted(COMMANDS)}")
+    code = await EufyClient().send(command)
+    return {"ok": True, "command": command, "code": f"0x{code:02X}"}
+
+
+@mcp.tool()
 async def stop() -> dict:
     """Stop the motors now."""
     await RoverClient().stop()
@@ -135,4 +171,7 @@ async def stop() -> dict:
 
 
 if __name__ == "__main__":
-    mcp.run()
+    if os.environ.get("BRAIN_TRANSPORT", "stdio") == "http":
+        mcp.run(transport="streamable-http")
+    else:
+        mcp.run()
