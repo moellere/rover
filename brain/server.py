@@ -32,8 +32,17 @@ LOW_BATTERY_V = 9.6        # refuse to drive below this (firmware cuts at 9.3)
 
 # Transport: stdio by default (Claude Code launches brain/run.sh); set
 # BRAIN_TRANSPORT=http to serve Streamable HTTP at /mcp (the container).
+# Behind a reverse proxy FastMCP's DNS-rebinding check 421s the public Host
+# header; BRAIN_ALLOWED_HOSTS lists the names to accept (host and host:*),
+# BRAIN_DNS_REBINDING_PROTECTION=false disables the check (the cluster
+# ingress only routes the exact hostname, behind basic auth).
+from mcp.server.transport_security import TransportSecuritySettings
+_hosts = [h for h in os.environ.get("BRAIN_ALLOWED_HOSTS", "").split(",") if h]
+_security = TransportSecuritySettings(
+    enable_dns_rebinding_protection=os.environ.get("BRAIN_DNS_REBINDING_PROTECTION", "true") != "false",
+    allowed_hosts=_hosts or ["localhost", "localhost:*", "127.0.0.1", "127.0.0.1:*"])
 mcp = FastMCP("rover-brain", host=os.environ.get("BRAIN_HOST", "0.0.0.0"),
-              port=int(os.environ.get("BRAIN_PORT", "8000")))
+              port=int(os.environ.get("BRAIN_PORT", "8000")), transport_security=_security)
 _last_drive_end = 0.0
 
 
