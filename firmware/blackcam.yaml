@@ -1,0 +1,166 @@
+# Reference copy - the canonical, live-flashed version of this file lives in a
+# private homelab ESPHome config repo (which is where `!include common/...` and
+# `!secret api_key` actually resolve from). This copy won't compile standalone;
+# it's here for history/documentation of the rover project.
+# blackcam: the Eufy RoboVac's lid board (2026-10-04) - camera + IR remote.
+# T-Camera (ESP32-WROVER), same family as redcam; powered from its bottom
+# header 5V (this unit accepts it; redcam does not).
+#
+# IR: IO22 -> 1k -> NPN base, emitter -> GND, 5V -> 33R -> 940 nm LED ->
+# collector (~105 mA). LED aimed down at the Eufy's IR window.
+# Frame: 68 CMD HH MM 5C SUM (HH 12-h hour, MM minute, SUM = low byte of
+# the first five); the vacuum ignores stale times, so frames are stamped
+# from SNTP. Hardware RMT 38 kHz carrier. Cmd: Fwd 2C, Back 7C, Left 3C,
+# Right 6C, Home EF, Start/Stop 4F.
+substitutions:
+  devicename: blackcam
+  
+esphome:
+  name: $devicename
+
+esp32:
+  board: ttgo-t-beam
+  framework:
+    type: esp-idf
+
+<<: !include common/base.yaml
+<<: !include common/sensor.yaml
+
+# ESP32-WROVER-B: 8 MB PSRAM, needed for the camera frame buffers at this rate.
+psram:
+
+# Camera
+esp32_camera:
+  external_clock:
+    pin: GPIO32
+    frequency: 20MHz
+  # ESPHome 2026.x: the camera's SCCB bus is a normal i2c bus now (see `i2c:`)
+  i2c_id: cam_sccb
+  data_pins: [GPIO5, GPIO14, GPIO4, GPIO15, GPIO18, GPIO23, GPIO36, GPIO39]
+  vsync_pin: GPIO27
+  href_pin: GPIO25
+  pixel_clock_pin: GPIO19
+  power_down_pin: GPIO26
+  # Image settings
+  name: $devicename Camera
+  # ...
+  resolution: SXGA
+  horizontal_mirror: true
+  vertical_flip: true
+  # The rover brain polls the snapshot endpoint between drive pulses; the
+  # default idle rate (0.1 fps) serves frames up to 10 s stale. Keep capturing.
+  max_framerate: 10 fps
+  idle_framerate: 1 fps
+
+i2c:
+  # IO21/IO22 were the OLED/IP5306 bus; the OLED is dropped and IO22 drives
+  # the IR LED (see remote_transmitter). IO21 is left alone, so no I2C START
+  # can occur on that bus.
+  - id: cam_sccb
+    sda: GPIO13
+    scl: GPIO12
+    scan: false
+
+#Motion Sensor    
+binary_sensor:
+  - platform: gpio
+    pin: GPIO33
+    name: "Blackcam Motion"
+    id: blackcam_motion
+    device_class: motion
+  - platform: gpio
+    pin:
+      number: GPIO34
+      mode: INPUT
+    name: "Blackcam Button"
+    filters:
+      - invert:
+
+switch:
+  - platform: restart
+    name: "Blackcam Restart"
+    id: "reboot"
+
+# Example configuration entry
+esp32_camera_web_server:
+  - port: 8080
+    mode: stream
+  - port: 8081
+    mode: snapshot
+    
+time:
+  - platform: sntp
+    id: sntptime
+    servers:
+      - 0.pool.ntp.org
+    on_time:
+      # Every morning on weekdays
+      - seconds: 0
+        minutes: 30
+        hours: 1
+        then:
+          - switch.toggle: reboot
+
+remote_transmitter:
+  pin: GPIO22
+  carrier_duty_percent: 50%
+  rmt_symbols: 192
+
+script:
+  - id: eufy_tx
+    mode: queued
+    parameters:
+      command: int
+    then:
+      - remote_transmitter.transmit_raw:
+          carrier_frequency: 38kHz
+          code: !lambda |-
+            auto now = id(sntptime).now();
+            uint8_t hh = 0, mm = 0;
+            if (now.is_valid()) { hh = now.hour % 12; if (hh == 0) hh = 12; mm = now.minute; }
+            else ESP_LOGW("eufy", "no SNTP time yet - the vacuum will probably ignore this");
+            uint8_t b[6] = {0x68, (uint8_t) command, hh, mm, 0x5C, 0};
+            b[5] = (uint8_t) (b[0] + b[1] + b[2] + b[3] + b[4]);
+            std::vector<int32_t> v;
+            v.push_back(2974); v.push_back(-3053);
+            for (int i = 0; i < 6; i++)
+              for (int bit = 7; bit >= 0; bit--) {
+                v.push_back(474);
+                v.push_back((b[i] >> bit) & 1 ? -1553 : -526);
+              }
+            v.push_back(447);
+            ESP_LOGI("eufy", "send %02X %02X %02X %02X %02X %02X", b[0], b[1], b[2], b[3], b[4], b[5]);
+            return v;
+          repeat:
+            times: 3
+            wait_time: 40ms
+
+api:
+  actions:
+    - action: eufy_command
+      variables:
+        command: int
+      then:
+        - script.execute:
+            id: eufy_tx
+            command: !lambda 'return command;'
+
+button:
+  - platform: template
+    name: "Eufy Forward"
+    on_press: [{script.execute: {id: eufy_tx, command: 0x2C}}]
+  - platform: template
+    name: "Eufy Backward"
+    on_press: [{script.execute: {id: eufy_tx, command: 0x7C}}]
+  - platform: template
+    name: "Eufy Left"
+    on_press: [{script.execute: {id: eufy_tx, command: 0x3C}}]
+  - platform: template
+    name: "Eufy Right"
+    on_press: [{script.execute: {id: eufy_tx, command: 0x6C}}]
+  - platform: template
+    name: "Eufy Home"
+    on_press: [{script.execute: {id: eufy_tx, command: 0xEF}}]
+  - platform: template
+    name: "Eufy Start Stop"
+    on_press: [{script.execute: {id: eufy_tx, command: 0x4F}}]

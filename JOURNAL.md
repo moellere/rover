@@ -18,38 +18,180 @@ breakdown of the notable decisions. Newest entry on top.
 
 ## Current status (as of the latest entry below)
 
-**Where things stand, 2026-09-29 (late):**
+**Where things stand, 2026-10-05:**
 
-- **Visual homing works** - `home_to_marker` has driven the rover to a
-  marker unattended three times (tank: 594 -> 90 mm, 667 -> 214 mm;
-  trike: 1109 -> 168 mm). The brain (`brain/`, MCP server `rover-brain`) is the
-  only way the rover is driven.
-- **The chassis is now the trike** (two driven wheels in front, trailing
-  caster) - rebuilt 2026-09-29. First trike homing run: 1109 -> 168 mm in
-  7 pulses. Motor duty is tunable live (`Drive duty` / `Pivot duty`
-  sliders on the rover); forward/backward were remapped in firmware for
-  the new motor orientation.
-- **Camera adapter strip printed and fitted** (`hardware/camera-strip.scad`)
-  - the cradle is bolted to the front standoffs now.
-- **Both ESPs on ESPHome 2026.8.1** (flashed 2026-09-29 once the pack
-  was back), redcam off 2024.9.2. Brake-on-stop is now a firmware switch
-  and is **off**: an A/B on 0.25 s pulses showed no measurable effect.
-- **Three cameras:** `bench` (camv3, rear view), `front` (fishcam, moved
-  across the bench 2026-09-29, head-on view), `rover` (redcam). All three
-  plus the spinal cord are Claude's to flash/modify for now.
-- The running brain MCP needs a reconnect (`/mcp`) to pick up `front`,
-  `set_brake` and the CLAHE marker retry.
-- Firmware: watchdog, disconnect-stop, battery guard (calibrated) live;
-  cliff-sensor guards live but sensors not yet installed (ordered). Camera
-  (`redcam`) on rover power, fresh snapshots (5 fps idle).
-- Eufy RoboVac 12 is the house chassis (IR-driven); IR node proven except
-  its LEDs (replacements on order). Bench camera swap to the PTZ agreed,
-  deferred until bench testing is done.
-- Next: TFMini forward LiDAR (obstacle stop + precise stop distance),
-  cliff sensors when they arrive, D1 Mini onto the buck.
+- **Two robots, one brain.** **Grover** (Makeblock trike, bench platform)
+  and a **Eufy RoboVac 12** (the house chassis, driven over IR). The
+  brain (`brain/`, MCP server `rover-brain`) drives Grover; the Eufy is
+  commanded through its lid board, `blackcam`.
+- **Grover's spinal cord is an ESP32** (`rover32`, ESPHome) since
+  2026-10-03 - no I/O expander, the TFMini alone on its own I2C bus.
+  Guards in firmware: command watchdog, disconnect-stop, low-battery
+  refusal (fixed today - see the week in review), cliff refusal, TFMini
+  obstacle stop at 35 cm (incl. "was close, now too close to measure"),
+  100 ms kick start, left-motor trim +6 %.
+- **Sensors on Grover:** TFMini forward LiDAR (mounted, calibrated to
+  1 cm), two TCRT5000 cliff sensors (v4 mounts put them on each tyre's
+  centreline 65 mm ahead of the axle), rover camera `redcam`, plus two
+  bench cameras (`camv3` behind, `fishcam` PTZ head-on).
+- **Visual homing works** (`home_to_marker`, unattended arrivals to
+  ~9-21 cm of an ArUco marker).
+- **Grover drove through the house** on 10/04 - dining room, foyer,
+  living room, to the kitchen doorway (~12-14 m) - and stopped itself at
+  the edge of anything it couldn't clear (a dog, people, sun glare).
+- **The Eufy is under our control.** Its IR protocol is decoded (the
+  remote stamps the time into every command); `blackcam` (a T-Camera on
+  the lid: camera + IR LED driver) drove it off the dock and sent it home.
+- **Open:** a recurring hard swing at the start of some Grover pulses
+  (kick start + battery-guard fix are the current suspects' remedies,
+  untested); edge-stop test with the v4 cliff mounts; brain as a hosted
+  service; Eufy battery/charging telemetry; BMS boards in hand, deferred.
 
 Standing project rules live in [CLAUDE.md](CLAUDE.md) - read that first;
-decisions and their reasoning are in the dated entries below.
+decisions and their reasoning are in the dated entries below. The
+week-in-review entry right below summarises 09-29 .. 10-05; the dated
+notes after it carry the detail (a few were appended out of order).
+
+---
+
+## 2026-09-29 .. 10-05 - Week in review: trike, TFMini, ESP32, cliff sensors, the house, the Eufy
+
+**Models:** Claude Fable 5.1 through 10/04 afternoon, then **Claude Opus
+5.5** (Fable's usage limit - the fallback CLAUDE.md names). Same
+conversation throughout; the handoff was invisible to the work.
+
+### Guidance from Enoch this week
+- Grover named (09/29). "You tell me what you want to do next" - Claude
+  picks milestones and moves through them without asking (recorded in
+  CLAUDE.md); physical work and purchases still go through Enoch.
+- Device permissions widened: the spinal cord, redcam, camv3, fishcam,
+  the Eufy IR node, blackcam and Grover's ESP32 are Claude's to flash.
+- Hardware realities he supplied: inventory (TFMini, ESP32 devkits,
+  C3/S3/C6 minis, 940 nm LED/receiver kit, NPN transistors, a spare
+  T-Camera that powers from its header), measurements (beam heights,
+  wheel diameter, sensor board), and fixes (bad battery cell, swapped
+  wires, a 3.3 V "GND", mis-wired receivers).
+- Ground rules for the house run: no fall hazard; reversing/pivoting OK;
+  "Taters" (the dog) will ignore you or bark; he watched the last stretch.
+
+### What happened (threads, roughly in order)
+1. **Trike + homing (09/29).** Tank tracks skidded on pivots, so the kit
+   was rebuilt as a two-wheel trike with a trailing caster. Visual homing
+   (closed loop: look, pivot toward the marker, step, re-look) arrived
+   unattended three times. A reverse test put a wheel over the bench
+   edge (caster flip drags the rear); new rule: reverse only in single
+   short pulses, bench camera checked first.
+2. **Brake-on-stop A/B.** Built a dynamic brake into every stop path;
+   measured with the marker as a ruler - no measurable effect on short
+   pulses, and it correlated with camera dropouts, so it became a switch
+   that boots off.
+3. **Battery.** A pack that sagged 2 V in 25 min idle was weak cells (not
+   load) - proven by an idle drain log. 3S BMS boards bought for
+   inventory (pad map recorded; deferred). One more bad cell found 10/04.
+4. **Fishcam joined** as a head-on PTZ view; marker detection gained a
+   CLAHE contrast retry for backlit frames.
+5. **TFMini.** Bracket designed and printed; power plan reworked (Enoch
+   spotted 5 V -> 3.3 V -> boost -> 5 V); direct GH1.25 lead. Bring-up was
+   hard: every I2C read NACKed and the sensor wedged SCL low, taking the
+   motor expander with it. Fix: repeated-start reads, 100 kHz, 20 ms
+   clock-stretch limit. Calibrated (78 vs 77 cm); 35 cm obstacle guard.
+6. **ESP32 spinal cord (`rover32`).** Because a wedged TFMini froze the
+   motor controller, the spinal cord moved to an ESP32 devkit (flashed
+   over WiFi onto the IR node's board), then - Enoch's suggestion - the
+   MCP23008 expander was dropped entirely: direction and cliff pins went
+   direct. Pins re-mapped twice for his layout. Battery sense
+   recalibrated; motor channels and polarity fixed in config after a
+   lifted test.
+7. **Left-motor trim.** A slight drift was real; a `Left trim` number,
+   calibrated on fishcam (0 -> 7 deg/pulse left, +10 -> 5 right, +6 ->
+   straight).
+8. **Cliff sensors (TCRT5000).** Mounts went through four versions with
+   Enoch's fit checks: v1/v2 ribs didn't hold the board, v3 did (Claude
+   rendered a three-view drawing for him to validate before printing),
+   then Enoch pointed out the sensors sat inboard of the wheels - v4 puts
+   each sensor on its tyre's centreline 65 mm ahead of the axle, PCB
+   turned across the robot, slimmed to a spine + arm after his review.
+   Powered at 3.3 V (DO is pulled to VCC; 5 V would exceed the ESP32).
+9. **The Eufy's IR, the long fight.** Captures of the remote decoded into
+   a frame `68 CMD HH MM 5C SUM` - **the remote stamps the current time
+   into every command**, which is why last week's recorded codes were
+   ignored. Transmitting failed for days: a mis-wired receiver, a 100 ohm
+   resistor in the wrong place, a board "GND" at 3.3 V, receiver
+   saturation, an ESP8266 software carrier the receivers never decoded -
+   and, finally, **Claude's own bug**: the ESP32 receiver had been given
+   all 512 RMT symbols, so the transmitter silently failed to initialise
+   and every "send" since 10/02 emitted nothing. Enoch's meter (0 V on
+   the pin) found it. With the RMT split, a hardware carrier, an NPN
+   driver (~105 mA) and time-stamped frames: **Forward and Home worked,
+   from 2 m.**
+10. **blackcam - the Eufy's lid board.** A spare T-Camera now does camera
+   and IR (LED driver on IO22; the OLED dropped so IO21 never moves and
+   the I2C bus stays quiet). It drove the Eufy off its dock and back.
+11. **Grover through the house (10/04).** Hardwood and rugs, short
+   checked legs with a camera frame per pulse. Early on it met a wall at
+   an angle - the TFMini went from "far" to "too close to measure" and
+   neither the firmware nor Claude's loop treated that as an obstacle;
+   both were fixed on the spot. Later it passed Taters on her bed,
+   stopped for a dog that sat up in a doorway, and finished at the
+   kitchen threshold because two people were standing ~1.5 m ahead (a
+   rover at people's feet is a trip hazard).
+12. **Today (10/05).** Temporary IR rig removed from rover32. A guard
+   test was spoiled by another sudden swing, then by forward refusals at
+   62-90 cm; logging the guard flags showed `battery_ok=0`: the port's
+   battery filter published once per 2.5 min and latched "low" from a
+   bad sample after every reboot. Rewritten (rolling 5 s, boot grace,
+   re-arm on any reading > 9.6 V). Added a 100 ms full-power kick start
+   so both wheels break stiction together - the leading suspect for the
+   swings, since mechanics and wiring checked out.
+
+### Decisions, 09-29 .. 10-05
+| Decision | Who | Why |
+|---|---|---|
+| Trike instead of tank | Enoch raised it; Claude chose | track skid caused stiction and asymmetry |
+| Brake-on-stop switchable, boots off | Claude | A/B showed no benefit on short pulses |
+| TFMini direct (no Qwiic boost chain) | Enoch spotted it; Claude planned | removes three parts from the power path |
+| Move the spinal cord to an ESP32 | Claude | a wedged I2C sensor must never freeze the motors |
+| Drop the MCP23008 entirely | Enoch suggested; Claude agreed | no I2C left in the motor path |
+| Cliff sensors at 3.3 V, DO to GPIO35/32 | Claude (correcting its own 5 V note) | ESP32 inputs are 3.3 V |
+| Cliff mount v4 geometry (tyre centreline, 65 mm lead) | Enoch found the gap; Claude designed; Enoch trimmed it | angled approaches could put a wheel over first |
+| Grover = bench platform; Eufy = Phases 2-3 | Claude | the Eufy already docks, charges, bumps; Grover is cheap to crash |
+| Eufy IR on blackcam (camera + IR on one T-Camera, IO22) | Enoch offered the board; Claude chose the pin | one lid board, quiet I2C bus |
+| Use the ESP32 hardware carrier, not the ESP8266 | Claude, from the evidence | software carrier never decoded |
+| Stop rules for driving in the house (frame per pulse; stop on close range, invalid-after-close, weak WiFi; never toward people/animals) | Claude | the wall bump |
+| Guard treats "close, then invalid" as an obstacle | Claude | the wall bump |
+| Battery guard rewrite; kick start | Claude | latched-low guard; stiction asymmetry |
+| Prints: drawings for validation before printing | Enoch's request, Claude adopted | caught two design errors before they cost a print |
+
+### Lessons (for the next model, or a human)
+- **Read the boot log for FAILED components before debugging hardware.**
+  A day of IR testing went into a transmitter that never initialised.
+- Instrument before guessing: logging the guard flags found the battery
+  latch in one pulse; the idle drain log settled the battery question.
+- Narrow-beam LiDAR misses anything off-centre and dark furniture returns
+  weak; the camera check per pulse is not optional.
+- A photo or a drawing before printing beats a reprint.
+
+### Code and design this week (all in this repo unless noted)
+- `brain/` (Python, ~640 lines): MCP server (`status`, `snapshot` for
+  three cameras, `drive`, `find_marker`, `home_to_marker`, `set_brake`,
+  `set_obstacle_stop`, `stop`), ESPHome API client, ArUco detection with
+  per-camera calibration and CLAHE retry, the homing loop.
+- Firmware (ESPHome; reference copies in `firmware/`, live configs in a
+  private repo): `rover32.yaml` (spinal cord), `blackcam.yaml` (Eufy lid:
+  camera + IR), `eufy-ir.yaml` / `eufy-ir8266` / `eufy-ir-c3` (IR test
+  nodes), the retired `rover.yaml` (D1 Mini).
+- Hardware (parametric OpenSCAD, printed through print-warden):
+  `camera-mount`, `camera-strip`, `tfmini-bracket`, `cliff-mount` (v1-v4),
+  plus drawings `cliff-mount-drawing.png`, `cliff-mount-v4-drawing.png`,
+  `blackcam-ir-wiring.png`.
+- ~80 commits this week, 121 in total.
+
+### Open
+1. Verify the battery-guard fix and the kick start on the bench, then the
+   TFMini guard test against a box, then the cliff edge-stop with v4.
+2. Eufy: lid mounting and power for blackcam; battery/charging telemetry
+   (roadmap 2E.6); the brain learning to drive it.
+3. Brain as a hosted service (roadmap 3.4c). BMS install (deferred).
 
 ---
 
