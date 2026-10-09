@@ -162,6 +162,10 @@ This is Claude's project to drive toward the goals; use whatever it needs:
   2026-09-29), never through the printer's API directly; starting needs
   Enoch's OK, quoted, and he cancels. `scripts/warden_call.py` is the
   fallback when the MCP isn't loaded in the session.
+- **Eufy IR hold (2026-10-09): send no Eufy commands** until the frame's
+  hour encoding is verified against the real remote. Our 12-h stamps
+  probably shifted the vacuum's clock, turning a cleaning schedule into a
+  daily 6 PM run that twice drove it out an open garage door.
 - **The Eufy is tested on the floor, never on the workbench.** It has no rear
   cliff sensors and none of the rover's firmware guards; on 2026-09-28 it
   started reversing toward the bench edge during IR testing and Enoch caught

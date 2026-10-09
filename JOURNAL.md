@@ -132,6 +132,18 @@ breakdown of the notable decisions. Newest entry on top.
   (it could only measure them), navigation is nudge-and-look with the
   camera correcting, and finer control would mean driving the wheel
   motors directly - Enoch's call.
+- **The Eufy escaped to the yard twice (10/05-10/08) - a schedule, probably
+  shifted by our frames.** Enoch found it outside after the garage door was
+  left open. Checked: no Eufy command from any Claude session after the
+  supervised 10/04 tests, none from the hosted brain, no HA button
+  presses. But blackcam's PIR (facing the dock) fired at 6:00:27 PM,
+  6:01:56 PM and 6:00:20 PM on 10/05-10/07, uncorrelated with door events
+  (the big door was open noon-8 PM those days): a daily scheduled clean.
+  Likely mechanism: our frames stamp the hour as 12-h (`hh % 12`), which
+  sets the vacuum's clock with no AM/PM, so a 6:00 AM schedule could now
+  fire at 6:00 PM. Nest clips aren't reachable (HA's Nest event cache is
+  empty). **Hold: no Eufy IR commands** until the hour encoding is checked
+  against the real remote's frames and the schedule is cleared.
 
 Standing project rules live in [CLAUDE.md](CLAUDE.md) - read that first;
 decisions and their reasoning are in the dated entries below. The
