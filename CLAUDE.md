@@ -38,14 +38,23 @@ T-Camera is the **eyes** (ESPHome; snapshot/stream), and `brain/` is the
 through the `rover-brain` MCP tools, not ad-hoc scripts. Consolidating both
 ESPs onto one board is a known later step (see BOM.md), not now.
 
-**Chassis (decided 2026-09-29):** the Makeblock kit is built as the
-**trike** (two driven wheels + trailing caster), not the tank. Tank tracks
-had to skid sideways to pivot, which caused stiction and left/right
-asymmetry. Steering is still differential, so `left`/`right` mean the same
-thing. The kit's Me Orion board is *not* used - an ESP + ESPHome stays
-(Orion has no WiFi and the safety firmware is proven). The swivel caster
-twisted the rear on stops; a fixed printed skid replaced it (designed 10-05,
-fitted 10-18).
+**Chassis (decided 2026-10-18, Claude's call, Enoch's "it's your
+project"):** the Makeblock kit goes back to the **tank** build. The trike
+(two driven wheels + rear caster, later a fixed skid) was chosen on
+2026-09-29 because tracks had to skid sideways to pivot - stiction,
+asymmetry, 100 % bursts. The ramped motion engine (2026-10-18) removes
+that reason, and the fall the same day showed the trike's real flaw: its
+balance line is the front axle, so a cliff stop with the wheels at an
+edge tips it over slowly, and the rear support (caster, then skid, then
+its bracket) is a weak point we kept redesigning. Tracks put the balance
+point mid-chassis, need no rear support, and shrug off seams and
+thresholds. Cost: pivots scrub, so heading per pivot pulse is less
+repeatable - steering is closed on the overhead marker pose, not dead
+reckoning. Keep pivots slow (40-50 % duty, `set_speeds`). Steering is
+still differential, so `left`/`right` mean the same thing. The kit's Me
+Orion board is *not* used - an ESP + ESPHome stays. (Rebuild pending
+Enoch; until then Grover is the trike minus its rear support, and cannot
+drive.)
 
 ## Homing runs need a clear lane
 
@@ -55,10 +64,12 @@ a table leg seen at an angle). Check the lane on a bench camera before a
 run, keep the marker's approach clear, and when driving anywhere else take
 a camera frame after every pulse (house run, 2026-10-04).
 
-## Reversing the trike
+## Reversing
 
-Since 2026-10-18 the rear rides on a **fixed printed skid**, not the
-swivel caster, and reversing is now the mirror of driving forward: a 0.3 s
+(Trike-era note, kept for the record; the tank has no rear support and
+reverses symmetrically by construction.) Since 2026-10-18 the rear rode
+on a **fixed printed skid**, not the swivel caster, and reversing became
+the mirror of driving forward: a 0.3 s
 reverse pulse on 10/18 went straight back with no heading change. (The old
 caster had to flip 180 deg on a direction change and dragged the rear
 sideways - on 2026-09-29 three reverse pulses turned the rover ~45 deg and

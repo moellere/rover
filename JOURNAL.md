@@ -298,6 +298,21 @@ drive duty 75 %, obstacle stop 50 cm, brake off; min duty left at 30 %
 15 cm, drive duty 50 %, min duty 30 % on the rover and need restoring.
 Enoch, after the fall: "well, that's the end of that experiment."
 
+### Decision: back to the tank
+
+Enoch's leading question at the end of the day: with precise motion
+control now, revisit the tank? Yes. The trike was chosen (09-29) because
+tracks skidded to pivot; the ramp engine removes that objection, and the
+fall showed the trike's real flaw: its balance line is the front axle,
+and its rear support is a part we have now redesigned three times
+(caster, skid, bracket). Tracks put the balance point mid-chassis, need
+no rear support, and ignore the hatch lip and house thresholds. Cost:
+pivots scrub, so steering closes on the overhead marker pose, pivots
+kept slow. Enoch: "it's your project, you tell me what you want to do" -
+so decided. Rear leg shelved unprinted. Open: whether the tank build
+keeps the deck plate and the four posts (then the battery cradle v2
+stands) and the front beam (cliff mounts, TFMini bracket carry over).
+
 ### Motion intent
 
 Answered in chat: two layers, both feasible now. (1) `set_speeds` under
