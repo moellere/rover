@@ -24,6 +24,7 @@ body_h    = 17;      // holder plastic, open face to back          (ASSUMED)
 bms_h     = 6;       // board + parts proud of the holder's back    (ASSUMED)
 bms_w     = 45;      // HW-288 56 x 45, centred on the back
 bms_l     = 56;
+bms_gap   = 3;       // board edge to the holder's end - the board sits at ONE end (Enoch, 2026-10-18), that end goes to the rear (+y)  (ASSUMED 3)
 clear     = 0.6;
 
 // ---- Posts (Makeblock 8 mm grid, M4) ----------------------------------
@@ -40,7 +41,8 @@ floor_t   = bms_h;   // BMS flush with the underside
 end_t     = 14;      // thick end walls carry the post bolts
 end_w     = 80;      // end blocks wider than the body so the counterbores stay enclosed
 win_w     = bms_w + 6;
-win_l     = bms_l + 6;
+win_l     = bms_l + 4;                  // 3 mm clear at the front, 1 at the rear (keeps a rim under the holder's end)
+win_y_c   = (holder_l / 2 - bms_gap + 1) - win_l / 2;         // rear edge of the window = board's rear edge + 1 mm
 tie_w     = 5; tie_t = 2.2;
 
 // ---- Camera perch (front = -y) -------------------------------------------
@@ -64,7 +66,7 @@ difference() {
   // holder pocket
   translate([0, 0, floor_t]) rbox(inner_w, inner_l, body_h + 1, 1);
   // BMS window through the floor
-  translate([0, 0, -1]) rbox(win_w, win_l, floor_t + 2, 2);
+  translate([0, win_y_c, -1]) rbox(win_w, win_l, floor_t + 2, 2);
   // post bolts: slotted holes + counterbores from the top of the end walls
   for (sx = [-1, 1], sy = [-1, 1]) {
     hull() for (dy = [-slot / 2, slot / 2])
