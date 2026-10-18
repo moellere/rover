@@ -78,8 +78,8 @@ breakdown of the notable decisions. Newest entry on top.
   (50 ms or 85 %) after the skid test.
 - **Back from the trip, 2026-10-18.** Cliff v4 mounts installed, skid
   fitted (Enoch). **Grover fell off the bench** during the third cliff
-  edge test (stopped on the trip, then tipped slowly) - T-Camera likely
-  dead, rear plate and skid bracket broken; see the 10-18 entry and the new edge-test rule in CLAUDE.md. **Ramped motion firmware flashed** (see the 10-18 entry):
+  edge test (stopped on the trip, then tipped slowly) - electronics all
+  survived, rear plate and skid bracket broken; see the 10-18 entry and the new edge-test rule in CLAUDE.md. **Ramped motion firmware flashed** (see the 10-18 entry):
   the kick start is gone, pulses are trapezoids timed on the ESP32, new
   `move`/`set_speeds`/`halt` API actions and brain `set_ramp` tool.
   First bench run: ~25-30 cm per 0.3 s pulse, heading change at the stop
@@ -281,14 +281,16 @@ firmware; lowered the threshold to 15 cm for the test (to be restored).
 now a rule in CLAUDE.md. (2) The sensors need to trip earlier: lower them
 (sharper spot), turn the module pots toward "less sensitive" so a partial
 reflection drop trips, and/or mount them further ahead; and keep bench
-cruise slow. (3) Damage (Enoch): the T-Camera `redcam` is probably dead, the rear
-plate broke off, and the skid's aluminium Makeblock bracket snapped (the
+cruise slow. (3) Damage (Enoch): at first the T-Camera looked dead, but **all the
+electronics survived** - rover32 came back on the pack being reseated
+(TFMini, cliff sensors, battery all reading) and `redcam` returned a
+snapshot. The rear plate broke off, and the skid's aluminium Makeblock bracket snapped (the
 skid itself is lost somewhere in the garage). The ESP32 spinal cord is
 unknown until it's powered again. "All in the name of science." Repairs:
 rear plate not needed if the pack moves forward; skid bracket to be
-reprinted as one piece with the skid; camera replacement to decide
-(spare T-Camera or an ESP32-CAM, needed for homing, not for the overhead
-steering loop). (4) `obstacle_stop` is
+reprinted as one piece with the skid. Settings restored afterwards:
+drive duty 75 %, obstacle stop 50 cm, brake off; min duty left at 30 %
+(it ran well all afternoon). (4) `obstacle_stop` is
 15 cm, drive duty 50 %, min duty 30 % on the rover and need restoring.
 Enoch, after the fall: "well, that's the end of that experiment."
 
