@@ -286,7 +286,11 @@ electronics survived** - rover32 came back on the pack being reseated
 (TFMini, cliff sensors, battery all reading) and `redcam` returned a
 snapshot. The rear plate broke off, and the skid's aluminium Makeblock bracket snapped (the
 skid itself is lost somewhere in the garage). The ESP32 spinal cord is
-unknown until it's powered again. "All in the name of science." Repairs:
+unknown until it's powered again. "All in the name of science." Enoch kept the
+pieces "for historical purposes" - the cracked acrylic plate, the camera
+cradle in two parts, the Makeblock L-bracket in two - and named the
+display the **boulevard of broken dreams**
+(`hardware/boulevard-of-broken-dreams-2026-10-18.jpg`). Repairs:
 rear plate not needed if the pack moves forward; skid bracket to be
 reprinted as one piece with the skid. Settings restored afterwards:
 drive duty 75 %, obstacle stop 50 cm, brake off; min duty left at 30 %
