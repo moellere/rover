@@ -315,8 +315,13 @@ then Enoch's point that the rear plate stacks the pack's ~200 g over the
 skid. Agreed: that unloads the drive wheels and loads the skid, which is
 the pivot everything swings around. Candidate: the four posts over the
 controller/breadboard, mass over/just behind the drive axle; the camera
-mount moves (likely onto the cradle's front edge). Waiting on the post
-spacing, thread and height before redoing the cradle.
+mount moves (likely onto the cradle's front edge). Posts measured (Enoch): 102 x 71 mm
+outer-to-outer, 30 mm tall -> 96 x 64 centres on the grid. Cradle v2
+written for them (cells up, BMS flush in a floor window, camera perch
+out front), sliced 1h 52m / 42.6 g, staged on print-warden as
+`cd828fc14e` for Enoch's go. Rear leg (`hardware/rear-leg.scad`, the
+printed replacement for the sheared bracket + skid) drafted, waiting on
+the bolt spacing and height. Camera cradle v6 will live on the perch.
 
 ### Eufy
 
