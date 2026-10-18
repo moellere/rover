@@ -218,7 +218,7 @@ confirmed over the native API (compile 2026-10-18 19:46, services
 forward/backward/left/right/stop/halt/move/set_speeds, ramp 40/300/300).
 **Not yet driven.** Plan for the first run: overhead lane check, three
 0.3 s forward pulses, compare the heading change per pulse with the
-09-05 numbers (20-30 deg per stop), then try min duty 30/50 and decel
+10-05 numbers (20-30 deg per stop), then try min duty 30/50 and decel
 500.
 
 ### Motion intent
