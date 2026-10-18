@@ -25,7 +25,8 @@ bms_h     = 6;       // board + parts proud of the holder's back    (ASSUMED)
 bms_w     = 45;      // HW-288 56 x 45, centred on the back
 bms_l     = 56;
 bms_gap   = 0;       // board edge to the holder's end: FLUSH (Enoch, 2026-10-18), the leads leave at that end; that end goes to the rear (+y)
-clear     = 0.6;
+clear     = 0.6;     // across
+clear_l   = 4.6;     // along: the balance leads wrap around both ends of the holder (photo 2026-10-18), 2 mm each end
 
 // ---- Posts (Makeblock 8 mm grid, M4) ----------------------------------
 post_cc_l = 96;      // along the chassis (y): 102 outer - 7 = 95 -> 96
@@ -42,7 +43,7 @@ end_t     = 14;      // thick end walls carry the post bolts
 end_w     = 80;      // end blocks wider than the body so the counterbores stay enclosed
 win_w     = bms_w + 6;
 win_l     = bms_l + 3;                  // 3 mm clear at the front; the rear edge is the pocket's end wall
-win_y_c   = ((holder_l + clear) / 2 - bms_gap) - win_l / 2;   // rear edge of the window = the pocket's rear wall
+win_y_c   = ((holder_l + clear_l) / 2 - bms_gap) - win_l / 2; // rear edge of the window = the pocket's rear wall
 tie_w     = 5; tie_t = 2.2;
 
 // ---- Camera perch (front = -y) -------------------------------------------
@@ -50,7 +51,7 @@ perch_d   = 28;      // how far the tab reaches forward of the end wall
 perch_w   = 48;
 
 inner_w = holder_w + clear;
-inner_l = holder_l + clear;
+inner_l = holder_l + clear_l;
 outer_w = inner_w + 2 * wall_t;
 outer_l = inner_l + 2 * end_t;        // bolts at +/-48 sit inside 12 mm end walls
 top_h   = floor_t + body_h;
