@@ -24,7 +24,7 @@ body_h    = 17;      // holder plastic, open face to back          (ASSUMED)
 bms_h     = 6;       // board + parts proud of the holder's back    (ASSUMED)
 bms_w     = 45;      // HW-288 56 x 45, centred on the back
 bms_l     = 56;
-bms_gap   = 3;       // board edge to the holder's end - the board sits at ONE end (Enoch, 2026-10-18), that end goes to the rear (+y)  (ASSUMED 3)
+bms_gap   = 0;       // board edge to the holder's end: FLUSH (Enoch, 2026-10-18), the leads leave at that end; that end goes to the rear (+y)
 clear     = 0.6;
 
 // ---- Posts (Makeblock 8 mm grid, M4) ----------------------------------
@@ -41,8 +41,8 @@ floor_t   = bms_h;   // BMS flush with the underside
 end_t     = 14;      // thick end walls carry the post bolts
 end_w     = 80;      // end blocks wider than the body so the counterbores stay enclosed
 win_w     = bms_w + 6;
-win_l     = bms_l + 4;                  // 3 mm clear at the front, 1 at the rear (keeps a rim under the holder's end)
-win_y_c   = (holder_l / 2 - bms_gap + 1) - win_l / 2;         // rear edge of the window = board's rear edge + 1 mm
+win_l     = bms_l + 3;                  // 3 mm clear at the front; the rear edge is the pocket's end wall
+win_y_c   = ((holder_l + clear) / 2 - bms_gap) - win_l / 2;   // rear edge of the window = the pocket's rear wall
 tie_w     = 5; tie_t = 2.2;
 
 // ---- Camera perch (front = -y) -------------------------------------------
@@ -81,6 +81,7 @@ difference() {
   // perch holes: 8 mm grid, two rows x five
   for (x = [-16, -8, 0, 8, 16], y = [-8, 0])
     translate([x, -(outer_l / 2 + 8) + y, -1]) cylinder(d = m4_hole, h = floor_t + 2, $fn = 24);
-  // lead exit: notch in the rear end wall's inner face for the pack leads
-  translate([0, outer_l / 2 - end_t / 2, floor_t + body_h / 2 + 1]) cube([12, end_t + 2, body_h], center = true);
+  // lead exit: full-height slot through the rear end wall, down to the
+  // underside - the leads leave the board at floor level, at that end
+  translate([0, outer_l / 2 - end_t / 2, top_h / 2]) cube([12, end_t + 2, top_h + 2], center = true);
 }
