@@ -18,6 +18,7 @@ from typing import Optional
 from aioesphomeapi import APIClient
 
 DRIVE_SERVICES = ("forward", "backward", "left", "right")
+DEFAULT_DECEL_S = 0.3      # firmware "Decel time" default; the real value is read from state
 
 
 @dataclass
@@ -32,6 +33,9 @@ class RoverState:
     front_range_cm: Optional[float] = None      # TFMini; None = no sensor/no reading
     front_range_valid: Optional[bool] = None    # False under 30 cm or no return
     obstacle_stop_cm: Optional[float] = None    # firmware guard threshold, 0 = off
+    min_duty: Optional[float] = None            # ramp profile (firmware 2026-10-18): duty applied at
+    accel_ms: Optional[float] = None            #   once from rest; ms to sweep 0..100% up / down
+    decel_ms: Optional[float] = None
     raw: dict = field(default_factory=dict)
 
 
@@ -94,23 +98,73 @@ class RoverClient:
                     out.front_range_valid = bool(val)
                 elif oid == "obstacle_stop":
                     out.obstacle_stop_cm = float(val)
+                elif oid == "min_duty":
+                    out.min_duty = float(val)
+                elif oid == "accel_time":
+                    out.accel_ms = float(val)
+                elif oid == "decel_time":
+                    out.decel_ms = float(val)
             return out
         finally:
             await client.disconnect()
 
     async def drive(self, direction: str, seconds: float) -> None:
-        """Fire a drive service, hold for `seconds`, then stop. The firmware
-        also stops on its own if this connection drops or 1.5s passes
-        without a refresh, so a crash here cannot leave the motors running."""
+        """One ramped pulse. With the 2026-10-18 firmware this is the on-board
+        `move` service: `seconds` of cruise, timed by the ESP32, then a decel
+        ramp; the connection is held open for the whole profile because the
+        firmware stops at once if its API client drops. Older firmware falls
+        back to fire-direction / sleep / stop. Either way the watchdog
+        (1.5 s without a refresh) and the guards remain authoritative."""
         if direction not in DRIVE_SERVICES:
             raise ValueError(f"direction must be one of {DRIVE_SERVICES}")
         client = await self._connect()
         try:
             _, services = await client.list_entities_services()
             svc = {s.name: s for s in services}
-            await client.execute_service(svc[direction], {})
-            await asyncio.sleep(seconds)
+            if "move" in svc:
+                await client.execute_service(svc["move"], {"direction": direction,
+                                                           "ms": int(round(seconds * 1000)), "duty": 0})
+                await asyncio.sleep(seconds + DEFAULT_DECEL_S + 0.3)
+            else:
+                await client.execute_service(svc[direction], {})
+                await asyncio.sleep(seconds)
+                await client.execute_service(svc["stop"], {})
+                await asyncio.sleep(0.2)
+        finally:
+            await client.disconnect()
+
+    async def set_speeds(self, left: int, right: int, hold_s: float,
+                         refresh_s: float = 0.5) -> None:
+        """Continuous drive: signed percent per wheel (left trim applied by the
+        firmware), held for `hold_s` with the command refreshed every
+        `refresh_s` so the 1.5 s watchdog stays happy, then an eased stop.
+        For steering loops that re-plan while rolling; needs the 2026-10-18
+        firmware (raises otherwise)."""
+        client = await self._connect()
+        try:
+            _, services = await client.list_entities_services()
+            svc = {s.name: s for s in services}
+            if "set_speeds" not in svc:
+                raise RuntimeError("rover firmware has no set_speeds service (flash rover32 2026-10-18+)")
+            deadline = asyncio.get_event_loop().time() + hold_s
+            while True:
+                await client.execute_service(svc["set_speeds"], {"left": int(left), "right": int(right)})
+                remaining = deadline - asyncio.get_event_loop().time()
+                if remaining <= 0:
+                    break
+                await asyncio.sleep(min(refresh_s, remaining))
             await client.execute_service(svc["stop"], {})
+            await asyncio.sleep(DEFAULT_DECEL_S + 0.3)
+        finally:
+            await client.disconnect()
+
+    async def halt(self) -> None:
+        """Immediate stop (no decel ramp). Falls back to `stop` on old firmware."""
+        client = await self._connect()
+        try:
+            _, services = await client.list_entities_services()
+            svc = {s.name: s for s in services}
+            await client.execute_service(svc.get("halt") or svc["stop"], {})
             await asyncio.sleep(0.2)
         finally:
             await client.disconnect()
@@ -142,6 +196,8 @@ class RoverClient:
             await client.disconnect()
 
     async def stop(self) -> None:
+        """Commanded stop: eased down over the firmware's decel ramp (immediate
+        on old firmware)."""
         client = await self._connect()
         try:
             _, services = await client.list_entities_services()

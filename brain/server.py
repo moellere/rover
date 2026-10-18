@@ -7,8 +7,10 @@ Tools:
     locate(camera)      overhead marker poses - Grover's position and heading
     eufy(command)       drive the Eufy RoboVac over IR via its lid board
     drive(direction, s) a bounded pulse: forward/backward/left/right for at
-                        most MAX_PULSE_S, always followed by stop
-    stop                immediate stop
+                        most MAX_PULSE_S of cruise, ramped up and down by the
+                        firmware (2026-10-18), always ending stopped
+    set_ramp(...)       the firmware's min duty / accel / decel sliders
+    stop                immediate stop (no decel ramp)
 
 Safety here is a courtesy layer: the firmware's watchdog, disconnect-stop,
 cliff and battery guards remain authoritative and cannot be bypassed from
@@ -20,6 +22,7 @@ rover_client.py and cameras.py.
 """
 import os
 import time
+from typing import Optional
 
 from mcp.server.fastmcp import FastMCP, Image
 
@@ -63,6 +66,7 @@ async def status() -> dict:
         "front_range_cm": st.front_range_cm,
         "front_range_valid": st.front_range_valid,
         "obstacle_stop_cm": st.obstacle_stop_cm,
+        "ramp": {"min_duty_pct": st.min_duty, "accel_ms": st.accel_ms, "decel_ms": st.decel_ms},
     }
 
 
@@ -79,7 +83,10 @@ def snapshot(camera: str = "bench") -> Image:
 @mcp.tool()
 async def drive(direction: str, seconds: float = 0.5) -> dict:
     """Pulse the rover: direction in forward/backward/left/right, for `seconds`
-    (capped at 1.0). Left/right are in-place pivots. Always ends with stop."""
+    of cruise (capped at 1.0), timed on the ESP32. The firmware jumps to its
+    min duty, ramps up to the drive/pivot duty, cruises, then ramps down over
+    its decel time (see set_ramp) - so a 0.3 s pulse moves for ~0.6 s. Left/
+    right are in-place pivots. Always ends stopped."""
     global _last_drive_end
     if direction not in DRIVE_SERVICES:
         raise ValueError(f"direction must be one of {DRIVE_SERVICES}")
@@ -173,9 +180,28 @@ async def eufy(command: str) -> dict:
 
 
 @mcp.tool()
+async def set_ramp(min_duty_pct: Optional[float] = None, accel_ms: Optional[float] = None,
+                   decel_ms: Optional[float] = None) -> dict:
+    """Tune the firmware's speed profile (persisted on the rover). min_duty_pct
+    is applied at once from rest so both wheels break stiction together
+    (default 40); accel_ms / decel_ms are the time to sweep the full 0..100%
+    range (default 300 each). 0 ms = step. Guards never ramp. Pass only the
+    values to change."""
+    c = RoverClient()
+    if min_duty_pct is not None:
+        await c.set_number("min_duty", float(min_duty_pct))
+    if accel_ms is not None:
+        await c.set_number("accel_time", float(accel_ms))
+    if decel_ms is not None:
+        await c.set_number("decel_time", float(decel_ms))
+    st = await c.state(timeout=3.0)
+    return {"min_duty_pct": st.min_duty, "accel_ms": st.accel_ms, "decel_ms": st.decel_ms}
+
+
+@mcp.tool()
 async def stop() -> dict:
-    """Stop the motors now."""
-    await RoverClient().stop()
+    """Stop the motors now - immediate, no decel ramp."""
+    await RoverClient().halt()
     return {"ok": True}
 
 

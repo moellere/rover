@@ -75,10 +75,32 @@ globals:
     type: float
     restore_value: no
     initial_value: '1000'
-  - id: kick
-    type: bool
+  # Motion engine (2026-10-18): every drive command sets a signed target
+  # duty per wheel (-1..1); a 20 ms loop ramps the live duty toward it
+  # (see the "ramp" interval). tgt/cur are the only motor state; the
+  # direction pins and PWM are derived from cur each tick.
+  - id: tgt_l
+    type: float
     restore_value: no
-    initial_value: 'false'
+    initial_value: '0'
+  - id: tgt_r
+    type: float
+    restore_value: no
+    initial_value: '0'
+  - id: cur_l
+    type: float
+    restore_value: no
+    initial_value: '0'
+  - id: cur_r
+    type: float
+    restore_value: no
+    initial_value: '0'
+  # millis() at which a timed `move` starts its deceleration; 0 = untimed
+  # (runs until stop / watchdog / a guard).
+  - id: move_end_ms
+    type: uint32_t
+    restore_value: no
+    initial_value: '0'
 
 # Pin map for awning
 #MCP0: Connected to L298N IN1
@@ -102,10 +124,24 @@ globals:
 # across power cycles anyway). The stop itself always happens.
 # Pins go to brake before EN goes to 100%, so there is never a full-duty
 # instant in the old drive direction.
+# Motion (2026-10-18). Two kinds of stop:
+#  * motor_stop - IMMEDIATE. Zeroes the targets and the live duty, optional
+#    150 ms dynamic brake (both inputs high, EN 100%), then everything off.
+#    Used by every guard: watchdog, disconnect, cliff, obstacle, battery,
+#    and the `halt` action. A guard never ramps.
+#  * a commanded stop (`stop` action, end of a timed `move`) just sets the
+#    targets to 0 and lets the ramp loop decelerate over "Decel time", then
+#    the loop calls motor_stop at zero. The trailing caster is what this is
+#    for: it was the hard start/stop transients, not the cruise, that swung
+#    the rear (overhead-camera runs, 2026-10-05).
+# Pins go to brake before EN goes to 100%, so there is never a full-duty
+# instant in the old drive direction.
 script:
   - id: motor_stop
     mode: restart
     then:
+      - lambda: |-
+          id(tgt_l) = 0; id(tgt_r) = 0; id(cur_l) = 0; id(cur_r) = 0; id(move_end_ms) = 0;
       - if:
           condition:
             switch.is_on: brake_on_stop
@@ -134,7 +170,39 @@ script:
       - text_sensor.template.publish:
           id: motion_status
           state: "Stopped"
-
+  # The one entry point for motion. l/r: signed wheel duty in percent
+  # (-100..100, left already trimmed by the caller if it wants trim); ms:
+  # cruise time before the decel ramp starts, 0 = untimed. Checks the
+  # guards for the kind of motion asked for: forward-ish (both >= 0) needs
+  # no cliff and no obstacle; a pivot needs no cliff; everything needs
+  # battery_ok. Refused = immediate stop + a log line, as before.
+  - id: set_motion
+    mode: restart
+    parameters:
+      l: float
+      r: float
+      ms: int
+    then:
+      - script.stop: motor_stop
+      - lambda: |-
+          id(last_command_ms) = millis();
+          const bool fwdish = l >= 0 && r >= 0 && (l > 0 || r > 0);
+          const bool backish = l <= 0 && r <= 0;
+          const bool ok = id(battery_ok) && (backish || !id(cliff_detected)) && (!fwdish || !id(obstacle_ahead));
+          if (!ok) {
+            id(motor_stop).execute();
+            ESP_LOGW("guard", "Motion blocked (l=%.0f r=%.0f): battery_ok=%d cliff=%d obstacle=%d range=%.0f last_good=%.0f",
+                     l, r, id(battery_ok), id(cliff_detected), id(obstacle_ahead), id(front_range).state, id(last_good_cm));
+            return;
+          }
+          id(tgt_l) = std::max(-1.0f, std::min(1.0f, l / 100.0f));
+          id(tgt_r) = std::max(-1.0f, std::min(1.0f, r / 100.0f));
+          if (ms > 0) {
+            const uint32_t e = millis() + (uint32_t) std::min((int) ms, 3000);
+            id(move_end_ms) = e == 0 ? 1 : e;   // 0 means untimed, so dodge the millis() wrap
+          } else {
+            id(move_end_ms) = 0;
+          }
 interval:
   # TFMini (SparkFun Qwiic, I2C 0x10, shares the bus with the MCP23008):
   # write 01 02 07, read 7 bytes [valid, -, dist cm LE, strength LE, mode].
@@ -188,19 +256,81 @@ interval:
                 id: motion_status
                 state: "Stopped (obstacle)"
             - logger.log: "Obstacle ahead inside the stop distance, stopping"
+  # Ramp loop: moves the live duty toward the target. Leaving rest jumps
+  # straight to "Min duty" (both wheels break stiction together - the old
+  # 100 ms 100% kick did the same job with far more energy), then climbs
+  # at 100% per "Accel time". Toward zero it falls at 100% per "Decel
+  # time"; a reversal passes through zero. At zero with a zero target it
+  # hands over to motor_stop. Direction pins and PWM come from the sign and
+  # magnitude of the live duty - nothing else touches them while moving.
+  - interval: 20ms
+    then:
+      - lambda: |-
+          const float dt = 20.0f;
+          const uint32_t now = millis();
+          if (id(move_end_ms) != 0 && (int32_t) (now - id(move_end_ms)) >= 0) {
+            id(move_end_ms) = 0;
+            id(tgt_l) = 0; id(tgt_r) = 0;
+            id(last_command_ms) = now;          // the decel phase gets its own watchdog window
+          }
+          if (id(cur_l) == 0 && id(cur_r) == 0 && id(tgt_l) == 0 && id(tgt_r) == 0) return;   // idle
+          // belt and braces: a guard that trips mid-move is also caught here
+          const bool fwdish = id(cur_l) >= 0 && id(cur_r) >= 0;
+          const bool backish = id(cur_l) <= 0 && id(cur_r) <= 0;
+          if (!id(battery_ok) || (!backish && id(cliff_detected)) || (fwdish && id(obstacle_ahead))) {
+            id(motor_stop).execute();
+            return;
+          }
+          const float up = id(accel_ms).state > 0 ? dt / id(accel_ms).state : 1.0f;
+          const float down = id(decel_ms).state > 0 ? dt / id(decel_ms).state : 1.0f;
+          const float minf = id(min_duty).state / 100.0f;
+          auto step = [&](float cur, float tgt) -> float {
+            if (cur == tgt) return cur;
+            const bool away = (cur == 0) || (((cur > 0) == (tgt > 0)) && fabsf(tgt) > fabsf(cur));
+            if (away) {
+              const float sgn = tgt > 0 ? 1.0f : -1.0f;
+              float mag = fabsf(cur);
+              mag = (mag < minf) ? minf : mag + up;
+              if (mag > fabsf(tgt)) mag = fabsf(tgt);
+              return sgn * mag;
+            }
+            const float sgn = cur > 0 ? 1.0f : -1.0f;
+            const float floor_ = (tgt != 0 && ((cur > 0) == (tgt > 0))) ? fabsf(tgt) : 0.0f;
+            float mag = fabsf(cur) - down;
+            if (mag < floor_) mag = floor_;
+            if (mag <= 0.0f) return 0.0f;
+            return sgn * mag;
+          };
+          id(cur_l) = step(id(cur_l), id(tgt_l));
+          id(cur_r) = step(id(cur_r), id(tgt_r));
+          if (id(cur_l) == 0 && id(cur_r) == 0) {
+            if (id(tgt_l) == 0 && id(tgt_r) == 0) id(motor_stop).execute();
+            return;
+          }
+          id(left_forward_pin).set_state(id(cur_l) > 0);
+          id(left_reverse_pin).set_state(id(cur_l) < 0);
+          id(right_forward_pin).set_state(id(cur_r) > 0);
+          id(right_reverse_pin).set_state(id(cur_r) < 0);
+          id(left_pwm).set_level(fabsf(id(cur_l)));
+          id(right_pwm).set_level(fabsf(id(cur_r)));
+          const char *st = fwdish ? "Forward" : backish ? "Backward" : (id(cur_l) < id(cur_r) ? "Left" : "Right");
+          if (id(motion_status).state != st) id(motion_status).publish_state(st);
+  # Command watchdog: an untimed motion (forward/backward/left/right,
+  # set_speeds) must be refreshed within 1.5 s or it stops. A timed `move`
+  # is bounded by the firmware itself, so it is exempt until its time is up
+  # (then the decel phase gets a fresh 1.5 s window, see the ramp loop).
   - interval: 200ms
     then:
       - if:
           condition:
             lambda: |-
-              return (id(motion_status).state != "Stopped") && (millis() - id(last_command_ms) > 1500);
+              return (id(motion_status).state != "Stopped") && id(move_end_ms) == 0 && (millis() - id(last_command_ms) > 1500);
           then:
             - script.execute: motor_stop
             - text_sensor.template.publish:
                 id: motion_status
                 state: "Stopped"
             - logger.log: "Watchdog: no command refresh in 1.5s, stopping motors"
-
 i2c:
   # Only the TFMini lives on I2C now (the MCP23008 is gone - direction and
   # cliff pins are direct on the ESP32), so a wedged sensor costs nothing
@@ -410,6 +540,43 @@ number:
     restore_value: true
     optimistic: true
 
+  # Ramp profile (2026-10-18). Min duty is applied at once from rest so both
+  # wheels break stiction together; the ramps are the time to sweep the
+  # full 0..100% range (so 75% cruise at 300 ms accel takes ~105 ms on top
+  # of the jump). Guards never ramp - they stop at once.
+  - platform: template
+    name: "Min duty"
+    id: min_duty
+    unit_of_measurement: "%"
+    min_value: 0
+    max_value: 80
+    step: 5
+    initial_value: 40
+    restore_value: true
+    optimistic: true
+    entity_category: config
+  - platform: template
+    name: "Accel time"
+    id: accel_ms
+    unit_of_measurement: "ms"
+    min_value: 0
+    max_value: 1000
+    step: 50
+    initial_value: 300
+    restore_value: true
+    optimistic: true
+    entity_category: config
+  - platform: template
+    name: "Decel time"
+    id: decel_ms
+    unit_of_measurement: "ms"
+    min_value: 0
+    max_value: 1000
+    step: 50
+    initial_value: 300
+    restore_value: true
+    optimistic: true
+    entity_category: config
 switch:
   - platform: template
     name: "Brake on stop"
@@ -420,37 +587,15 @@ switch:
   - platform: template
     name: "Forward"
     lambda: |-
-      if (id(motion_status).state == "Forward") {
-        return true;
-      } else {
-        return false;
-      }
+      return id(motion_status).state == "Forward";
     turn_on_action:
-      - lambda: |-
-          id(last_command_ms) = millis();
-      - if:
-          condition:
-            lambda: 'return id(battery_ok) && !id(cliff_detected) && !id(obstacle_ahead);'
-          then:
-            - output.set_level:
-                id: left_pwm
-                level: !lambda 'return std::min(1.0f, id(drive_duty).state / 100.0f * (1.0f + id(left_trim).state / 100.0f));'
-            - output.set_level:
-                id: right_pwm
-                level: !lambda 'return id(drive_duty).state / 100.0;'
-            - output.turn_on: left_forward_pin
-            - output.turn_on: right_forward_pin
-            - output.turn_off: left_reverse_pin
-            - output.turn_off: right_reverse_pin
-            - text_sensor.template.publish:
-                id: motion_status
-                state: "Forward"
+      - script.execute:
+          id: set_motion
+          l: !lambda 'return std::min(100.0f, id(drive_duty).state * (1.0f + id(left_trim).state / 100.0f));'
+          r: !lambda 'return id(drive_duty).state;'
+          ms: 0
     turn_off_action:
-      - script.execute: motor_stop
-      - text_sensor.template.publish:
-          id: motion_status
-          state: "Stopped"
-
+      - lambda: 'id(tgt_l) = 0; id(tgt_r) = 0; id(move_end_ms) = 0;'
 text_sensor:
   - platform: template
     name: "Motion"
@@ -464,161 +609,82 @@ api:
         state: "Stopped"
     - logger.log: "API client disconnected, stopping motors"
   actions:
+    # Compatibility set, all through set_motion (ramped): untimed, refreshed
+    # by the watchdog. `stop` eases down; `halt` is the immediate stop.
     - action: forward
       then:
-      - script.stop: motor_stop
-      - lambda: |-
-          id(last_command_ms) = millis();
-      - if:
-          condition:
-            lambda: 'return id(battery_ok) && !id(cliff_detected) && !id(obstacle_ahead);'
-          then:
-            # Kick start (2026-10-05): from rest, both motors at 100% for the
-            # first 100 ms so both wheels break stiction together - a short
-            # pulse at 75% could free one wheel and not the other, pivoting
-            # Grover hard. Then drop to the normal duty + trim.
-            - lambda: 'id(kick) = id(motion_status).state == "Stopped" || id(motion_status).state == "";'
-            - output.set_level:
-                id: left_pwm
-                level: !lambda 'return id(kick) ? 1.0f : std::min(1.0f, id(drive_duty).state / 100.0f * (1.0f + id(left_trim).state / 100.0f));'
-            - output.set_level:
-                id: right_pwm
-                level: !lambda 'return id(kick) ? 1.0f : id(drive_duty).state / 100.0f;'
-            - output.turn_on: left_forward_pin
-            - output.turn_on: right_forward_pin
-            - output.turn_off: left_reverse_pin
-            - output.turn_off: right_reverse_pin
-            - text_sensor.template.publish:
-                id: motion_status
-                state: "Forward"
-            - if:
-                condition:
-                  lambda: 'return id(kick);'
-                then:
-                  - delay: 100ms
-                  - if:
-                      condition:
-                        lambda: 'return id(motion_status).state == "Forward";'
-                      then:
-                        - output.set_level:
-                            id: left_pwm
-                            level: !lambda 'return std::min(1.0f, id(drive_duty).state / 100.0f * (1.0f + id(left_trim).state / 100.0f));'
-                        - output.set_level:
-                            id: right_pwm
-                            level: !lambda 'return id(drive_duty).state / 100.0f;'
-          else:
-            - script.execute: motor_stop
-            - text_sensor.template.publish:
-                id: motion_status
-                state: "Stopped"
-            - lambda: 'ESP_LOGW("guard", "Forward blocked: battery_ok=%d cliff=%d obstacle=%d range=%.0f last_good=%.0f", id(battery_ok), id(cliff_detected), id(obstacle_ahead), id(front_range).state, id(last_good_cm));' 
+        - script.execute:
+            id: set_motion
+            l: !lambda 'return std::min(100.0f, id(drive_duty).state * (1.0f + id(left_trim).state / 100.0f));'
+            r: !lambda 'return id(drive_duty).state;'
+            ms: 0
     - action: backward
       then:
-      - script.stop: motor_stop
-      - lambda: |-
-          id(last_command_ms) = millis();
-      - if:
-          condition:
-            lambda: 'return id(battery_ok);'
-          then:
-            # Kick start (2026-10-05): from rest, both motors at 100% for the
-            # first 100 ms so both wheels break stiction together - a short
-            # pulse at 75% could free one wheel and not the other, pivoting
-            # Grover hard. Then drop to the normal duty + trim.
-            - lambda: 'id(kick) = id(motion_status).state == "Stopped" || id(motion_status).state == "";'
-            - output.set_level:
-                id: left_pwm
-                level: !lambda 'return id(kick) ? 1.0f : std::min(1.0f, id(drive_duty).state / 100.0f * (1.0f + id(left_trim).state / 100.0f));'
-            - output.set_level:
-                id: right_pwm
-                level: !lambda 'return id(kick) ? 1.0f : id(drive_duty).state / 100.0f;'
-            - output.turn_off: left_forward_pin
-            - output.turn_off: right_forward_pin
-            - output.turn_on: left_reverse_pin
-            - output.turn_on: right_reverse_pin
-            - text_sensor.template.publish:
-                id: motion_status
-                state: "Backward"
-            - if:
-                condition:
-                  lambda: 'return id(kick);'
-                then:
-                  - delay: 100ms
-                  - if:
-                      condition:
-                        lambda: 'return id(motion_status).state == "Backward";'
-                      then:
-                        - output.set_level:
-                            id: left_pwm
-                            level: !lambda 'return std::min(1.0f, id(drive_duty).state / 100.0f * (1.0f + id(left_trim).state / 100.0f));'
-                        - output.set_level:
-                            id: right_pwm
-                            level: !lambda 'return id(drive_duty).state / 100.0f;'
-          else:
-            - script.execute: motor_stop
-            - text_sensor.template.publish:
-                id: motion_status
-                state: "Stopped"
-            - logger.log: "Backward blocked (low battery)"
+        - script.execute:
+            id: set_motion
+            l: !lambda 'return -std::min(100.0f, id(drive_duty).state * (1.0f + id(left_trim).state / 100.0f));'
+            r: !lambda 'return -id(drive_duty).state;'
+            ms: 0
     - action: left
       then:
-      - script.stop: motor_stop
-      - lambda: |-
-          id(last_command_ms) = millis();
-      - if:
-          condition:
-            lambda: 'return id(battery_ok) && !id(cliff_detected);'
-          then:
-            - output.set_level:
-                id: left_pwm
-                level: !lambda 'return id(pivot_duty).state / 100.0;'
-            - output.set_level:
-                id: right_pwm
-                level: !lambda 'return id(pivot_duty).state / 100.0;'
-            - output.turn_off: left_forward_pin
-            - output.turn_on: right_forward_pin
-            - output.turn_on: left_reverse_pin
-            - output.turn_off: right_reverse_pin
-            - text_sensor.template.publish:
-                id: motion_status
-                state: "Left"
-          else:
-            - script.execute: motor_stop
-            - text_sensor.template.publish:
-                id: motion_status
-                state: "Stopped"
-            - logger.log: "Left blocked (cliff detected or low battery)"
+        - script.execute:
+            id: set_motion
+            l: !lambda 'return -id(pivot_duty).state;'
+            r: !lambda 'return id(pivot_duty).state;'
+            ms: 0
     - action: right
       then:
-      - script.stop: motor_stop
-      - lambda: |-
-          id(last_command_ms) = millis();
-      - if:
-          condition:
-            lambda: 'return id(battery_ok) && !id(cliff_detected);'
-          then:
-            - output.set_level:
-                id: left_pwm
-                level: !lambda 'return id(pivot_duty).state / 100.0;'
-            - output.set_level:
-                id: right_pwm
-                level: !lambda 'return id(pivot_duty).state / 100.0;'
-            - output.turn_on: left_forward_pin
-            - output.turn_off: right_forward_pin
-            - output.turn_off: left_reverse_pin
-            - output.turn_on: right_reverse_pin
-            - text_sensor.template.publish:
-                id: motion_status
-                state: "Right"
-          else:
-            - script.execute: motor_stop
-            - text_sensor.template.publish:
-                id: motion_status
-                state: "Stopped"
-            - logger.log: "Right blocked (cliff detected or low battery)"
+        - script.execute:
+            id: set_motion
+            l: !lambda 'return id(pivot_duty).state;'
+            r: !lambda 'return -id(pivot_duty).state;'
+            ms: 0
     - action: stop
       then:
-      - script.execute: motor_stop
-      - text_sensor.template.publish:
-          id: motion_status
-          state: "Stopped"
+        - lambda: |-
+            id(last_command_ms) = millis();
+            id(tgt_l) = 0; id(tgt_r) = 0; id(move_end_ms) = 0;
+            if (id(cur_l) == 0 && id(cur_r) == 0) id(motor_stop).execute();
+    - action: halt
+      then:
+        - script.execute: motor_stop
+    # Timed move, executed on-board: direction forward/backward/left/right,
+    # ms of cruise (<= 3000) before the decel ramp, duty 0 = the matching
+    # slider. Total motion is about ms + Decel time.
+    - action: move
+      variables:
+        direction: string
+        ms: int
+        duty: int
+      then:
+        - script.execute:
+            id: set_motion
+            l: !lambda |-
+              float d = duty > 0 ? duty : (direction == "left" || direction == "right" ? id(pivot_duty).state : id(drive_duty).state);
+              float dl = std::min(100.0f, d * (1.0f + id(left_trim).state / 100.0f));
+              if (direction == "forward") return dl;
+              if (direction == "backward") return -dl;
+              if (direction == "left") return -d;
+              if (direction == "right") return d;
+              return 0.0f;
+            r: !lambda |-
+              float d = duty > 0 ? duty : (direction == "left" || direction == "right" ? id(pivot_duty).state : id(drive_duty).state);
+              if (direction == "forward") return d;
+              if (direction == "backward") return -d;
+              if (direction == "left") return d;
+              if (direction == "right") return -d;
+              return 0.0f;
+            ms: !lambda 'return std::max(0, (int) ms);'
+    # Continuous drive for a steering loop: signed percent per wheel, left
+    # trim applied. Untimed - refresh at least every 1.5 s or the watchdog
+    # stops it. Both >= 0 counts as forward for the cliff/obstacle guards.
+    - action: set_speeds
+      variables:
+        left: int
+        right: int
+      then:
+        - script.execute:
+            id: set_motion
+            l: !lambda 'return std::max(-100.0f, std::min(100.0f, left * (1.0f + id(left_trim).state / 100.0f)));'
+            r: !lambda 'return (float) std::max(-100, std::min(100, (int) right));'
+            ms: 0
