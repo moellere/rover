@@ -101,6 +101,12 @@ globals:
     type: uint32_t
     restore_value: no
     initial_value: '0'
+  # set by a guard (cliff) before motor_stop: brake this stop regardless of
+  # the brake switch - a cliff stop has centimetres to spare, not a choice.
+  - id: hard_stop
+    type: bool
+    restore_value: no
+    initial_value: 'false'
 
 # Pin map for awning
 #MCP0: Connected to L298N IN1
@@ -144,7 +150,7 @@ script:
           id(tgt_l) = 0; id(tgt_r) = 0; id(cur_l) = 0; id(cur_r) = 0; id(move_end_ms) = 0;
       - if:
           condition:
-            switch.is_on: brake_on_stop
+            lambda: 'return id(brake_on_stop).state || id(hard_stop);'
           then:
             - output.turn_on: left_forward_pin
             - output.turn_on: left_reverse_pin
@@ -167,6 +173,7 @@ script:
       - output.turn_off: right_forward_pin
       - output.turn_off: left_reverse_pin
       - output.turn_off: right_reverse_pin
+      - lambda: 'id(hard_stop) = false;'
       - text_sensor.template.publish:
           id: motion_status
           state: "Stopped"
@@ -394,10 +401,13 @@ binary_sensor:
       number: GPIO35   # input-only; the sensor module drives it (no pull-up on 34-39)
       inverted: false
     filters:
-      - delayed_on_off: 50ms
+      # Trip at once (2026-10-18: a 50 ms on-delay cost ~2 cm of the 65 mm
+      # sensor-to-wheel margin and a wheel went over the edge); only the
+      # release is debounced.
+      - delayed_off: 100ms
     on_press:
       - lambda: |-
-          id(cliff_detected) = true;
+          id(cliff_detected) = true; id(hard_stop) = true;
       - script.execute: motor_stop
       - text_sensor.template.publish:
           id: motion_status
@@ -414,10 +424,13 @@ binary_sensor:
       number: GPIO32
       inverted: false
     filters:
-      - delayed_on_off: 50ms
+      # Trip at once (2026-10-18: a 50 ms on-delay cost ~2 cm of the 65 mm
+      # sensor-to-wheel margin and a wheel went over the edge); only the
+      # release is debounced.
+      - delayed_off: 100ms
     on_press:
       - lambda: |-
-          id(cliff_detected) = true;
+          id(cliff_detected) = true; id(hard_stop) = true;
       - script.execute: motor_stop
       - text_sensor.template.publish:
           id: motion_status

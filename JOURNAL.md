@@ -77,11 +77,13 @@ breakdown of the notable decisions. Newest entry on top.
   to fit), with the kick start's extra speed feeding it - trim the kick
   (50 ms or 85 %) after the skid test.
 - **Back from the trip, 2026-10-18.** Cliff v4 mounts installed, skid
-  fitted (Enoch). **Ramped motion firmware flashed** (see the 10-18 entry):
+  fitted (Enoch). **Grover fell off the bench** during the third cliff
+  edge test (stopped on the trip, then tipped slowly) - damage report
+  pending; see the 10-18 entry and the new edge-test rule in CLAUDE.md. **Ramped motion firmware flashed** (see the 10-18 entry):
   the kick start is gone, pulses are trapezoids timed on the ESP32, new
   `move`/`set_speeds`/`halt` API actions and brain `set_ramp` tool.
-  Untested on the bench yet - first run: overhead lane test, 0.3 s pulses,
-  watch the stop transient. BMS soldered to a new 3x18650 holder (Enoch);
+  First bench run: ~25-30 cm per 0.3 s pulse, heading change at the stop
+  0-2 deg (was 20-30), reverse straight, pivots ~50 deg and symmetric. BMS soldered to a new 3x18650 holder (Enoch);
   its mount location is being decided - the rear plate puts ~200 g over
   the skid, the 4 posts over the controller/breadboard are the candidate
   (camera mount moves). Eufy schedule clear procedure found (remote only:
@@ -216,10 +218,72 @@ The first session's OTA failed (no route to host - Grover had dropped off
 WiFi or been switched off); the second session re-flashed at 19:5x,
 confirmed over the native API (compile 2026-10-18 19:46, services
 forward/backward/left/right/stop/halt/move/set_speeds, ramp 40/300/300).
-**Not yet driven.** Plan for the first run: overhead lane check, three
-0.3 s forward pulses, compare the heading change per pulse with the
-10-05 numbers (20-30 deg per stop), then try min duty 30/50 and decel
-500.
+Driven the same afternoon - see the first-run table below.
+
+### First run with the skid and the ramps (same afternoon)
+
+Overhead lane check, Grover at the right-hand end of the bench nosing
+toward the marker end, hatch below its line, TFMini 117 cm clear. No
+ArUco on Grover's top yet, so heading read off its outline in the
+overhead frame (roughly +/-3 deg). Ramp defaults 40 % / 300 ms / 300 ms,
+drive duty unchanged.
+
+| Pulse (0.3 s) | Travel | Heading change at the stop |
+|---|---|---|
+| forward 1 | ~25 cm | ~0 (if anything squarer; lens distortion at the frame edge) |
+| forward 2 | ~24 cm (TFMini) | +2 deg |
+| forward 3 | ~30 cm | -1 deg |
+| backward | ~30 cm, straight | 0 |
+| left pivot | about 50 deg, rear swings, pivot near the drive axle | - |
+| right pivot | back to the original heading | - |
+
+Against 20-30 deg per stop on 10/05 this is the fix. Two things changed
+at once (fixed skid, ramped profile), so neither gets sole credit; the
+10/05 zip-tied-caster test already pointed at the skid, and the ramp is
+what makes the stops gentle enough to keep. Reversing is straight now -
+CLAUDE.md's reversing rule relaxed (pulses <= 0.5 s, still look at the
+overhead camera first: no rear cliff sensors). Pivot note: after a left
+pivot the rear ends up ~2 cm from the garage-side edge when Grover is in
+the top lane - a pivot sweeps the rear through a ~25 cm arc, so plan
+pivots away from edges. Ramp tuning (min duty 30/50, decel 500) left for
+later; the defaults are good enough to move on to the steering loop.
+
+### Cliff edge-stop test - Grover went off the bench
+
+Enoch offered to spot ("I'm ready to catch it if it starts to go over the
+edge"), so the v4 cliff mounts got their first edge test. Setup: drive
+duty 50 %, min duty 30 %, brake on, 0.3 s pulses toward the garage-side
+edge, overhead frame between pulses.
+
+| Run | Approach | Result |
+|---|---|---|
+| 1 | ~30 deg off square (rear on the hatch lip, pivots fell short) | front-right tripped, stopped by itself, **wheel hanging over the edge**, chassis resting on the edge - neither wheel had contact, reverse did nothing, Enoch lifted it back |
+| fix | firmware: cliff inputs trip at once (the 50 ms `delayed_on_off` became `delayed_off: 100ms`), a cliff stop always brakes (`hard_stop` global) regardless of the brake switch; flashed | |
+| 2 | square, brake switch off (forced brake under test) | both sensors tripped, stopped by itself with the **wheels on the edge**; a 0.5 s reverse took it straight back - self-recovery works while the wheels still touch |
+| 3 | square, same spot, firmware log streaming | both tripped 180 ms into the pulse, stop at once, second cliff event 0.85 s later: **slow tip over the edge, fell to the floor**. API down afterwards. |
+
+What the log says (run 3, firmware clock): Forward 25.615, cliff right
+25.794, motor_stop restart 25.815, cliff left 25.819, brain disconnect
+26.409 (its own pulse timer), cliff left again 26.664, both sensors
+release 27.03-27.17 (the floor coming up). The firmware's own reaction
+is ~20 ms; the margin goes in the sensor tripping late (the module's
+comparator flips only when its spot is nearly off the edge) plus the
+stop distance from ~0.3 m/s, and the stopped rover's balance point is
+already past the wheels' contact line once they reach the edge. A
+spotter can't catch a slow tip.
+
+Twice in between, the obstacle guard refused forward because Enoch stood
+in front of the nose: the TFMini reads invalid under 30 cm and the "close
+then invalid" rule treats that as an obstacle. Right call by the
+firmware; lowered the threshold to 15 cm for the test (to be restored).
+
+**Conclusions.** (1) No edge test without a soft landing or a tether -
+now a rule in CLAUDE.md. (2) The sensors need to trip earlier: lower them
+(sharper spot), turn the module pots toward "less sensitive" so a partial
+reflection drop trips, and/or mount them further ahead; and keep bench
+cruise slow. (3) Damage report pending from Enoch; `obstacle_stop` is
+15 cm, drive duty 50 %, min duty 30 % on the rover and need restoring.
+Enoch, after the fall: "well, that's the end of that experiment."
 
 ### Motion intent
 
@@ -253,11 +317,13 @@ the schedule icon disappears; then set the clock and check AM/PM. The IR
 hold stays until the hour encoding is verified against the real remote.
 
 **Claude-driven:** replacing the kick start with an on-board speed
-profile rather than trimming it; the move/set_speeds/halt API shape; the
+profile rather than trimming it; running the edge test by creeping to
+the trip point with only a spotter - the call that put Grover on the
+floor; the move/set_speeds/halt API shape; the
 motion-intent plan; recovering the cut-off session from its transcript.
 
 **Enoch-decided:** asking for ramped/deliberate motion and motion intent
-in the first place; the pack-over-the-skid observation and the post
+in the first place; offering to spot the edge test, and ending it; the pack-over-the-skid observation and the post
 mounting idea; all the physical work (cliff mounts, skid, BMS soldering).
 
 ---

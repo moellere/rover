@@ -44,7 +44,8 @@ had to skid sideways to pivot, which caused stiction and left/right
 asymmetry. Steering is still differential, so `left`/`right` mean the same
 thing. The kit's Me Orion board is *not* used - an ESP + ESPHome stays
 (Orion has no WiFi and the safety firmware is proven). The swivel caster
-twists the rear on stops; a fixed printed skid replaces it (2026-10-05).
+twisted the rear on stops; a fixed printed skid replaced it (designed 10-05,
+fitted 10-18).
 
 ## Homing runs need a clear lane
 
@@ -56,14 +57,29 @@ a camera frame after every pulse (house run, 2026-10-04).
 
 ## Reversing the trike
 
-Backing up is **not** the mirror of driving forward: the trailing caster has
-to flip 180° when direction changes and drags the rear sideways while it
-does (2026-09-29: three 0.3 s backward pulses turned the rover ~45° and put
-one wheel over the right-hand bench edge; Enoch caught it). No rear cliff
-sensors exist, and the rover camera faces *away* from the direction of
-travel - marker distance says nothing about sideways drift. Reverse only in
-single short pulses (<= 0.3 s), and **look at the bench camera before each
-one** - never a scripted sequence checked only through the rover camera.
+Since 2026-10-18 the rear rides on a **fixed printed skid**, not the
+swivel caster, and reversing is now the mirror of driving forward: a 0.3 s
+reverse pulse on 10/18 went straight back with no heading change. (The old
+caster had to flip 180 deg on a direction change and dragged the rear
+sideways - on 2026-09-29 three reverse pulses turned the rover ~45 deg and
+put a wheel over the bench edge.) What has *not* changed: there are no
+rear cliff sensors and the rover camera faces away from the direction of
+travel. So still reverse in short pulses (<= 0.5 s) and **look at the
+overhead bench camera before each one** - never a scripted sequence
+checked only through the rover camera.
+
+## Edge tests (Enoch's bench, 2026-10-18: Grover went off)
+
+**Never drive Grover at a bench edge to test the cliff guard unless there
+is a soft landing under that edge or a tether on the chassis.** The guard
+trips, but the stop uses up the whole 65 mm between sensor and wheel: on
+10/18 run 1 left a wheel hanging over the edge, run 2 stopped with the
+wheels on the edge, run 3 stopped and then tipped over slowly ~0.8 s later
+and fell to the garage floor. A spotter is not enough - the fall is a slow
+tip, not a lurch, and the firmware cannot reverse a rover whose drive
+wheels have no contact. Also: a person standing in front of the nose
+inside 30 cm makes the TFMini read invalid and the obstacle guard refuses
+forward (correct) - spotters stand to the side of the line.
 
 ## Rover orientation on the bench
 
