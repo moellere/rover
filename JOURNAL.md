@@ -18,7 +18,7 @@ breakdown of the notable decisions. Newest entry on top.
 
 ## Current status (as of the latest entry below)
 
-**Where things stand, 2026-10-05:**
+**Where things stand, 2026-10-18:**
 
 - **Two robots, one brain.** **Grover** (Makeblock trike, bench platform)
   and a **Eufy RoboVac 12** (the house chassis, driven over IR). The
@@ -76,6 +76,16 @@ breakdown of the notable decisions. Newest entry on top.
   cause; the free swivel caster remains the prime suspect (skid printed,
   to fit), with the kick start's extra speed feeding it - trim the kick
   (50 ms or 85 %) after the skid test.
+- **Back from the trip, 2026-10-18.** Cliff v4 mounts installed, skid
+  fitted (Enoch). **Ramped motion firmware flashed** (see the 10-18 entry):
+  the kick start is gone, pulses are trapezoids timed on the ESP32, new
+  `move`/`set_speeds`/`halt` API actions and brain `set_ramp` tool.
+  Untested on the bench yet - first run: overhead lane test, 0.3 s pulses,
+  watch the stop transient. BMS soldered to a new 3x18650 holder (Enoch);
+  its mount location is being decided - the rear plate puts ~200 g over
+  the skid, the 4 posts over the controller/breadboard are the candidate
+  (camera mount moves). Eufy schedule clear procedure found (remote only:
+  hold Schedule ~3 s until two beeps, then set the clock, check AM/PM).
 - **Pause: Enoch travelling ~2 weeks from 10/05.** Hardware state left:
   caster skid printing (fit when back); Grover should be powered off
   (the firmware guard only stops driving - idle draw still drains the
@@ -149,6 +159,106 @@ Standing project rules live in [CLAUDE.md](CLAUDE.md) - read that first;
 decisions and their reasoning are in the dated entries below. The
 week-in-review entry right below summarises 09-29 .. 10-05; the dated
 notes after it carry the detail (a few were appended out of order).
+
+---
+
+## 2026-10-18 - Back on the bench: ramped motion engine, BMS pack, Eufy schedule
+
+**Model:** Claude Fable 5.1 (two sessions; the first was cut off mid-flash
+and the second picked it up from the transcript and the working tree).
+
+**Guidance from Enoch:** he's back and powered Grover on; the cliff v4
+mounts are installed and he fitted the caster skid; the BMS is soldered to
+a 3x18650 holder (61 x 79 x ~23 mm with the board) and needs a mount; he
+wants to know how to clear the Eufy's programming; "this is your project,
+I'm not trying to drive, but are you OK with me asking probing questions?"
+(yes). Then the key question: since the skew comes from sudden
+acceleration and deceleration, can the motors be driven more slowly or
+with ramped speed, and can we express a motion *intent* instead of the
+move / wait / look cycle? Later: the rear battery plate "may actually be
+contributing to some of the skew" - a lot of weight directly over the
+skid; the four extender posts over the motor controller/breadboard could
+carry it instead, at the cost of moving the camera mount.
+
+### Ramped motion engine (firmware + brain)
+
+What a pulse looked like before: 100 % on both motors for 100 ms (the
+kick start), 75 % for the rest of 0.3 s, then PWM straight to zero and a
+coast or a 150 ms brake. All transient, nothing for the trailing skid to
+settle into. Replaced with a speed profile that runs on the ESP32:
+
+- Every command sets a signed target duty per wheel; a 20 ms loop ramps
+  the live duty toward it. From rest it jumps to **Min duty** (default
+  40 %, both wheels break stiction together, far less energy than the
+  100 % kick) then climbs at 100 % per **Accel time** (300 ms); toward
+  zero it falls at 100 % per **Decel time** (300 ms). Direction pins and
+  PWM are derived from the live duty every tick. The three are HA number
+  sliders, persisted on the rover.
+- Two kinds of stop: `stop` eases down over the decel ramp; `halt` and
+  **every guard** (watchdog, disconnect, cliff, obstacle, battery) stop at
+  once with the optional dynamic brake, exactly as before.
+- New API actions: `move(direction, ms, duty)` - a timed pulse where the
+  ESP32 times the cruise (<= 3 s) and then decelerates, so pulse length
+  no longer includes WiFi jitter and a brain crash can't extend it;
+  `set_speeds(left, right)` - signed percent per wheel, untimed, for a
+  steering loop that re-plans while rolling (watchdog: refresh within
+  1.5 s); `halt`. The old forward/backward/left/right/stop remain, now
+  ramped. A timed move is exempt from the watchdog until its time is up,
+  then the decel phase gets its own 1.5 s window.
+- Brain: `drive()` uses `move` when the firmware has it (falls back on old
+  firmware), `RoverClient.set_speeds()` / `halt()`, a `set_ramp` tool,
+  ramp values in `status`. `stop` tool = halt (immediate).
+- Bug caught before compiling: the untimed-move path set `move_end_ms`
+  to 1 for every command, which would have ended them at once. Three
+  `int` casts for the ESPHome action variables after the first compile.
+
+The first session's OTA failed (no route to host - Grover had dropped off
+WiFi or been switched off); the second session re-flashed at 19:5x,
+confirmed over the native API (compile 2026-10-18 19:46, services
+forward/backward/left/right/stop/halt/move/set_speeds, ramp 40/300/300).
+**Not yet driven.** Plan for the first run: overhead lane check, three
+0.3 s forward pulses, compare the heading change per pulse with the
+09-05 numbers (20-30 deg per stop), then try min duty 30/50 and decel
+500.
+
+### Motion intent
+
+Answered in chat: two layers, both feasible now. (1) `set_speeds` under
+the dead-man gives the brain a continuous drive it can steer while
+rolling, re-planning from the overhead `locate` pose every ~200 ms;
+(2) on top of that, a `go_to(x, y)` / `face(heading)` tool in the brain
+that closes the loop itself and returns when done - the move/wait/look
+cycle becomes the brain's internal loop, not Enoch's. (2) is the next
+brain milestone once (1) is proven not to swing the rear.
+
+### BMS pack and where it goes
+
+Enoch soldered the HW-288 to the back of a 3x18650 holder (photos): B-
+(0V) and the 4.2 V / 8.4 V taps into the holder, pack + off the 12.6 V
+pad, load - off P-. Correct for this board (P+ is the same net as B+ on
+the common-port HW-288, so a load lead on the 12.6 V pad is fine). First
+draft of a cradle, `hardware/battery-cradle.scad`, for the rear plate -
+then Enoch's point that the rear plate stacks the pack's ~200 g over the
+skid. Agreed: that unloads the drive wheels and loads the skid, which is
+the pivot everything swings around. Candidate: the four posts over the
+controller/breadboard, mass over/just behind the drive axle; the camera
+mount moves (likely onto the cradle's front edge). Waiting on the post
+spacing, thread and height before redoing the cradle.
+
+### Eufy
+
+Clear procedure (Eufy's own, non-WiFi 11S/12 family): off the dock, power
+switch on, remote within 3 m: hold **Schedule** ~3 s until two beeps and
+the schedule icon disappears; then set the clock and check AM/PM. The IR
+hold stays until the hour encoding is verified against the real remote.
+
+**Claude-driven:** replacing the kick start with an on-board speed
+profile rather than trimming it; the move/set_speeds/halt API shape; the
+motion-intent plan; recovering the cut-off session from its transcript.
+
+**Enoch-decided:** asking for ramped/deliberate motion and motion intent
+in the first place; the pack-over-the-skid observation and the post
+mounting idea; all the physical work (cliff mounts, skid, BMS soldering).
 
 ---
 

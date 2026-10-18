@@ -35,7 +35,7 @@ All from Enoch's inventory unless the Source column says otherwise.
 | TTGO T-Camera (`redcam`) | 1 | Rover camera | Inventory | Installed (printed cradle + adapter strip) |
 | Printed parts (PETG): camera cradle, adapter strip, TFMini bracket, cliff mounts v4 (L+R) | - | see `hardware/README.md` | $0 | Installed |
 | Printed caster skid (`hardware/caster-skid.scad`) + M5 bolt 25-30 mm + nut | 1 | Replaces the swivel caster (it yaws the rear on stops) | $0 | Staged to print |
-| 3S BMS 40A board (1 of a 3-pack, B0G6JQ8ZFN) | 1 | Per-cell protection + balancing | $2.89 prorated (budget) | In hand, install deferred |
+| 3S BMS 40A board (1 of a 3-pack, B0G6JQ8ZFN) | 1 | Per-cell protection + balancing | $2.89 prorated (budget) | Soldered to a new 3x18650 holder 2026-10-18 (Enoch); mount pending (location under discussion) |
 | Bench cameras: `camv3` (Thingino), `fishcam` (Wyze Pan v2, Thingino PTZ) | 2 | Watch the bench from behind and head-on | Inventory | Installed |
 
 Retired: Wemos D1 Mini (now the bench IR test node `eufy-ir8266`), MCP23008
