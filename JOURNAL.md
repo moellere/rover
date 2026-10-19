@@ -331,7 +331,7 @@ and LOOK before slicing.
 
 Enoch leaves 10-20 early for ~5 days; the gyro won't be wired before he
 goes, so the firmware was written and compile-checked without it. On
-rover32: a third I2C bus (`bus_c`, SDA GPIO21 / SCL GPIO27) for the
+rover32: a third I2C bus (`bus_c`, SDA GPIO21 / SCL GPIO5) for the
 Parallax L3G4200D at 0x69; a 10 ms lambda that checks WHO_AM_I, sets
 100 Hz / 250 dps / BDU, averages 200 samples at rest for the zero-rate
 bias, then integrates the Z rate into `yaw` (deg, CCW +) and publishes

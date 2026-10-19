@@ -445,10 +445,10 @@ i2c:
     timeout: 20ms
   # Gyro bus (2026-10-19): Parallax L3G4200D at 0x69 (SDO pulled high on
   # the module; CS high = I2C). Its own bus so a wedged gyro never touches
-  # the TFMini. VIN 3V3, GND, SDA GPIO21, SCL GPIO27.
+  # the TFMini. VIN 3V3, GND, SDA GPIO21, SCL GPIO5 (a strapping pin, fine for an I2C line that idles high; Enoch's choice, 2026-10-19).
   - id: bus_c
     sda: GPIO21
-    scl: GPIO27
+    scl: GPIO5
     scan: true
     frequency: 400kHz
 
