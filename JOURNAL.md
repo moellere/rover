@@ -324,7 +324,11 @@ midnight and his test fit "shows it will likely work" (body_h/bms_h
 still assumed, bolt-on after the trip). Camera mount v6 started next at
 00:14 on Enoch's "OK, start it" (job `3c4b4a74d8`, 1h 29m, 23 g); done
 01:51, Enoch: "mount looks ok at first glance". Both tank parts are now
-printed; fit, bolt-on and camera attach wait for his return. Enoch on the rebuild: the
+printed; fit, bolt-on and camera attach wait for his return. Enoch,
+leaving: "If you need to print something else, you can (e.g. a combined
+bracket for the cliff sensors and tfmini or a bracket for the Eufy
+camera/IR mount)" - a standing print OK for the trip, recorded in
+CLAUDE.md. One print, since only he can clear the bed. Enoch on the rebuild: the
 tank looks cooler than the trike, "think Carlton Banks vs the Fresh
 Prince" - the trike "did have a better dance, unfortunately with pride
 comes a great fall." Two OpenSCAD lessons the same hour: a

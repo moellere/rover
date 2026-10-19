@@ -148,6 +148,12 @@ fallback is to switch to Opus 5.5 or wait for the reset.
   T-Camera (`redcam`), both bench cameras (`camv3`, `fishcam`), the
   Eufy's lid board (`blackcam`) and the IR test nodes (`eufy-ir8266`,
   `eufy-ir-c3`). Every other device still needs a check-in first.
+- **Printing while Enoch is away (2026-10-20, "If you need to print
+  something else, you can"):** Claude may submit and start prints on his
+  standing OK, quoting it, without a per-print go. The bed can only be
+  cleared by him, so that is one print per absence - choose it well, and
+  the bolt-pattern rule below still applies (no bracket sliced to a hole
+  pattern nobody measured).
 - **Physical setup is Enoch's to confirm.** When a test needs him to move,
   aim or wire something, describe the setup and wait for his "go" before
   capturing or sending - don't start while he's still placing things.
