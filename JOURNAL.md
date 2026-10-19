@@ -298,6 +298,27 @@ drive duty 75 %, obstacle stop 50 cm, brake off; min duty left at 30 %
 15 cm, drive duty 50 %, min duty 30 % on the rover and need restoring.
 Enoch, after the fall: "well, that's the end of that experiment."
 
+### 10-19: the tank is built (Enoch, same evening)
+
+Enoch rebuilt the kit as the tank in one sitting: lengthwise beams, a
+short cross beam at the front carrying the TFMini bracket (centred, two
+temporary screws) and both cliff mounts, which reach ~5 cm ahead of the
+track's nose - the balance point is now mid-track, so the edge margin
+went from nil to over 10 cm with the same sensors. Deck plate and the
+four posts carried over, but the posts sit ~38 mm ahead of the track
+midpoint with the motors at the rear, so the **battery cradle went to
+v3**: pocket shifted 40 mm rearward on the post pattern, BMS at the front
+end with its window open to the deck for the leads, front bolts in the
+camera perch tab, rear bolt heads sunk under the holder's floor. **Camera
+mount v6**: 4 mm base with the M4 slots at +/-16, clear of the cable
+slot where v5 tore; it bolts to the perch, which got a matching cable
+drop. TFMini stays on the metal cross beam (Claude's call: it stays put
+when the pack comes out and sits below the camera's view). Both parts
+sliced, held for Enoch's go. Two OpenSCAD lessons the same hour: a
+variable used before its line is silently undef (two renders lost their
+base/window), and a counterbore at the body's edge breaks out - render
+and LOOK before slicing.
+
 ### Decision: back to the tank
 
 Enoch's leading question at the end of the day: with precise motion

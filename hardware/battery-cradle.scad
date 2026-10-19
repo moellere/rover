@@ -59,7 +59,7 @@ body_rear  = pocket_rear + end_t;
 top_h   = floor_t + body_h;
 front_bolt_y = -post_cc_l / 2;
 rear_bolt_y  =  post_cc_l / 2;
-tab_front = front_bolt_y - 30;             // room for the bolt and the camera grid ahead of it
+tab_front = front_bolt_y - 38;             // room for the bolt, the camera grid and the camera base (44 long) ahead of it
 perch_y   = front_bolt_y - 12;             // camera grid centre row
 
 module rbox(w, l, h, r = 2) { linear_extrude(h) offset(r) offset(-r) square([w, l], center = true); }
@@ -87,6 +87,8 @@ difference() {
   for (sy = [-1, 1], sx = [-1, 1])
     translate([sx * outer_w / 2, shift + sy * holder_l / 4, floor_t + 2 + tie_w / 2])
       cube([wall_t * 3, tie_t, tie_w], center = true);
+  // camera cable drop under the camera base's slot (camera-mount v6 on the rear grid row, usb_x = 0)
+  hull() for (y = [perch_y + 3 - 1.5, perch_y + 3 + 1.5]) translate([0, y, -1]) cylinder(d = 13, h = floor_t + 2, $fn = 32);
   // camera perch grid
   for (x = perch_cols, dy = perch_rows)
     translate([x, perch_y + dy, -1]) cylinder(d = m4_hole, h = floor_t + 2, $fn = 24);

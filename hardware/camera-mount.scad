@@ -40,13 +40,14 @@ lip_len   = 4.5;    // length of each corner lip along the board edge (must stay
 tab_w     = 5.0;    // width of the two bottom corner tabs the board rests on
 tilt      = 10;     // degrees the camera looks DOWN from horizontal
 base_l    = 44;     // base plate length (along the rover's travel axis)
-base_t    = 3.0;    // base plate thickness
+base_t    = 4.0;    // base plate thickness (v6: was 3; v5 tore at the base)
 
 inner_w  = pcb_w + 2*clear;
 inner_t  = pcb_t + 2*clear;
 outer_w  = inner_w + 2*wall;
 depth    = comp_back + wall + inner_t + lip;   // cradle front-to-back
-base_w   = outer_w + 8;
+bolt_x   = 16;      // v6 (2026-10-19): bolts at +/-16 (two grid pitches), clear of the cable slot - v5 had them at +/-8, inside it, and tore there in the fall
+base_w   = max(outer_w + 8, 2 * bolt_x + 12);   // wide enough for the bolts
 
 // ---- Makeblock plate interface ---------------------------------------------
 mb_pitch  = 8;      // Makeblock hole grid, mm
@@ -59,7 +60,7 @@ module base() {
   difference() {
     linear_extrude(base_t)
       offset(r=3) offset(delta=-3) square([base_w, base_l], center=true);
-    for (x = [-mb_pitch, mb_pitch])
+    for (x = [-bolt_x, bolt_x])
       hull() for (y = [-slot_len/2, slot_len/2])
         translate([x, y, -1]) cylinder(d=m4_hole, h=base_t+2);
     // cable pass-through: the USB lead runs straight down from the board's
