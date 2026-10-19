@@ -328,7 +328,11 @@ printed; fit, bolt-on and camera attach wait for his return. Enoch,
 leaving: "If you need to print something else, you can (e.g. a combined
 bracket for the cliff sensors and tfmini or a bracket for the Eufy
 camera/IR mount)" - a standing print OK for the trip, recorded in
-CLAUDE.md. One print, since only he can clear the bed. Enoch on the rebuild: the
+CLAUDE.md. One print, since only he can clear the bed. Then the news
+that frees it: "The tfmini bracket lined up this time. It and the cliff
+brackets are mounted to the front of the acrylic plate" (plate moved
+forward to fit them and clear the motor) - so no combined front bracket
+is needed and the print slot stays unspent. Enoch on the rebuild: the
 tank looks cooler than the trike, "think Carlton Banks vs the Fresh
 Prince" - the trike "did have a better dance, unfortunately with pride
 comes a great fall." Two OpenSCAD lessons the same hour: a
