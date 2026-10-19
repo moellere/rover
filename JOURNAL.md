@@ -314,7 +314,11 @@ mount v6**: 4 mm base with the M4 slots at +/-24, outside the pedestal and clear
 of the cable slot where v5 tore; it bolts to the perch, which got a matching cable
 drop. TFMini stays on the metal cross beam (Claude's call: it stays put
 when the pack comes out and sits below the camera's view). Both parts
-sliced, held for Enoch's go. Two OpenSCAD lessons the same hour: a
+sliced, held for Enoch's go. Battery cradle v3 started on print-warden at 21:30 (job `5fa9f793b0`,
+2h 19m) once Enoch confirmed the bed clear. Enoch on the rebuild: the
+tank looks cooler than the trike, "think Carlton Banks vs the Fresh
+Prince" - the trike "did have a better dance, unfortunately with pride
+comes a great fall." Two OpenSCAD lessons the same hour: a
 variable used before its line is silently undef (two renders lost their
 base/window), and a counterbore at the body's edge breaks out - render
 and LOOK before slicing.
