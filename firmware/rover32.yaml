@@ -337,11 +337,19 @@ interval:
           const float dt = (now - last_us) * 1e-6f; last_us = now;
           const float dps = (int16_t) (b[0] | (b[1] << 8)) * 0.00875f;
           if (id(gyro_cal_n) < 200) {
-            if (id(motion_status).state != "Stopped") return;   // only calibrate at rest
+            // Only calibrate at rest: motors stopped AND the readings quiet.
+            // A window whose samples spread more than 3 dps (someone handling
+            // the rover - 2026-10-19 it captured a 13 dps bias that way)
+            // starts over.
+            static float cal_min = 0, cal_max = 0;
+            if (id(motion_status).state != "Stopped") { id(gyro_cal_n) = 0; id(gyro_cal_sum) = 0; return; }
+            if (id(gyro_cal_n) == 0) { cal_min = dps; cal_max = dps; }
+            cal_min = std::min(cal_min, dps); cal_max = std::max(cal_max, dps);
+            if (cal_max - cal_min > 3.0f) { id(gyro_cal_n) = 0; id(gyro_cal_sum) = 0; return; }
             id(gyro_cal_sum) += dps;
             if (++id(gyro_cal_n) == 200) {
               id(gyro_bias) = id(gyro_cal_sum) / 200.0f; id(yaw_deg) = 0; id(gyro_ok) = true;
-              ESP_LOGI("gyro", "calibrated: bias %.3f dps", id(gyro_bias));
+              ESP_LOGI("gyro", "calibrated: bias %.3f dps (spread %.2f)", id(gyro_bias), cal_max - cal_min);
             }
             return;
           }

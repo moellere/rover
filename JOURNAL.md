@@ -90,8 +90,8 @@ breakdown of the notable decisions. Newest entry on top.
   hold Schedule ~3 s until two beeps, then set the clock, check AM/PM).
 - **Pause: Enoch travelling ~5 days from 10/20.** Grover is the tank now,
   powered off, battery cradle v3 printed (fit-check pending), camera
-  mount v6 and the gyro wiring wait for his return; gyro firmware ready
-  to flash. The earlier pause follows.
+  mount v6 waits for his return; gyro wired, firmware flashed and
+  calibrating cleanly, Grover left on the 5 V rail (no driving). The earlier pause follows.
 - **Pause: Enoch travelling ~2 weeks from 10/05.** Hardware state left:
   caster skid printing (fit when back); Grover should be powered off
   (the firmware guard only stops driving - idle draw still drains the
@@ -340,8 +340,18 @@ eases out `Turn lead` degrees (slider, default 8) before the goal, hard
 capped at 3 s by the move timer; `zero_yaw` and `gyro_calibrate`. A
 missing gyro just logs once and `turn` is refused. Brain: `yaw_deg` /
 `yaw_rate_dps` in `status`, a `turn(degrees)` tool returning yaw before
-and after. **Not flashed** - Grover is powered off for the trip; flash
-and validate against the overhead marker when the four wires are on.
+and after. Then Enoch wired it the same night (SCL moved to **GPIO5** for his
+convenience) and left Grover on the 5 V rail (pack out: battery reads
+0.66 V, driving refused). **Flashed OTA 02:50**: the bus scan found the
+gyro at 0x69. First reading was a steady +13 deg/s at rest - the boot
+calibration had run while Enoch was still handling the rover, so the
+bias was garbage. Fix flashed at once: the calibration window restarts
+whenever its samples spread more than 3 deg/s (motors-stopped alone
+wasn't enough). After that it took ~30 s to settle through the 3D
+printer's vibration, then yaw at rest moved 0.23 deg in 17 s - under a
+degree a minute, good enough across a single turn. Pivot validation
+against the overhead marker waits for the pack. "Grover is yours to
+flash at will" while Enoch is away; camera stays off until he's back.
 Camera mount v6 print deferred to Enoch's return (nobody home to pull a
 failed print). While he is away: the brain's steering loop, on paper.
 

@@ -24,7 +24,7 @@ All from Enoch's inventory unless the Source column says otherwise.
 | Component | Qty | Role | Source | Status |
 |---|---|---|---|---|
 | Makeblock Starter Robot Kit, **trike** (two driven wheels + trailing caster; tank until 2026-09-29) | 1 | Chassis and two DC gear motors | Inventory | Installed |
-| Parallax L3G4200D 3-axis gyro module | 1 | Yaw rate for on-board heading control (I2C 0x69 on GPIO21/5, 3V3) | Inventory | Found 2026-10-19; wiring + firmware pending. (A GY-61 / ADXL335 analog accelerometer is also in inventory, deferred.) |
+| Parallax L3G4200D 3-axis gyro module | 1 | Yaw rate for on-board heading control (I2C 0x69 on GPIO21/5, 3V3) | Inventory | Wired and reading 2026-10-19 (SCL GPIO5). (A GY-61 / ADXL335 analog accelerometer is also in inventory, deferred.) |
 | TTGO T-Camera `redcam` (rover camera) | 1 | Eyes for homing | Inventory | Survived the 2026-10-18 fall (snapshot verified) |
 | Makeblock caster bracket + printed skid | 1 | Rear support | Inventory / printed | **Bracket snapped, skid lost, 2026-10-18** - reprint as one piece |
 | ESP32 devkit (WROOM-32D, 38-pin) - `rover32` | 1 | Spinal cord (ESPHome): enables GPIO16/17, direction GPIO18/19/22/23, cliff GPIO35/32, TFMini I2C GPIO25/26, battery GPIO34 | Inventory (was the Eufy IR node's board) | Installed 2026-10-03 |
