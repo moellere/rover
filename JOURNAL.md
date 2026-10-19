@@ -90,7 +90,7 @@ breakdown of the notable decisions. Newest entry on top.
   hold Schedule ~3 s until two beeps, then set the clock, check AM/PM).
 - **Pause: Enoch travelling ~5 days from 10/20.** Grover is the tank now,
   powered off, battery cradle v3 printed and test-fitted ("will likely
-  work"), camera mount v6 printing (`3c4b4a74d8`, pull it when back); gyro wired, firmware flashed and
+  work"), camera mount v6 printed (looks ok at first glance), both unfitted; gyro wired, firmware flashed and
   calibrating cleanly, Grover left on the 5 V rail (no driving). The earlier pause follows.
 - **Pause: Enoch travelling ~2 weeks from 10/05.** Hardware state left:
   caster skid printing (fit when back); Grover should be powered off
@@ -322,7 +322,9 @@ sliced, held for Enoch's go. Battery cradle v3 started on print-warden at 21:30 
 2h 19m) once Enoch confirmed the bed clear; it finished just before
 midnight and his test fit "shows it will likely work" (body_h/bms_h
 still assumed, bolt-on after the trip). Camera mount v6 started next at
-00:14 on Enoch's "OK, start it" (job `3c4b4a74d8`, 1h 28m, 23 g). Enoch on the rebuild: the
+00:14 on Enoch's "OK, start it" (job `3c4b4a74d8`, 1h 29m, 23 g); done
+01:51, Enoch: "mount looks ok at first glance". Both tank parts are now
+printed; fit, bolt-on and camera attach wait for his return. Enoch on the rebuild: the
 tank looks cooler than the trike, "think Carlton Banks vs the Fresh
 Prince" - the trike "did have a better dance, unfortunately with pride
 comes a great fall." Two OpenSCAD lessons the same hour: a
