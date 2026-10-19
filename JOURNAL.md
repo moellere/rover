@@ -99,7 +99,9 @@ breakdown of the notable decisions. Newest entry on top.
   Eufy's top (IR window, lid flat) and side, and the blackcam power
   choice (USB bank vs vacuum battery) for a lid mount; (3) fit/bolt the
   cradle and camera mount, pack in, camera on; (4) gyro pivot test on
-  the floor. The earlier pause follows.
+  the floor. Enoch is wiring blackcam from the Eufy's pack (2E.6, his
+  call, 10-20; LM2596 from inventory, tap on the switched side, fused,
+  spare lead for a voltage divider later). The earlier pause follows.
 - **Pause: Enoch travelling ~2 weeks from 10/05.** Hardware state left:
   caster skid printing (fit when back); Grover should be powered off
   (the firmware guard only stops driving - idle draw still drains the
