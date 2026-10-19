@@ -309,9 +309,12 @@ and its rear support is a part we have now redesigned three times
 no rear support, and ignore the hatch lip and house thresholds. Cost:
 pivots scrub, so steering closes on the overhead marker pose, pivots
 kept slow. Enoch: "it's your project, you tell me what you want to do" -
-so decided. Rear leg shelved unprinted. Open: whether the tank build
-keeps the deck plate and the four posts (then the battery cradle v2
-stands) and the front beam (cliff mounts, TFMini bracket carry over).
+so decided. Rear leg shelved unprinted. Enoch (10-19): the deck plate and the
+four posts carry over (battery cradle v2 stands), and so do the front
+beam and its hole pattern, but its height will differ and the cliff
+mounts may not reach past the track's nose - cliff mount v5 and maybe a
+TFMini bracket tweak once the tank is together (need: beam height above
+the floor, track nose ahead of the beam).
 
 ### Motion intent
 
