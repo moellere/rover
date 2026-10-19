@@ -91,7 +91,15 @@ breakdown of the notable decisions. Newest entry on top.
 - **Pause: Enoch travelling ~5 days from 10/20.** Grover is the tank now,
   powered off, battery cradle v3 printed and test-fitted ("will likely
   work"), camera mount v6 printed (looks ok at first glance), both unfitted; gyro wired, firmware flashed and
-  calibrating cleanly, Grover left on the 5 V rail (no driving). The earlier pause follows.
+  calibrating cleanly, Grover left on the 5 V rail (no driving). Eufy
+  back on, schedule cleared (Enoch, 10-20); IR hold stays. **Enoch's
+  list for his return:** (1) PM-stamped remote capture on `eufy-ir-c3`
+  (set the remote to a PM time, press Forward, then real time, Forward
+  again) to settle the hour encoding; (2) photos with a ruler of the
+  Eufy's top (IR window, lid flat) and side, and the blackcam power
+  choice (USB bank vs vacuum battery) for a lid mount; (3) fit/bolt the
+  cradle and camera mount, pack in, camera on; (4) gyro pivot test on
+  the floor. The earlier pause follows.
 - **Pause: Enoch travelling ~2 weeks from 10/05.** Hardware state left:
   caster skid printing (fit when back); Grover should be powered off
   (the firmware guard only stops driving - idle draw still drains the
