@@ -183,6 +183,9 @@ This is Claude's project to drive toward the goals; use whatever it needs:
   slices the part; Enoch loads filament changes and actually starts the
   print job. Slicing preferences (Enoch's): **tree supports** when supports
   are needed at all, and **no brim** (he doesn't want to trim one off).
+  **Bolt patterns: measure hole positions from a beam end** and confirm
+  with Enoch before slicing - the TFMini bracket assumed a centred pair
+  and never fitted (one bolt used, 2026-09-29..10-19).
   Designs are parametric OpenSCAD in `hardware/`; the toolchain installs
   with `scripts/install-tools.sh` (OpenSCAD + OrcaSlicer, no root needed).
   Prints are submitted and started through the print-warden MCP (since
