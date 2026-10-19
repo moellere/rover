@@ -88,6 +88,10 @@ breakdown of the notable decisions. Newest entry on top.
   the skid, the 4 posts over the controller/breadboard are the candidate
   (camera mount moves). Eufy schedule clear procedure found (remote only:
   hold Schedule ~3 s until two beeps, then set the clock, check AM/PM).
+- **Pause: Enoch travelling ~5 days from 10/20.** Grover is the tank now,
+  powered off, battery cradle v3 printed (fit-check pending), camera
+  mount v6 and the gyro wiring wait for his return; gyro firmware ready
+  to flash. The earlier pause follows.
 - **Pause: Enoch travelling ~2 weeks from 10/05.** Hardware state left:
   caster skid printing (fit when back); Grover should be powered off
   (the firmware guard only stops driving - idle draw still drains the
@@ -322,6 +326,24 @@ comes a great fall." Two OpenSCAD lessons the same hour: a
 variable used before its line is silently undef (two renders lost their
 base/window), and a counterbore at the body's edge breaks out - render
 and LOOK before slicing.
+
+### 10-19, late: gyro firmware written blind, Enoch away ~5 days
+
+Enoch leaves 10-20 early for ~5 days; the gyro won't be wired before he
+goes, so the firmware was written and compile-checked without it. On
+rover32: a third I2C bus (`bus_c`, SDA GPIO21 / SCL GPIO27) for the
+Parallax L3G4200D at 0x69; a 10 ms lambda that checks WHO_AM_I, sets
+100 Hz / 250 dps / BDU, averages 200 samples at rest for the zero-rate
+bias, then integrates the Z rate into `yaw` (deg, CCW +) and publishes
+`yaw rate`; a `turn(deg, duty)` action that pivots under the ramp and
+eases out `Turn lead` degrees (slider, default 8) before the goal, hard
+capped at 3 s by the move timer; `zero_yaw` and `gyro_calibrate`. A
+missing gyro just logs once and `turn` is refused. Brain: `yaw_deg` /
+`yaw_rate_dps` in `status`, a `turn(degrees)` tool returning yaw before
+and after. **Not flashed** - Grover is powered off for the trip; flash
+and validate against the overhead marker when the four wires are on.
+Camera mount v6 print deferred to Enoch's return (nobody home to pull a
+failed print). While he is away: the brain's steering loop, on paper.
 
 ### Decision: back to the tank
 

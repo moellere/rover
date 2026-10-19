@@ -36,6 +36,8 @@ class RoverState:
     min_duty: Optional[float] = None            # ramp profile (firmware 2026-10-18): duty applied at
     accel_ms: Optional[float] = None            #   once from rest; ms to sweep 0..100% up / down
     decel_ms: Optional[float] = None
+    yaw_deg: Optional[float] = None            # gyro heading (firmware 2026-10-19), CCW +, zeroed at calibration
+    yaw_rate_dps: Optional[float] = None
     raw: dict = field(default_factory=dict)
 
 
@@ -104,6 +106,10 @@ class RoverClient:
                     out.accel_ms = float(val)
                 elif oid == "decel_time":
                     out.decel_ms = float(val)
+                elif oid == "yaw":
+                    out.yaw_deg = float(val)
+                elif oid == "yaw_rate":
+                    out.yaw_rate_dps = float(val)
             return out
         finally:
             await client.disconnect()
@@ -155,6 +161,22 @@ class RoverClient:
                 await asyncio.sleep(min(refresh_s, remaining))
             await client.execute_service(svc["stop"], {})
             await asyncio.sleep(DEFAULT_DECEL_S + 0.3)
+        finally:
+            await client.disconnect()
+
+    async def turn(self, degrees: float, duty: int = 0, timeout_s: float = 4.0) -> None:
+        """Gyro-closed pivot by `degrees` (+ left/CCW, - right), executed on the
+        ESP32 (needs the 2026-10-19 firmware and a calibrated gyro - the
+        firmware logs a refusal otherwise). The connection is held open for
+        the turn (disconnect = stop); the firmware caps the turn at 3 s."""
+        client = await self._connect()
+        try:
+            _, services = await client.list_entities_services()
+            svc = {s.name: s for s in services}
+            if "turn" not in svc:
+                raise RuntimeError("rover firmware has no turn service (flash rover32 2026-10-19+)")
+            await client.execute_service(svc["turn"], {"deg": float(degrees), "duty": int(duty)})
+            await asyncio.sleep(min(timeout_s, 3.0 + DEFAULT_DECEL_S + 0.3))
         finally:
             await client.disconnect()
 

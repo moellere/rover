@@ -10,6 +10,7 @@ Tools:
                         most MAX_PULSE_S of cruise, ramped up and down by the
                         firmware (2026-10-18), always ending stopped
     set_ramp(...)       the firmware's min duty / accel / decel sliders
+    turn(degrees)       gyro-closed pivot on the ESP32 (2026-10-19 firmware)
     stop                immediate stop (no decel ramp)
 
 Safety here is a courtesy layer: the firmware's watchdog, disconnect-stop,
@@ -67,6 +68,8 @@ async def status() -> dict:
         "front_range_valid": st.front_range_valid,
         "obstacle_stop_cm": st.obstacle_stop_cm,
         "ramp": {"min_duty_pct": st.min_duty, "accel_ms": st.accel_ms, "decel_ms": st.decel_ms},
+        "yaw_deg": st.yaw_deg,
+        "yaw_rate_dps": st.yaw_rate_dps,
     }
 
 
@@ -177,6 +180,26 @@ async def eufy(command: str) -> dict:
         raise ValueError(f"command must be one of {sorted(COMMANDS)}")
     code = await EufyClient().send(command)
     return {"ok": True, "command": command, "code": f"0x{code:02X}"}
+
+
+@mcp.tool()
+async def turn(degrees: float, duty: int = 0) -> dict:
+    """Pivot in place by `degrees` (+ = left/CCW, - = right), closed on the
+    rover's gyro: the firmware ramps up, watches its yaw, and eases out
+    `turn_lead` degrees before the goal (3 s hard cap). Returns the yaw
+    before and after. Needs the gyro wired and calibrated (status.yaw_deg
+    not None); on the tank, pivots scrub, so this is the only repeatable
+    way to turn."""
+    global _last_drive_end
+    c = RoverClient()
+    before = (await c.state(timeout=3.0)).yaw_deg
+    if before is None:
+        raise RuntimeError("gyro not reporting - wired and calibrated?")
+    await c.turn(degrees, duty)
+    _last_drive_end = time.monotonic()
+    after = (await c.state(timeout=3.0)).yaw_deg
+    return {"ok": True, "requested_deg": degrees, "yaw_before": before, "yaw_after": after,
+            "turned_deg": None if after is None else round(after - before, 1)}
 
 
 @mcp.tool()

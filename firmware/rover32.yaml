@@ -107,6 +107,43 @@ globals:
     type: bool
     restore_value: no
     initial_value: 'false'
+  # Gyro (L3G4200D on bus_c, 2026-10-19): yaw integrated from the Z rate.
+  - id: gyro_ok          # sensor answered and the boot calibration finished
+    type: bool
+    restore_value: no
+    initial_value: 'false'
+  - id: gyro_bias        # zero-rate offset, deg/s, from the boot calibration
+    type: float
+    restore_value: no
+    initial_value: '0'
+  - id: gyro_cal_n       # samples collected so far for the calibration
+    type: int
+    restore_value: no
+    initial_value: '0'
+  - id: gyro_cal_sum
+    type: float
+    restore_value: no
+    initial_value: '0'
+  - id: yaw_deg          # heading, deg, CCW positive, zeroed at calibration
+    type: float
+    restore_value: no
+    initial_value: '0'
+  - id: gyro_errors
+    type: int
+    restore_value: no
+    initial_value: '0'
+  - id: turn_active      # a `turn` is running: the gyro loop ends it
+    type: bool
+    restore_value: no
+    initial_value: 'false'
+  - id: turn_goal        # yaw at which the turn is done
+    type: float
+    restore_value: no
+    initial_value: '0'
+  - id: turn_sign        # +1 left (CCW), -1 right
+    type: float
+    restore_value: no
+    initial_value: '1'
 
 # Pin map for awning
 #MCP0: Connected to L298N IN1
@@ -147,7 +184,7 @@ script:
     mode: restart
     then:
       - lambda: |-
-          id(tgt_l) = 0; id(tgt_r) = 0; id(cur_l) = 0; id(cur_r) = 0; id(move_end_ms) = 0;
+          id(tgt_l) = 0; id(tgt_r) = 0; id(cur_l) = 0; id(cur_r) = 0; id(move_end_ms) = 0; id(turn_active) = false;
       - if:
           condition:
             lambda: 'return id(brake_on_stop).state || id(hard_stop);'
@@ -263,6 +300,63 @@ interval:
                 id: motion_status
                 state: "Stopped (obstacle)"
             - logger.log: "Obstacle ahead inside the stop distance, stopping"
+  # Gyro loop (2026-10-19): L3G4200D OUT_Z at 100 Hz, 250 dps full scale
+  # (8.75 mdps/digit). First 200 samples after boot, motors stopped, set
+  # the zero-rate bias and zero the heading; then yaw += rate * dt.
+  # Drift is a few deg/min - the overhead marker corrects it; on-board the
+  # gyro only has to be right across one turn. A running `turn` is ended
+  # here when the goal is within `turn_lead` deg (the decel ramp covers
+  # the rest). Register writes once on first contact: CTRL_REG1 0x20 =
+  # 0x1F (100 Hz ODR, 25 Hz cutoff, all axes on), CTRL_REG4 0x23 = 0x80
+  # (BDU, 250 dps).
+  - interval: 10ms
+    then:
+      - lambda: |-
+          static bool configured = false;
+          static uint32_t last_us = 0;
+          if (!configured) {
+            uint8_t who = 0; const uint8_t r = 0x0F;
+            if (id(bus_c).write_readv(0x69, &r, 1, &who, 1) != i2c::ERROR_OK || who != 0xD3) {
+              if (++id(gyro_errors) == 100) ESP_LOGW("gyro", "no L3G4200D at 0x69 (who=0x%02X)", who);
+              return;
+            }
+            const uint8_t c1[2] = {0x20, 0x1F}; const uint8_t c4[2] = {0x23, 0x80};
+            id(bus_c).write(0x69, c1, 2); id(bus_c).write(0x69, c4, 2);
+            configured = true; id(gyro_errors) = 0; last_us = micros();
+            ESP_LOGI("gyro", "L3G4200D configured, calibrating - keep still");
+            return;
+          }
+          const uint8_t reg = 0x2C | 0x80;   // OUT_Z_L, auto-increment
+          uint8_t b[2] = {0, 0};
+          if (id(bus_c).write_readv(0x69, &reg, 1, b, 2) != i2c::ERROR_OK) {
+            if (++id(gyro_errors) == 50) { ESP_LOGW("gyro", "read errors, heading unreliable"); id(gyro_ok) = false; }
+            return;
+          }
+          id(gyro_errors) = 0;
+          const uint32_t now = micros();
+          const float dt = (now - last_us) * 1e-6f; last_us = now;
+          const float dps = (int16_t) (b[0] | (b[1] << 8)) * 0.00875f;
+          if (id(gyro_cal_n) < 200) {
+            if (id(motion_status).state != "Stopped") return;   // only calibrate at rest
+            id(gyro_cal_sum) += dps;
+            if (++id(gyro_cal_n) == 200) {
+              id(gyro_bias) = id(gyro_cal_sum) / 200.0f; id(yaw_deg) = 0; id(gyro_ok) = true;
+              ESP_LOGI("gyro", "calibrated: bias %.3f dps", id(gyro_bias));
+            }
+            return;
+          }
+          const float rate = dps - id(gyro_bias);
+          if (dt < 0.1f) id(yaw_deg) += rate * dt;
+          id(yaw_rate).publish_state(rate);
+          id(yaw).publish_state(id(yaw_deg));
+          if (id(turn_active)) {
+            const float remaining = (id(turn_goal) - id(yaw_deg)) * id(turn_sign);
+            if (remaining <= id(turn_lead).state) {
+              id(turn_active) = false;
+              id(tgt_l) = 0; id(tgt_r) = 0; id(move_end_ms) = 0; id(last_command_ms) = millis();
+              ESP_LOGI("gyro", "turn done: yaw %.1f (goal %.1f)", id(yaw_deg), id(turn_goal));
+            }
+          }
   # Ramp loop: moves the live duty toward the target. Leaving rest jumps
   # straight to "Min duty" (both wheels break stiction together - the old
   # 100 ms 100% kick did the same job with far more energy), then climbs
@@ -349,6 +443,14 @@ i2c:
     scan: true
     frequency: 100kHz
     timeout: 20ms
+  # Gyro bus (2026-10-19): Parallax L3G4200D at 0x69 (SDO pulled high on
+  # the module; CS high = I2C). Its own bus so a wedged gyro never touches
+  # the TFMini. VIN 3V3, GND, SDA GPIO21, SCL GPIO27.
+  - id: bus_c
+    sda: GPIO21
+    scl: GPIO27
+    scan: true
+    frequency: 400kHz
 
 # Example configuration entry
 output:
@@ -456,6 +558,26 @@ sensor:
   - platform: wifi_signal
     name: ${devicename} WiFi Signal
     update_interval: 60s
+  - platform: template
+    name: "Yaw"
+    id: yaw
+    unit_of_measurement: "°"
+    accuracy_decimals: 1
+    state_class: measurement
+    filters:
+      - or:
+          - delta: 1
+          - throttle: 5s
+  - platform: template
+    name: "Yaw rate"
+    id: yaw_rate
+    unit_of_measurement: "°/s"
+    accuracy_decimals: 1
+    state_class: measurement
+    filters:
+      - or:
+          - delta: 5
+          - throttle: 5s
   - platform: template
     name: "Front range"
     id: front_range
@@ -590,6 +712,19 @@ number:
     restore_value: true
     optimistic: true
     entity_category: config
+  # How many degrees before the goal a `turn` starts its decel ramp (the
+  # ramp covers the rest). Tune on the bench: too small overshoots.
+  - platform: template
+    name: "Turn lead"
+    id: turn_lead
+    unit_of_measurement: "°"
+    min_value: 0
+    max_value: 45
+    step: 1
+    initial_value: 8
+    restore_value: true
+    optimistic: true
+    entity_category: config
 switch:
   - platform: template
     name: "Brake on stop"
@@ -688,6 +823,28 @@ api:
               if (direction == "right") return -d;
               return 0.0f;
             ms: !lambda 'return std::max(0, (int) ms);'
+    # Gyro turn (2026-10-19): pivot by `deg` (+ = left/CCW, - = right) at
+    # `duty` (0 = pivot slider), ending when the gyro says so. Capped at
+    # 3 s by the move timer in case the gyro stops reading mid-turn.
+    # Refused if the gyro is not calibrated.
+    - action: turn
+      variables:
+        deg: float
+        duty: int
+      then:
+        - lambda: |-
+            if (!id(gyro_ok)) { ESP_LOGW("gyro", "turn refused: gyro not ready"); return; }
+            id(turn_sign) = deg >= 0 ? 1.0f : -1.0f;
+            id(turn_goal) = id(yaw_deg) + deg;
+            id(turn_active) = true;
+            const float d = duty > 0 ? duty : id(pivot_duty).state;
+            id(set_motion).execute(-id(turn_sign) * d, id(turn_sign) * d, 3000);
+    - action: zero_yaw
+      then:
+        - lambda: 'id(yaw_deg) = 0; id(yaw).publish_state(0);'
+    - action: gyro_calibrate
+      then:
+        - lambda: 'id(gyro_cal_n) = 0; id(gyro_cal_sum) = 0; id(gyro_ok) = false;'
     # Continuous drive for a steering loop: signed percent per wheel, left
     # trim applied. Untimed - refresh at least every 1.5 s or the watchdog
     # stops it. Both >= 0 counts as forward for the cliff/obstacle guards.
