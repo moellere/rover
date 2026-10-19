@@ -47,7 +47,7 @@ tie_w     = 5; tie_t = 2.2;
 // ---- Front tab: front bolts + camera perch -------------------------------
 tab_w     = 80;      // covers the front bolts at x = +/-32
 perch_rows = [-8, 0];   // camera grid rows, relative to perch_y
-perch_cols = [-16, -8, 0, 8, 16];
+perch_cols = [-24, -16, -8, 0, 8, 16, 24];
 
 inner_w = holder_w + clear_w;
 inner_l = holder_l + clear_l;

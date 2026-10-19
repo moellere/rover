@@ -310,8 +310,8 @@ midpoint with the motors at the rear, so the **battery cradle went to
 v3**: pocket shifted 40 mm rearward on the post pattern, BMS at the front
 end with its window open to the deck for the leads, front bolts in the
 camera perch tab, rear bolt heads sunk under the holder's floor. **Camera
-mount v6**: 4 mm base with the M4 slots at +/-16, clear of the cable
-slot where v5 tore; it bolts to the perch, which got a matching cable
+mount v6**: 4 mm base with the M4 slots at +/-24, outside the pedestal and clear
+of the cable slot where v5 tore; it bolts to the perch, which got a matching cable
 drop. TFMini stays on the metal cross beam (Claude's call: it stays put
 when the pack comes out and sits below the camera's view). Both parts
 sliced, held for Enoch's go. Two OpenSCAD lessons the same hour: a

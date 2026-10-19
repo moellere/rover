@@ -46,7 +46,7 @@ inner_w  = pcb_w + 2*clear;
 inner_t  = pcb_t + 2*clear;
 outer_w  = inner_w + 2*wall;
 depth    = comp_back + wall + inner_t + lip;   // cradle front-to-back
-bolt_x   = 16;      // v6 (2026-10-19): bolts at +/-16 (two grid pitches), clear of the cable slot - v5 had them at +/-8, inside it, and tore there in the fall
+bolt_x   = 24;      // v6 (2026-10-19): bolts at +/-24 (three grid pitches, outside the pedestal footprint), clear of the cable slot - v5 had them at +/-8, inside it, and tore there in the fall
 base_w   = max(outer_w + 8, 2 * bolt_x + 12);   // wide enough for the bolts
 
 // ---- Makeblock plate interface ---------------------------------------------
