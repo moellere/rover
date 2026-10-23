@@ -40,7 +40,7 @@ instructions, and readable as plain English by anyone.
 - **Visual homing works** (since 10-05): `home_to_marker` finds a printed
   ArUco marker with the onboard camera and parks in front of it. Steering
   from the overhead camera's view of a marker on Grover's top is next -
-  the marker is being printed.
+  the marker page is in the inkjet's queue (10-23).
 - **It has been through the house** (2026-10-04, as the trike): dining
   room to kitchen doorway, ~12-14 m, in camera-checked legs.
 - **Sensors:** TFMini forward LiDAR (obstacle stop at 50 cm), two TCRT5000
@@ -82,8 +82,11 @@ settle, look again - talking to the rover over ESPHome's native API.
   5 V); two TCRT5000 cliff modules at 3.3 V on printed v4 mounts
 - Vision: TTGO T-Camera on the rover (fisheye, ~111 deg); two Thingino
   cameras on the bench (`camv3` behind the rover, `fishcam` PTZ head-on)
-- Homing targets: ArUco 4x4_50 markers, ids 0 (80 mm) and 1 (160 mm),
-  printable from `hardware/markers/`
+- Markers: ArUco 4x4_50, ids 0 (80 mm) and 1 (160 mm) as homing targets,
+  id 2 (60 mm, FRONT-labelled) on Grover's top for the overhead camera -
+  pages in `hardware/markers/`, each with a 100 mm scale bar; print at
+  100 %, or send one straight to a network inkjet with
+  `scripts/print_marker.py`
 
 ## Software
 

@@ -17,6 +17,18 @@ except for the one `apt-get` line noted at the top of that script).
 | `battery-cradle.scad` | **v3 (tank, 2026-10-19):** cradle for the 3x18650 holder with the HW-288 BMS flush at one end of its back (61 x 79 x ~23). Sits on the four 30 mm posts (96 x 64 centres, +/-2 mm slots) with the pocket shifted **40 mm rearward** to put the pack on the track midpoint: rear bolt heads sunk under the holder's floor, front bolts in the floor-level front tab, which is also the camera perch (5x2 M4 grid + cable drop). BMS at the front end, its window open to the deck below for the leads. Cells up, zip-tie slots, 2 mm end clearance for the balance-lead wraps. Prints floor down, no supports. | Posts and holder measured by Enoch 10-18/19. **Printed 2026-10-19** (job `5fa9f793b0`, 2h 19m, 57 g PETG). Enoch's test fit with the holder: "will likely work". **Bolted on 2026-10-22**, pack in; the assumed body_h / bms_h (17 / 6) were close enough that nothing needed rework. |
 | `caster-skid.scad` | Fixed domed PETG skid replacing the swivel caster (which twisted the rear on stops). 22 mm puck, 36 mm tall (bracket underside to bench), M5 bolt down through the block into a captive nut slid in from the side. Round, so the single bolt can't steer it. | Printed and fitted 2026-10-18; its aluminium bracket sheared in the fall the same day and the skid was lost. Superseded by the tank rebuild. |
 
+## Markers
+
+`markers/make_marker.py` draws an ArUco 4x4_50 page (US Letter, 300 DPI):
+the square at its exact size, a caption, a 100 mm scale bar with 10 mm
+ticks, and with `--front` a FRONT label on the top edge (what
+`brain/overhead.py` treats as forward). Committed pages: id 0 80 mm and
+id 1 160 mm (homing targets), id 2 60 mm FRONT-labelled (Grover's top).
+Print at 100 %, never fit-to-page, and check the scale bar with a ruler.
+`scripts/print_marker.py <page.png> --printer <host>` sends a page to an
+IPP inkjet at native size (needs `ipptool` from `cups-ipp-utils`; the
+address stays out of the repo).
+
 ## Render
 
 ```

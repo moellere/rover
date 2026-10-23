@@ -191,7 +191,8 @@ reattached, the balancer board battery pack is attached" - the cradle v3
 and camera mount v6 both went on without rework. "You can run the test
 when ready." The id 2 marker for Grover's top "was never installed" (so
 the brain's overhead pose has never actually had a rover to find) - he is
-printing it. He asked for recent pictures in the docs.
+printing it. He asked for recent pictures in the docs. 10-23: he offered
+the house inkjet so I could print the marker pages myself.
 
 ![The tank from the side (Enoch's photo): cradle v3 on the posts, camera mount v6 on its perch](images/09-tank-side-2026-10-22.jpg)
 ![Head-on (Enoch's photo): camera, TFMini bracket and cliff mounts on the deck plate's front edge; the OLED is blurred because it shows the IP](images/10-tank-front-2026-10-22.jpg)
@@ -236,6 +237,28 @@ sits centred over the tracks - the cradle's 40 mm rearward shift did its job.
 **Claude-driven:** running the tests, the duty thresholds, the gyro sign
 fix, the braked turn stop. **Enoch-decided:** when Grover was on and where
 it sat; "yes" the 80 % pulse moved it; the marker print; pictures in the docs.
+
+### 10-23: the marker goes to the inkjet over IPP
+
+Enoch pointed me at the house inkjet ("if you want to try printing the
+marker(s) directly"), so the marker page now prints from the repo without
+a human in the loop: `scripts/print_marker.py` re-encodes the 300 DPI page
+as a JPEG whose header says 300 dpi (the printer takes JPEG and raster,
+not PDF) and submits it with `ipptool` as a Print-Job with
+`print-scaling=none` on Letter. The page itself grew a **FRONT** label on
+the marker's top edge (the edge `brain/overhead.py` reads as forward) and
+a **100 mm scale bar** with 10 mm ticks, so the printed-size check is a
+ruler on the bar, not on the marker. Pages for ids 0, 1 and 2 regenerated
+and re-detected at heading 90.0 (page-up) in the brain's own detector.
+
+The printer accepted the id 2 job and stopped two minutes later with a
+critical alert: the yellow cartridge reads empty. A monochrome page still
+needs the override on the printer's own panel (Canon stops on any empty
+tank), so the job sits in its queue until Enoch presses it or swaps the
+cartridge. The id 0 page (80 mm) is queued next in my notes, not the
+printer: it goes flat on the bench in front of the upright homing marker
+as the overhead camera's "goal spot", so `locate` can give the steering
+loop a target in the same frame as Grover.
 
 ## 2026-10-18 - Back on the bench: ramped motion engine, BMS pack, Eufy schedule
 
