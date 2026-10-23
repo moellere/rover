@@ -26,7 +26,7 @@ All from Enoch's inventory unless the Source column says otherwise.
 | Makeblock Starter Robot Kit, **trike** (two driven wheels + trailing caster; tank until 2026-09-29) | 1 | Chassis and two DC gear motors | Inventory | Installed |
 | Parallax L3G4200D 3-axis gyro module | 1 | Yaw rate for on-board heading control (I2C 0x69 on GPIO21/5, 3V3) | Inventory | Wired and reading 2026-10-19 (SCL GPIO5). (A GY-61 / ADXL335 analog accelerometer is also in inventory, deferred.) |
 | TTGO T-Camera `redcam` (rover camera) | 1 | Eyes for homing | Inventory | Survived the 2026-10-18 fall (snapshot verified) |
-| Makeblock caster bracket + printed skid | 1 | Rear support | Inventory / printed | **Bracket snapped, skid lost, 2026-10-18** - reprint as one piece |
+| Makeblock caster bracket + printed skid | 1 | Rear support (trike) | Inventory / printed | **Bracket snapped, skid lost, 2026-10-18**; superseded by the tank rebuild (no rear support) |
 | ESP32 devkit (WROOM-32D, 38-pin) - `rover32` | 1 | Spinal cord (ESPHome): enables GPIO16/17, direction GPIO18/19/22/23, cliff GPIO35/32, TFMini I2C GPIO25/26, battery GPIO34 | Inventory (was the Eufy IR node's board) | Installed 2026-10-03 |
 | L298N dual H-bridge | 1 | Motor driver | Inventory | Installed |
 | 18650 Li-ion cells | 3 (3S) | Power, 12.6 V full / ~9 V empty | Inventory | Installed; one weak set retired 09-29, one bad cell found 10-04 - charge the set together and full |
@@ -35,10 +35,10 @@ All from Enoch's inventory unless the Source column says otherwise.
 | Benewake TFMini (SparkFun SEN-14786) | 1 | Forward LiDAR: obstacle stop 50 cm, range for homing | Inventory | Installed on the printed bracket; direct GH1.25 lead, 5 V |
 | GH1.25-to-Dupont lead (kit B087N4GY8Z) | 1 | TFMini direct connection (replaced the Qwiic boost chain and LD33V) | $0.40 prorated (budget) | Installed |
 | TCRT5000 cliff modules (HW-870) | 2 | Front cliff detection, DO at 3.3 V | Enoch's purchase (not budget) | Installed on v4 mounts |
-| TTGO T-Camera (`redcam`) | 1 | Rover camera | Inventory | Installed (printed cradle + adapter strip) |
-| Printed parts (PETG): camera cradle, adapter strip, TFMini bracket, cliff mounts v4 (L+R) | - | see `hardware/README.md` | $0 | Installed |
-| Printed caster skid (`hardware/caster-skid.scad`) + M5 bolt 25-30 mm + nut | 1 | Replaces the swivel caster (it yaws the rear on stops) | $0 | Staged to print |
-| 3S BMS 40A board (1 of a 3-pack, B0G6JQ8ZFN) | 1 | Per-cell protection + balancing | $2.89 prorated (budget) | Soldered to a new 3x18650 holder 2026-10-18 (Enoch); mount pending (location under discussion) |
+| TTGO T-Camera (`redcam`) | 1 | Rover camera | Inventory | Installed on camera mount v6 on the battery cradle's perch (2026-10-22) |
+| Printed parts (PETG): battery cradle v3, camera mount v6, TFMini bracket, cliff mounts v4 (L+R) | - | see `hardware/README.md` | $0 | Installed on the tank (2026-10-19..22); camera-mount v5 and the adapter strip retired |
+| Printed caster skid (`hardware/caster-skid.scad`) + M5 bolt 25-30 mm + nut | 1 | Replaced the swivel caster on the trike | $0 | Printed and fitted 10-18, lost in the fall; superseded |
+| 3S BMS 40A board (1 of a 3-pack, B0G6JQ8ZFN) | 1 | Per-cell protection + balancing | $2.89 prorated (budget) | Soldered to a new 3x18650 holder 2026-10-18 (Enoch); in the printed cradle on the deck posts since 2026-10-22 |
 | Bench cameras: `camv3` (Thingino), `fishcam` (Wyze Pan v2, Thingino PTZ) | 2 | Watch the bench from behind and head-on | Inventory | Installed |
 
 Retired: Wemos D1 Mini (now the bench IR test node `eufy-ir8266`), MCP23008

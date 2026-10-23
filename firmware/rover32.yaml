@@ -305,8 +305,8 @@ interval:
   # the zero-rate bias and zero the heading; then yaw += rate * dt.
   # Drift is a few deg/min - the overhead marker corrects it; on-board the
   # gyro only has to be right across one turn. A running `turn` is ended
-  # here when the goal is within `turn_lead` deg (the decel ramp covers
-  # the rest). Register writes once on first contact: CTRL_REG1 0x20 =
+  # here with a braked stop when the remaining angle is within `turn_lead`
+  # plus rate x `turn_stop_ms` (the stop latency). Register writes once on first contact: CTRL_REG1 0x20 =
   # 0x1F (100 Hz ODR, 25 Hz cutoff, all axes on), CTRL_REG4 0x23 = 0x80
   # (BDU, 250 dps).
   - interval: 10ms
@@ -359,12 +359,20 @@ interval:
           if (dt < 0.1f) id(yaw_deg) += rate * dt;
           id(yaw_rate).publish_state(rate);
           id(yaw).publish_state(id(yaw_deg));
+          // Smoothed |rate| for the predictive stop (scrubbing tracks make
+          // the raw rate jump 40..160 dps sample to sample).
+          static float rate_f = 0;
+          rate_f = 0.7f * rate_f + 0.3f * fabsf(rate);
           if (id(turn_active)) {
             const float remaining = (id(turn_goal) - id(yaw_deg)) * id(turn_sign);
-            if (remaining <= id(turn_lead).state) {
+            const float lead = id(turn_lead).state + rate_f * id(turn_stop_ms).state * 0.001f;
+            if (remaining <= lead) {
+              // Brake, don't ramp: at 90 % the decel ramp alone was ~10 deg
+              // of overshoot (10-22). hard_stop makes motor_stop brake.
               id(turn_active) = false;
-              id(tgt_l) = 0; id(tgt_r) = 0; id(move_end_ms) = 0; id(last_command_ms) = millis();
-              ESP_LOGI("gyro", "turn done: yaw %.1f (goal %.1f)", id(yaw_deg), id(turn_goal));
+              id(hard_stop) = true;
+              id(motor_stop).execute();
+              ESP_LOGI("gyro", "turn done: yaw %.1f (goal %.1f, lead %.1f at %.0f dps)", id(yaw_deg), id(turn_goal), lead, rate_f);
             }
           }
   # Ramp loop: moves the live duty toward the target. Leaving rest jumps
@@ -722,8 +730,9 @@ number:
     restore_value: true
     optimistic: true
     entity_category: config
-  # How many degrees before the goal a `turn` starts its decel ramp (the
-  # ramp covers the rest). Tune on the bench: too small overshoots.
+  # A `turn` brakes when remaining <= lead + |rate| * stop latency. Lead is
+  # the fixed margin; the latency term covers sensor-to-brake delay at
+  # whatever speed the pivot is actually running. Tune on the bench.
   - platform: template
     name: "Turn lead"
     id: turn_lead
@@ -731,7 +740,18 @@ number:
     min_value: 0
     max_value: 45
     step: 1
-    initial_value: 8
+    initial_value: 2
+    restore_value: true
+    optimistic: true
+    entity_category: config
+  - platform: template
+    name: "Turn stop latency"
+    id: turn_stop_ms
+    unit_of_measurement: "ms"
+    min_value: 0
+    max_value: 300
+    step: 10
+    initial_value: 60
     restore_value: true
     optimistic: true
     entity_category: config

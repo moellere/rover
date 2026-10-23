@@ -88,6 +88,10 @@ breakdown of the notable decisions. Newest entry on top.
   the skid, the 4 posts over the controller/breadboard are the candidate
   (camera mount moves). Eufy schedule clear procedure found (remote only:
   hold Schedule ~3 s until two beeps, then set the clock, check AM/PM).
+- **2026-10-22, Enoch back:** cradle and camera mount fitted, pack in,
+  camera on; **the tank drives** (needs 75 % min duty), gyro sign fixed,
+  first closed turns within ~5-10 deg, braked turn stop flashed. Marker
+  id 2 for Grover's top being printed (it was never installed).
 - **Pause: Enoch travelling ~5 days from 10/20.** Grover is the tank now,
   powered off, battery cradle v3 printed and test-fitted ("will likely
   work"), camera mount v6 printed (looks ok at first glance), both unfitted; gyro wired, firmware flashed and
@@ -177,6 +181,56 @@ week-in-review entry right below summarises 09-29 .. 10-05; the dated
 notes after it carry the detail (a few were appended out of order).
 
 ---
+
+## 2026-10-22 - The tank drives: pack in, camera on, first gyro turns
+
+**Model:** Claude Fable 5.1 (same session as 10-18/19, continued).
+
+**Guidance from Enoch:** back from his trip; "Grover is on, the camera is
+reattached, the balancer board battery pack is attached" - the cradle v3
+and camera mount v6 both went on without rework. "You can run the test
+when ready." The id 2 marker for Grover's top "was never installed" (so
+the brain's overhead pose has never actually had a rover to find) - he is
+printing it. He asked for recent pictures in the docs.
+
+![The tank assembled, overhead, 10-22](images/06-tank-overhead-2026-10-22.jpg)
+![Grover's own view down the bench to the homing marker](images/07-tank-eye-view-2026-10-22.jpg)
+
+**What happened.** Status on power-up: pack 11.8 V through the BMS, TFMini
+133 cm valid, cliffs clear, WiFi -36 dBm, every firmware service present
+(`move`, `set_speeds`, `turn`, `zero_yaw`, `gyro_calibrate`...). The pack
+sits centred over the tracks - the cradle's 40 mm rearward shift did its job.
+
+- **First `turn(90)` at 40 %: nothing.** The firmware reported "Left" for
+  its full 3 s cap and the gyro stayed at zero; the overhead showed Grover
+  had not moved a millimetre. Not the gyro: a 60 % forward pulse hummed
+  (yaw wobbled +/-1 deg) without moving, 80 % moved, 100 % moved well. The
+  tank with the pack aboard needs ~75 % to break free, against the trike's
+  30 %. **Min duty 75 %, pivot duty 90 %** (sliders, and the firmware
+  defaults) - the tortoise needs a shove.
+- **The gyro's sign was inverted.** A 100 % "left" pulse turned Grover
+  counter-clockwise from above (the overhead agreed) and the gyro read
+  -31 deg. The module sits Z-down on the tank. Flashed `-0.00875` so left
+  / CCW is +yaw, as `turn` assumes - had the first 40 % turn actually
+  moved, it would have spun the wrong way to its 3 s cap.
+- **First closed turns** (pivot 90 %, lead 8 deg): `turn(+90)` -> 100.4 deg,
+  `turn(-90)` -> -95.4 deg, net 4.9 deg after the pair. ~90 deg/s once
+  rolling, 1.1 s per turn, no overshoot *after* the stop - the overshoot
+  is the 300 ms decel ramp itself (~10 deg at that rate). Fix flashed:
+  a turn now ends with a **braked stop** (`hard_stop` -> `motor_stop`)
+  when remaining <= `Turn lead` (now 2 deg) + smoothed |rate| x
+  `Turn stop latency` (new slider, 60 ms). Results below once run.
+- **Gyro drift** recalibrated at rest: 0.33 deg in 20 s (~1 deg/min) -
+  this sensor's floor, fine across a 1 s turn; the marker corrects the rest.
+- Pivots scrub and walk the chassis a few cm; the first forward pulses
+  carried Grover half a bench-length before the pivot - at 100 % the
+  tank is not slow.
+
+![After the first gyro-closed +90: nose from along the bench to the pegboard side](images/08-first-gyro-turn-2026-10-22.jpg)
+
+**Claude-driven:** running the tests, the duty thresholds, the gyro sign
+fix, the braked turn stop. **Enoch-decided:** when Grover was on and where
+it sat; "yes" the 80 % pulse moved it; the marker print; pictures in the docs.
 
 ## 2026-10-18 - Back on the bench: ramped motion engine, BMS pack, Eufy schedule
 
@@ -304,7 +358,12 @@ unknown until it's powered again. "All in the name of science." Enoch kept the
 pieces "for historical purposes" - the cracked acrylic plate, the camera
 cradle in two parts, the Makeblock L-bracket in two - and named the
 display the **boulevard of broken dreams**
-(`hardware/boulevard-of-broken-dreams-2026-10-18.jpg`). Repairs:
+(`hardware/boulevard-of-broken-dreams-2026-10-18.jpg`).
+
+![The trike, skid fitted, at the open edge an hour before the fall](images/04-trike-at-the-edge-2026-10-18.jpg)
+![Enoch rebuilding the kit as the tank that evening](images/05-tank-rebuild-2026-10-18.jpg)
+
+Repairs:
 rear plate not needed if the pack moves forward; skid bracket to be
 reprinted as one piece with the skid. Settings restored afterwards:
 drive duty 75 %, obstacle stop 50 cm, brake off; min duty left at 30 %

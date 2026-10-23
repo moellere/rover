@@ -22,27 +22,36 @@ instructions, and readable as plain English by anyone.
 2. **Phase 2:** recharge itself.
 3. **Phase 3:** roam the house.
 
-## Where it stands (2026-10-05)
+## Where it stands (2026-10-22)
 
-- **Visual homing works.** `home_to_marker` finds a printed ArUco marker
-  with the onboard camera and parks in front of it, unattended.
-- **It has been through the house.** On 2026-10-04 Grover drove from the
-  dining room through the foyer and living room to the kitchen doorway
-  (~12-14 m) in short, camera-checked legs, stopping itself for a dog,
-  people and sun glare. Hardwood and rugs both fine.
-- **Spinal cord is an ESP32** (`rover32`, since 2026-10-03) with no I/O
-  expander; the TFMini LiDAR sits alone on its own I2C bus.
+- **Grover is a tank** (Makeblock tracks, rebuilt 2026-10-19 after the
+  trike went off the bench on 10-18). Balance point mid-track, no rear
+  support, seams don't matter. It drives since 10-22: the pack and the
+  tracks need ~75 % duty to break free, so the ramp engine starts there.
+- **Ramped motion engine** (10-18): every move ramps duty up and down on
+  both sides together, so stops no longer yaw the chassis (0-2 deg per
+  stop, was 20-30). `move(direction, ms, duty)`, `set_speeds(l, r)`.
+- **Gyro heading** (L3G4200D, 10-19/22): yaw integrated on the ESP32,
+  `turn(deg)` pivots and brakes when the gyro says so - first closed
+  turns within 5-10 deg, being tightened.
+- **Power:** 3x18650 through a 3S BMS (soldered 10-18) in a printed
+  cradle on the deck posts, shifted rearward for balance; the camera
+  mount (v6) rides on the cradle's front perch.
+- **Visual homing works** (since 10-05): `home_to_marker` finds a printed
+  ArUco marker with the onboard camera and parks in front of it. Steering
+  from the overhead camera's view of a marker on Grover's top is next -
+  the marker is being printed.
+- **It has been through the house** (2026-10-04, as the trike): dining
+  room to kitchen doorway, ~12-14 m, in camera-checked legs.
 - **Sensors:** TFMini forward LiDAR (obstacle stop at 50 cm), two TCRT5000
-  cliff sensors on mounts that put each one ahead of its wheel, the rover
-  camera, and two bench cameras (one behind, one head-on PTZ).
-- **Chassis is the trike build** (two driven wheels, trailing caster). The
-  swivel caster twists the rear on stops; a fixed printed skid
-  (`hardware/caster-skid.scad`) replaces it next.
-- **The house chassis works too:** a Eufy RoboVac 12 driven over IR from
-  `blackcam`, a T-Camera on its lid (camera + IR LED driver). It has backed
-  off its dock and returned on command.
-- Known hazard: no rear cliff sensors, and reversing a trike is
-  unpredictable - see the reversing rule in `CLAUDE.md`.
+  cliff sensors on the deck plate's front edge, the rover camera, the
+  overhead bench camera (PTZ, looking straight down).
+- **The house chassis:** a Eufy RoboVac 12 driven over IR from
+  `blackcam`, a T-Camera on its lid. On hold until the remote's hour
+  encoding is verified (our frames probably shifted its clock and a
+  schedule drove it out of the garage twice).
+- Known hazards: no rear cliff sensors; the cliff guard trips late enough
+  that edge tests need a soft landing or a tether (see `CLAUDE.md`).
 
 ## Architecture
 
@@ -133,7 +142,23 @@ on the lid (`firmware/blackcam.yaml`), stamps each frame from SNTP and
 drives a 940 nm LED through an NPN transistor (~105 mA, 2 m range). It has
 backed the Eufy off its dock and sent it home. See Tier 2E in the roadmap.
 
-## First drive
+## Pictures
+
+The tank, 2026-10-22: assembled with the pack, cradle and camera, seen
+from the overhead bench camera; its own view down the bench to the homing
+marker; and after its first gyro-closed 90 deg turn.
+
+![The tank assembled, overhead](images/06-tank-overhead-2026-10-22.jpg)
+![Grover's own view down the bench](images/07-tank-eye-view-2026-10-22.jpg)
+![After the first gyro-closed turn](images/08-first-gyro-turn-2026-10-22.jpg)
+
+The trike era, 2026-10-18: at the open edge with its skid an hour before
+the fall, and the kit being rebuilt as the tank the same evening.
+
+![The trike at the edge](images/04-trike-at-the-edge-2026-10-18.jpg)
+![Rebuilding as the tank](images/05-tank-rebuild-2026-10-18.jpg)
+
+First drive, 2026-09-27 (the original Makeblock tank, before the trike):
 
 ![First look at the workbench, lights on](images/01-first-look.jpg)
 ![Mid-drive, having moved a full bench-length](images/02-first-drive.jpg)
