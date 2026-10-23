@@ -148,6 +148,8 @@ The tank, 2026-10-22: assembled with the pack, cradle and camera, seen
 from the overhead bench camera; its own view down the bench to the homing
 marker; and after its first gyro-closed 90 deg turn.
 
+![The tank from the side: pack in its cradle over the deck posts, camera mount on the front perch](images/09-tank-side-2026-10-22.jpg)
+![Head-on: T-Camera on its mount, TFMini and both cliff sensors on the deck plate's front edge](images/10-tank-front-2026-10-22.jpg)
 ![The tank assembled, overhead](images/06-tank-overhead-2026-10-22.jpg)
 ![Grover's own view down the bench](images/07-tank-eye-view-2026-10-22.jpg)
 ![After the first gyro-closed turn](images/08-first-gyro-turn-2026-10-22.jpg)

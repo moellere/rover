@@ -193,6 +193,8 @@ when ready." The id 2 marker for Grover's top "was never installed" (so
 the brain's overhead pose has never actually had a rover to find) - he is
 printing it. He asked for recent pictures in the docs.
 
+![The tank from the side (Enoch's photo): cradle v3 on the posts, camera mount v6 on its perch](images/09-tank-side-2026-10-22.jpg)
+![Head-on (Enoch's photo): camera, TFMini bracket and cliff mounts on the deck plate's front edge; the OLED is blurred because it shows the IP](images/10-tank-front-2026-10-22.jpg)
 ![The tank assembled, overhead, 10-22](images/06-tank-overhead-2026-10-22.jpg)
 ![Grover's own view down the bench to the homing marker](images/07-tank-eye-view-2026-10-22.jpg)
 
