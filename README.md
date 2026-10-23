@@ -32,8 +32,8 @@ instructions, and readable as plain English by anyone.
   both sides together, so stops no longer yaw the chassis (0-2 deg per
   stop, was 20-30). `move(direction, ms, duty)`, `set_speeds(l, r)`.
 - **Gyro heading** (L3G4200D, 10-19/22): yaw integrated on the ESP32,
-  `turn(deg)` pivots and brakes when the gyro says so - first closed
-  turns within 5-10 deg, being tightened.
+  `turn(deg)` pivots and brakes when the gyro says so - 90 deg turns
+  land within 1-3 deg (10-22).
 - **Power:** 3x18650 through a 3S BMS (soldered 10-18) in a printed
   cradle on the deck posts, shifted rearward for balance; the camera
   mount (v6) rides on the cradle's front perch.

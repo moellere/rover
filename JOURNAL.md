@@ -90,7 +90,7 @@ breakdown of the notable decisions. Newest entry on top.
   hold Schedule ~3 s until two beeps, then set the clock, check AM/PM).
 - **2026-10-22, Enoch back:** cradle and camera mount fitted, pack in,
   camera on; **the tank drives** (needs 75 % min duty), gyro sign fixed,
-  first closed turns within ~5-10 deg, braked turn stop flashed. Marker
+  closed turns now land within 1-3 deg (braked stop). Marker
   id 2 for Grover's top being printed (it was never installed).
 - **Pause: Enoch travelling ~5 days from 10/20.** Grover is the tank now,
   powered off, battery cradle v3 printed and test-fitted ("will likely
@@ -219,7 +219,10 @@ sits centred over the tracks - the cradle's 40 mm rearward shift did its job.
   is the 300 ms decel ramp itself (~10 deg at that rate). Fix flashed:
   a turn now ends with a **braked stop** (`hard_stop` -> `motor_stop`)
   when remaining <= `Turn lead` (now 2 deg) + smoothed |rate| x
-  `Turn stop latency` (new slider, 60 ms). Results below once run.
+  `Turn stop latency` (new slider, 60 ms). **Result, same settings,
+  untuned:** +89.7, -89.0, +89.7, -86.6 deg for four +/-90 commands, net
+  4.3 deg after the set (some of it drift), 1.1-1.4 s per turn, peak rate
+  150-200 deg/s. From 10 deg over to 1-3 deg under in one change.
 - **Gyro drift** recalibrated at rest: 0.33 deg in 20 s (~1 deg/min) -
   this sensor's floor, fine across a 1 s turn; the marker corrects the rest.
 - Pivots scrub and walk the chassis a few cm; the first forward pulses
