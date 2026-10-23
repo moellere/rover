@@ -335,7 +335,9 @@ interval:
           id(gyro_errors) = 0;
           const uint32_t now = micros();
           const float dt = (now - last_us) * 1e-6f; last_us = now;
-          const float dps = (int16_t) (b[0] | (b[1] << 8)) * 0.00875f;
+          // Sign: the module sits Z-down on the tank (10-22: a firmware 'left'
+          // pivot read negative), so negate - left/CCW from above is +yaw.
+          const float dps = (int16_t) (b[0] | (b[1] << 8)) * -0.00875f;
           if (id(gyro_cal_n) < 200) {
             // Only calibrate at rest: motors stopped AND the readings quiet.
             // A window whose samples spread more than 3 dps (someone handling
@@ -679,7 +681,7 @@ number:
     min_value: 20
     max_value: 100
     step: 5
-    initial_value: 50
+    initial_value: 90     # tank: pivots scrub, 60 % didn't break free (10-22)
     restore_value: true
     optimistic: true
 
@@ -692,9 +694,9 @@ number:
     id: min_duty
     unit_of_measurement: "%"
     min_value: 0
-    max_value: 80
+    max_value: 100
     step: 5
-    initial_value: 40
+    initial_value: 75     # tank with the pack: 60 % hums, 100 % moves (10-22)
     restore_value: true
     optimistic: true
     entity_category: config
