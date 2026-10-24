@@ -263,7 +263,8 @@ onboard `home_to_marker`) stops the overhead leg 45 cm out, short of the
 paper. Also: the taped id 2 sheet curled up during the pivots and the
 overhead lost it; Enoch: "maybe a bracket to hold Grover marker?" -
 `hardware/marker-cap.scad`, a lid over the cradle's long walls with the
-marker recessed in its top, awaiting his check before it prints.
+marker recessed in its top. Enoch: "looks OK", then "start it" - job
+`ed36e13f16`, 41 min, 18 g PETG, started 10:49.
 
 **Claude-driven:** the test sequence, the clipping hypothesis and its
 rejection, the scale slider, the steering loop, the reprint. **Enoch-
