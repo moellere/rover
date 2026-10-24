@@ -484,9 +484,9 @@ ruler, later: the roller is 18 mm long along the drive axis and the
 deck plate's front edge sits over its middle when docked - so the
 roller's centre is at the plate's front edge, give or take a few mm,
 and the pad hangs straight down from that edge with no reach-back.
-Deck plate grid (Enoch): 4 mm holes (the cliff mounts' M4s go through
-them), ~4 mm of web between - an 8 mm pitch. Bracket holes get +/-1 mm
-slots.
+Deck plate grid (Enoch, corrected): 4 mm holes on a ~9 mm pitch - not
+the Makeblock 8 mm, so the bracket's holes follow 9 mm with +/-1 mm
+slots, and the cliff mount bolt positions get measured, not assumed.
 
 **Claude-driven:** everything in the loops, the diagnoses (one wrong),
 the cap, the turn guards, the dock concept, shelving the Eufy. **Enoch-decided:** every
