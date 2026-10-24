@@ -136,6 +136,10 @@ globals:
     type: bool
     restore_value: no
     initial_value: 'false'
+  - id: turn_start_yaw   # yaw when the turn started (runaway guard)
+    type: float
+    restore_value: no
+    initial_value: '0'
   - id: turn_goal        # yaw at which the turn is done
     type: float
     restore_value: no
@@ -301,8 +305,8 @@ interval:
                 state: "Stopped (obstacle)"
             - logger.log: "Obstacle ahead inside the stop distance, stopping"
   # Gyro loop (2026-10-19): L3G4200D OUT_Z at 100 Hz, 500 dps full scale
-  # (17.5 mdps/digit; 250 dps clipped at the peak of a 90 % pivot and the
-  # turns came up ~20 % short against the overhead marker, 2026-10-24). First 200 samples after boot, motors stopped, set
+  # (17.5 mdps/digit; raised from 250 on 2026-10-24 while chasing a 20 %
+  # shortfall that turned out to be the module's tilt, kept for headroom). First 200 samples after boot, motors stopped, set
   # the zero-rate bias and zero the heading; then yaw += rate * dt.
   # Drift is a few deg/min - the overhead marker corrects it; on-board the
   # gyro only has to be right across one turn. A running `turn` is ended
@@ -336,9 +340,9 @@ interval:
           id(gyro_errors) = 0;
           const uint32_t now = micros();
           const float dt = (now - last_us) * 1e-6f; last_us = now;
-          // Sign: the module sits Z-down on the tank (10-22: a firmware 'left'
-          // pivot read negative), so negate - left/CCW from above is +yaw.
-          const float dps = (int16_t) (b[0] | (b[1] << 8)) * -0.0175f;
+          // Sign: left/CCW from above is +yaw. The module was Z-down on the tank
+          // 10-22..24 (negated then); since 2026-10-24 it is mounted flat face-up.
+          const float dps = (int16_t) (b[0] | (b[1] << 8)) * 0.0175f;
           if (id(gyro_cal_n) < 200) {
             // Only calibrate at rest: motors stopped AND the readings quiet.
             // A window whose samples spread more than 3 dps (someone handling
@@ -356,9 +360,9 @@ interval:
             }
             return;
           }
-          // Gyro scale: the sensor reads ~24 % low against the overhead marker
-          // (four +/-90 legs 2026-10-24, same ratio at 250 and 500 dps), so the
-          // slider multiplies the bias-corrected rate; the overhead is the truth.
+          // Gyro scale: calibration against the overhead marker. The 24 % shortfall
+          // of 2026-10-24 was the module sitting ~37 deg off flat (cos 37 = 0.8),
+          // not the chip - mounted flat it reads true (scale 1.0).
           const float rate = (dps - id(gyro_bias)) * id(gyro_scale).state;
           if (dt < 0.1f) id(yaw_deg) += rate * dt;
           static uint8_t pub = 0;
@@ -369,6 +373,12 @@ interval:
           rate_f = 0.7f * rate_f + 0.3f * fabsf(rate);
           if (id(turn_active)) {
             const float remaining = (id(turn_goal) - id(yaw_deg)) * id(turn_sign);
+            // Runaway guard: yaw moving the wrong way by 20 deg means the gyro,
+            // not the rover, is turning - stop rather than spin to the cap.
+            if ((id(yaw_deg) - id(turn_start_yaw)) * id(turn_sign) < -20.0f) {
+              id(turn_active) = false; id(hard_stop) = true; id(motor_stop).execute();
+              ESP_LOGW("gyro", "turn aborted: yaw ran the wrong way (%.0f)", id(yaw_deg) - id(turn_start_yaw));
+            }
             const float lead = id(turn_lead).state + rate_f * id(turn_stop_ms).state * 0.001f;
             if (remaining <= lead) {
               // Brake, don't ramp: at 90 % the decel ramp alone was ~10 deg
@@ -765,7 +775,7 @@ number:
     min_value: 0.5
     max_value: 2.0
     step: 0.01
-    initial_value: 1.24
+    initial_value: 1.0
     restore_value: true
     optimistic: true
     entity_category: config
@@ -878,8 +888,13 @@ api:
       then:
         - lambda: |-
             if (!id(gyro_ok)) { ESP_LOGW("gyro", "turn refused: gyro not ready"); return; }
+            // A gyro that reports motion while the rover is stopped is a bad wire
+            // (2026-10-24: a loose module read a constant -300 dps and a turn
+            // chased a goal it could never reach until the 3 s cap).
+            if (fabsf(id(yaw_rate).state) > 20.0f) { ESP_LOGW("gyro", "turn refused: %.0f dps at rest", id(yaw_rate).state); return; }
             id(turn_sign) = deg >= 0 ? 1.0f : -1.0f;
             id(turn_goal) = id(yaw_deg) + deg;
+            id(turn_start_yaw) = id(yaw_deg);
             id(turn_active) = true;
             const float d = duty > 0 ? duty : id(pivot_duty).state;
             id(set_motion).execute(-id(turn_sign) * d, id(turn_sign) * d, 3000);
