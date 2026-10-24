@@ -221,6 +221,24 @@ right pivot); a tuning note, not a blocker. Yaw and rate now publish at
 This is the number the steering loop needed: the gyro closes a turn
 on-board, the overhead confirms it, and the two speak the same degrees.
 
+**The steering loop, same morning.** `brain/steer.py`: `face(heading)`
+(locate, gyro-turn by the error, locate again, up to three corrections)
+and `go_to(target)` (locate; turn toward the target if more than 10 deg
+off, else one forward pulse sized from the distance; re-locate; stop
+inside `stop_mm`). `face(270)` from 186: one turn to 266, a 3.8 deg nudge
+to 268, done. `go_to(marker 0, stop 350 mm)` from the right end: turned
+-83, a 1 s pulse that only covered 14 cm (stiction after the pivot), then
+- having "learned" 14 cm/s from that - a second 1 s pulse that covered
+70 cm and left Grover 30 cm short of id 0, nose on it, where the TFMini
+guard had it anyway. Then the overhead lost Grover's marker three frames
+running: the snapshot shows the clear tape over the marker's face
+throwing the window light back at the camera, black cells washed to
+grey. No detector setting recovers that; the tape has to come off the
+cells (edges only, or matte). Pulse sizing now assumes the tank is fast
+(700 mm/s) unless it has proven faster, never slower. Both are MCP
+tools (`face`, `go_to`); the running server needs a reconnect to see
+them.
+
 **Claude-driven:** the test sequence, the clipping hypothesis and its
 rejection, the scale slider. **Enoch-decided:** taping the markers,
 Grover on.

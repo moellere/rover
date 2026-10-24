@@ -11,6 +11,8 @@ Tools:
                         firmware (2026-10-18), always ending stopped
     set_ramp(...)       the firmware's min duty / accel / decel sliders
     turn(degrees)       gyro-closed pivot on the ESP32 (2026-10-19 firmware)
+    face(heading)       turn until the overhead camera sees that heading
+    go_to(...)          drive to a marker or pixel target, closed on the overhead
     stop                immediate stop (no decel ramp)
 
 Safety here is a courtesy layer: the firmware's watchdog, disconnect-stop,
@@ -200,6 +202,37 @@ async def turn(degrees: float, duty: int = 0) -> dict:
     after = (await c.state(timeout=3.0)).yaw_deg
     return {"ok": True, "requested_deg": degrees, "yaw_before": before, "yaw_after": after,
             "turned_deg": None if after is None else round(after - before, 1)}
+
+
+@mcp.tool()
+async def face(heading_deg: float, tol_deg: float = 3.0, camera: str = "bench") -> dict:
+    """Turn Grover until the overhead camera reads its heading within `tol_deg`
+    of `heading_deg` (image frame: 0 = right, 90 = up, 180 = toward the homing
+    marker end, 270 = toward the pegboard). Each correction is a gyro-closed
+    turn; the overhead is re-read after every one. Needs the id 2 marker on
+    Grover's top in view."""
+    global _last_drive_end
+    from brain.steer import face as _face
+    r = await _face(heading_deg, camera, tol_deg)
+    _last_drive_end = time.monotonic()
+    return r.as_dict()
+
+
+@mcp.tool()
+async def go_to(marker_id: Optional[int] = None, x_px: Optional[float] = None, y_px: Optional[float] = None,
+                stop_mm: float = 150.0, max_steps: int = 10, camera: str = "bench") -> dict:
+    """Drive Grover to a target seen by the overhead camera - another marker's
+    position (`marker_id`, e.g. 0 lying flat as the goal spot) or a pixel
+    (`x_px`, `y_px`) - and stop within `stop_mm` of it. Loop: locate, turn
+    toward the target if more than 10 deg off, else one forward pulse sized
+    from the distance (never longer than 1 s), re-locate. Check the lane on
+    the overhead first: the firmware's TFMini guard only covers straight
+    ahead. Returns the step log."""
+    global _last_drive_end
+    from brain.steer import go_to as _go_to
+    r = await _go_to(x_px, y_px, marker_id, stop_mm, camera, max_steps)
+    _last_drive_end = time.monotonic()
+    return r.as_dict()
 
 
 @mcp.tool()
