@@ -34,7 +34,9 @@ instructions, and readable as plain English by anyone.
 - **Gyro heading** (L3G4200D, 10-19/22/24): yaw integrated on the ESP32,
   `turn(deg)` pivots and brakes when the gyro says so. Mounted flat
   (10-24; it had been 37 deg off, reading 24 % low) it matches the
-  overhead camera to 0.1 deg on a quarter turn.
+  overhead camera to 0.1 deg on a quarter turn. (10-24 also fixed a
+  10-18 guard bug that silently killed every pivot from rest with an
+  obstacle inside the TFMini guard distance.)
 - **Power:** 3x18650 through a 3S BMS (soldered 10-18) in a printed
   cradle on the deck posts, shifted rearward for balance; the camera
   mount (v6) rides on the cradle's front perch.

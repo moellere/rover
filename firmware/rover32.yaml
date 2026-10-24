@@ -408,8 +408,16 @@ interval:
           }
           if (id(cur_l) == 0 && id(cur_r) == 0 && id(tgt_l) == 0 && id(tgt_r) == 0) return;   // idle
           // belt and braces: a guard that trips mid-move is also caught here
-          const bool fwdish = id(cur_l) >= 0 && id(cur_r) >= 0;
-          const bool backish = id(cur_l) <= 0 && id(cur_r) <= 0;
+          // Judge direction by the live duties while moving, by the targets when
+          // starting from rest: at rest both live duties are 0, which counted as
+          // "forward-ish" and killed every pivot from rest with an obstacle
+          // inside the guard distance (2026-10-24, found when the TFMini came
+          // back to life and pivots facing the pegboard stopped working).
+          const bool at_rest = id(cur_l) == 0 && id(cur_r) == 0;
+          const float gl = at_rest ? id(tgt_l) : id(cur_l);
+          const float gr = at_rest ? id(tgt_r) : id(cur_r);
+          const bool fwdish = gl >= 0 && gr >= 0 && (gl > 0 || gr > 0);
+          const bool backish = gl <= 0 && gr <= 0;
           if (!id(battery_ok) || (!backish && id(cliff_detected)) || (fwdish && id(obstacle_ahead))) {
             id(motor_stop).execute();
             return;

@@ -349,11 +349,23 @@ one for me: I commanded a pivot while Enoch had Grover in his hands,
 because I read "check now" as a go. Motion only on an explicit go, with a
 frame first.
 
-**Still open: the TFMini.** It ACKs on its bus but has returned empty
-frames all day; `front_range` has been "no return" since the first run
-this morning, so the obstacle guard was blind. Nothing left the bench
-and the overhead did the stopping, but it needs its plug checked before
-any house run.
+**The TFMini came back, and exposed a 10-18 bug.** Enoch confirmed the
+laser was on (phone camera); after the rail work it started returning
+frames again (37 cm facing the pegboard, 132 cm down the bench). The
+moment it did, every pivot from rest facing anything inside 50 cm died
+silently: +90 facing the open bench worked, -90 facing the pegboard did
+nothing, twice, with no "refused" or "blocked" in the log. The ramp
+loop's continuous guard judged "forward-ish" from the *live* duties,
+and at rest both are zero, which counts as forward-ish - so with
+`obstacle_ahead` set it executed motor_stop on the first tick of any
+start, pivots included. Fixed: judge by the targets when starting from
+rest. Verified: `turn(-90)` facing the pegboard at 37 cm now gives
+-87.8. In hindsight the "ten turns, no motion" at the marker end this
+morning, blamed on a tired pack, was this bug with the TFMini seeing
+the monitor; the TFMini had been dead since at least the first run
+(every status read "no return"), which is why pivots worked at all.
+Motors after the remount: the gyro turn pair on the motors reads +87.1
+gyro / +86.1 overhead, so the whole chain agrees within a degree.
 
 **Claude-driven:** everything in the loops, the diagnoses (one wrong),
 the cap, the turn guards. **Enoch-decided:** every reposition, the pack
