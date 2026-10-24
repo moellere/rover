@@ -463,6 +463,15 @@ makes them the lowest thing on Grover by 5 mm. Fine on the bench (the
 hatch lip is a millimetre or two); a house threshold could catch them,
 so Phase 3 may want the pads sprung or retractable. Noted, not solved.
 
+![Grover belly-up: the deck plate's perforated front edge carries both cliff mounts (two M4 each) and the TFMini bracket; motors and side beams behind](images/23-grover-underside-2026-10-24.jpg)
+
+Belly-up photo: the deck plate is a perforated acrylic grid, its front
+edge ahead of the beams, each cliff mount on two M4s in that grid with
+free holes beside them. The pad bracket bolts into those free holes.
+Needed to draw it: the grid pitch and hole diameter, the plate's
+thickness, the deck underside's height above the track bottom, and the
+barrel's fore-aft offset from the plate's front edge when docked.
+
 **Claude-driven:** everything in the loops, the diagnoses (one wrong),
 the cap, the turn guards, the dock concept, shelving the Eufy. **Enoch-decided:** every
 reposition, the pack swap, the edge call, the "is it flat?" question,
