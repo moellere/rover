@@ -523,7 +523,12 @@ with Grover forward), clamped with two nuts so the height is set by
 turning them, a 16 mm fender washer under the head as the pad face and
 a ring terminal for the wire. No print, adjustable, replaceable. A
 printed post is the fallback if the nearest hole is more than ~5 mm
-off the roller.
+off the roller. Then, with Grover fully forward: **the deck plate sits
+49 mm above the roller's unloaded contact surface** (Enoch). So the pad
+face wants to be 46 mm below the deck (3 mm of roller compression); with
+the 4 mm plate under the deck, that is 42 mm of bolt from the plate's
+underside to the washer face - an M4 x 50 does it with the nuts setting
+the exact figure.
 Grover was left docked on the base mid-bench under the overhead for
 reference; the next session starts from there (overhead: base tower on
 Grover's nose, heading toward the marker end).
