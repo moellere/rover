@@ -31,16 +31,20 @@ instructions, and readable as plain English by anyone.
 - **Ramped motion engine** (10-18): every move ramps duty up and down on
   both sides together, so stops no longer yaw the chassis (0-2 deg per
   stop, was 20-30). `move(direction, ms, duty)`, `set_speeds(l, r)`.
-- **Gyro heading** (L3G4200D, 10-19/22): yaw integrated on the ESP32,
-  `turn(deg)` pivots and brakes when the gyro says so - 90 deg turns
-  land within 1-3 deg (10-22).
+- **Gyro heading** (L3G4200D, 10-19/22/24): yaw integrated on the ESP32,
+  `turn(deg)` pivots and brakes when the gyro says so. The sensor reads
+  24 % low (clone sensitivity); a `Gyro scale` slider calibrated against
+  the overhead marker (10-24) puts gyro and camera within 0.3 deg of each
+  other on +/-90 legs.
 - **Power:** 3x18650 through a 3S BMS (soldered 10-18) in a printed
   cradle on the deck posts, shifted rearward for balance; the camera
   mount (v6) rides on the cradle's front perch.
 - **Visual homing works** (since 10-05): `home_to_marker` finds a printed
   ArUco marker with the onboard camera and parks in front of it. Steering
-  from the overhead camera's view of a marker on Grover's top is next -
-  the marker page printed 10-24, going on next.
+  from the overhead camera's view of the marker on Grover's top is next -
+  the marker is on (10-24) and `locate` reads Grover's pose and heading
+  from it; a second marker (id 0) lies flat by the homing marker as the
+  goal spot.
 - **It has been through the house** (2026-10-04, as the trike): dining
   room to kitchen doorway, ~12-14 m, in camera-checked legs.
 - **Sensors:** TFMini forward LiDAR (obstacle stop at 50 cm), two TCRT5000

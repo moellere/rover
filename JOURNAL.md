@@ -182,6 +182,49 @@ notes after it carry the detail (a few were appended out of order).
 
 ---
 
+## 2026-10-24 - Markers on, and the gyro was lying by a quarter
+
+**Model:** Claude Fable 5.1 (same session, continued).
+
+**Guidance from Enoch:** "both are taped" (id 2 on Grover's top, id 0
+flat on the bench by the homing marker), "the rover is on if you want to
+test". Earlier: both printed sheets "measured out correctly".
+
+**What happened.** `locate` saw everything first try: Grover's id 2 at
+the right end of the bench heading 176.5 (nose toward the marker end),
+id 0 and the upright id 1 at the marker end reading ~182 (laid square
+to the bench, so the overhead's frame is about 2 deg off the bench axis).
+Then the check this was all for - a gyro-closed +90 / -90 pair with the
+overhead reading between each leg:
+
+| Leg | Gyro said | Overhead saw | ratio |
+|---|---|---|---|
+| +90 | +89.5 | +111.6 | 1.25 |
+| -90 | -87.1 | -110.9 | 1.27 |
+
+Consistent, both directions, so not noise. First suspect: the L3G4200D's
+250 dps full scale clipping at the peak of a 90 % pivot (the 10-22 turns
+peaked at 150-200 dps filtered). Reflashed at 500 dps: +87.8 vs +109.1,
+-86.4 vs -104.1 - same ratio, so not clipping. A bench snapshot settled
+which instrument to believe: Grover sat visibly swung past square to the
+bench edge. The firmware already checks WHO_AM_I (0xD3), reads OUT_Z
+with auto-increment and integrates with measured dt, so what is left is
+the chip's sensitivity itself - clone L3G4200Ds are known for exactly
+this. Fix: a **`Gyro scale`** slider (0.5-2.0, default 1.24, the mean of
+four legs) multiplying the bias-corrected rate, so the overhead can
+recalibrate it without a reflash. With it: +90.9 vs +90.6 overhead,
+-86.4 vs -86.1. **Gyro and overhead agree within 0.3 deg.** The -90 leg
+lands ~4 deg short both times (the stop lead is a touch generous for a
+right pivot); a tuning note, not a blocker. Yaw and rate now publish at
+20 Hz instead of 100 to spare the API.
+
+This is the number the steering loop needed: the gyro closes a turn
+on-board, the overhead confirms it, and the two speak the same degrees.
+
+**Claude-driven:** the test sequence, the clipping hypothesis and its
+rejection, the scale slider. **Enoch-decided:** taping the markers,
+Grover on.
+
 ## 2026-10-22 - The tank drives: pack in, camera on, first gyro turns
 
 **Model:** Claude Fable 5.1 (same session as 10-18/19, continued).

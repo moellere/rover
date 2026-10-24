@@ -300,15 +300,16 @@ interval:
                 id: motion_status
                 state: "Stopped (obstacle)"
             - logger.log: "Obstacle ahead inside the stop distance, stopping"
-  # Gyro loop (2026-10-19): L3G4200D OUT_Z at 100 Hz, 250 dps full scale
-  # (8.75 mdps/digit). First 200 samples after boot, motors stopped, set
+  # Gyro loop (2026-10-19): L3G4200D OUT_Z at 100 Hz, 500 dps full scale
+  # (17.5 mdps/digit; 250 dps clipped at the peak of a 90 % pivot and the
+  # turns came up ~20 % short against the overhead marker, 2026-10-24). First 200 samples after boot, motors stopped, set
   # the zero-rate bias and zero the heading; then yaw += rate * dt.
   # Drift is a few deg/min - the overhead marker corrects it; on-board the
   # gyro only has to be right across one turn. A running `turn` is ended
   # here with a braked stop when the remaining angle is within `turn_lead`
   # plus rate x `turn_stop_ms` (the stop latency). Register writes once on first contact: CTRL_REG1 0x20 =
-  # 0x1F (100 Hz ODR, 25 Hz cutoff, all axes on), CTRL_REG4 0x23 = 0x80
-  # (BDU, 250 dps).
+  # 0x1F (100 Hz ODR, 25 Hz cutoff, all axes on), CTRL_REG4 0x23 = 0x90
+  # (BDU, 500 dps).
   - interval: 10ms
     then:
       - lambda: |-
@@ -320,7 +321,7 @@ interval:
               if (++id(gyro_errors) == 100) ESP_LOGW("gyro", "no L3G4200D at 0x69 (who=0x%02X)", who);
               return;
             }
-            const uint8_t c1[2] = {0x20, 0x1F}; const uint8_t c4[2] = {0x23, 0x80};
+            const uint8_t c1[2] = {0x20, 0x1F}; const uint8_t c4[2] = {0x23, 0x90};
             id(bus_c).write(0x69, c1, 2); id(bus_c).write(0x69, c4, 2);
             configured = true; id(gyro_errors) = 0; last_us = micros();
             ESP_LOGI("gyro", "L3G4200D configured, calibrating - keep still");
@@ -337,7 +338,7 @@ interval:
           const float dt = (now - last_us) * 1e-6f; last_us = now;
           // Sign: the module sits Z-down on the tank (10-22: a firmware 'left'
           // pivot read negative), so negate - left/CCW from above is +yaw.
-          const float dps = (int16_t) (b[0] | (b[1] << 8)) * -0.00875f;
+          const float dps = (int16_t) (b[0] | (b[1] << 8)) * -0.0175f;
           if (id(gyro_cal_n) < 200) {
             // Only calibrate at rest: motors stopped AND the readings quiet.
             // A window whose samples spread more than 3 dps (someone handling
@@ -355,10 +356,13 @@ interval:
             }
             return;
           }
-          const float rate = dps - id(gyro_bias);
+          // Gyro scale: the sensor reads ~24 % low against the overhead marker
+          // (four +/-90 legs 2026-10-24, same ratio at 250 and 500 dps), so the
+          // slider multiplies the bias-corrected rate; the overhead is the truth.
+          const float rate = (dps - id(gyro_bias)) * id(gyro_scale).state;
           if (dt < 0.1f) id(yaw_deg) += rate * dt;
-          id(yaw_rate).publish_state(rate);
-          id(yaw).publish_state(id(yaw_deg));
+          static uint8_t pub = 0;
+          if (++pub >= 5) { pub = 0; id(yaw_rate).publish_state(rate); id(yaw).publish_state(id(yaw_deg)); }   // 20 Hz to the API, not 100
           // Smoothed |rate| for the predictive stop (scrubbing tracks make
           // the raw rate jump 40..160 dps sample to sample).
           static float rate_f = 0;
@@ -752,6 +756,16 @@ number:
     max_value: 300
     step: 10
     initial_value: 60
+    restore_value: true
+    optimistic: true
+    entity_category: config
+  - platform: template
+    name: "Gyro scale"
+    id: gyro_scale
+    min_value: 0.5
+    max_value: 2.0
+    step: 0.01
+    initial_value: 1.24
     restore_value: true
     optimistic: true
     entity_category: config
