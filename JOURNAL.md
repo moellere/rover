@@ -492,6 +492,21 @@ cliff-mount.scad), reaching outboard over the roller with a drop leg to
 a wide pad - wide, because the approach lands within ~2 cm sideways and
 the roller is only 10 mm across, so the pad is a 40 mm strip (copper
 tape on PETG, or brass strip) rather than a bolt head.
+Then Enoch's better version: **a second wing on the cliff mount itself**,
+reaching outboard toward the track, the pad on its end - one print per
+side, no new holes. His finger on the roller beside the mount's foot:
+
+![Where the wing goes: the roller sits just outboard of the cliff mount's foot](images/27-wing-pointer-2026-10-24.jpg)
+![The deck plate's front edge over the breadboard, track beside it](images/28-deck-edge-at-track-2026-10-24.jpg)
+![Track lifted away: the deck plate reaches the side beam; the motor under it](images/29-track-lifted-deck-side-2026-10-24.jpg)
+
+The deck's slight warp (the front sits on the left motor) turned out
+"almost inconsequential, especially side to side", so one drawing serves
+both sides; the pad still gets a vertical slot for trimming. Heights
+derive from the cliff mount file: it drops 43 mm from its mounting face
+to the sensor face, and the sensors' lowest point is 12 mm, so the deck
+top is ~55 mm above the track bottom and the pad leg reaches ~48 mm
+down from it.
 
 **Claude-driven:** everything in the loops, the diagnoses (one wrong),
 the cap, the turn guards, the dock concept, shelving the Eufy. **Enoch-decided:** every
