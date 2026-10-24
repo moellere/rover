@@ -508,6 +508,23 @@ to the sensor face, and the sensors' lowest point is 12 mm, so the deck
 top is ~55 mm above the track bottom and the pad leg reaches ~48 mm
 down from it.
 
+**Grover all the way forward** (Enoch: it only goes fully on if the
+wings trail behind): the rollers end up ~20-25 mm behind the deck
+plate's front edge, under the deck, just inboard of the tracks' inner
+faces, right by the side beams' front ends.
+
+![Fully forward: the roller is under the deck behind the cliff mount's foot](images/30-fully-forward-roller-under-deck-2026-10-24.jpg)
+![Other side: the roller sits at the track's inner edge beside the side beam's end](images/31-fully-forward-roller-at-beam-2026-10-24.jpg)
+
+That moves the pad off the cliff mount altogether and onto the deck
+plate's own grid: **the contact is an M4 bolt**, head down, through
+whichever deck hole sits over the roller (look down through the deck
+with Grover forward), clamped with two nuts so the height is set by
+turning them, a 16 mm fender washer under the head as the pad face and
+a ring terminal for the wire. No print, adjustable, replaceable. A
+printed post is the fallback if the nearest hole is more than ~5 mm
+off the roller.
+
 **Claude-driven:** everything in the loops, the diagnoses (one wrong),
 the cap, the turn guards, the dock concept, shelving the Eufy. **Enoch-decided:** every
 reposition, the pack swap, the edge call, the "is it flat?" question,
