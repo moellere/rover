@@ -419,6 +419,17 @@ tip, under the deck plate's front, and land on the plates when the
 TFMini guard stops the nose at the tower. The tower face is ~140 x 70 mm
 - room for an 80 mm marker (id 0's size), not the 160 mm id 1.
 
+![Profile with a ruler: the base plate is ~11 mm thick where the barrels sit, the barrels reach 20 mm, the tower ~85 mm tall](images/17-eufy-base-profile-2026-10-24.jpg)
+
+Profile numbers: the plate surface the tracks will ride on is ~11 mm
+above the floor at the barrels (sloping to ~6 mm at the front edge),
+so the barrels stand 3-9 mm proud of it (14-20 mm above the floor).
+Grover's pads at 17 mm above the floor are therefore ~6 mm above the
+surface the tracks sit on; whatever hangs under the chassis between the
+tracks must clear 9 mm (an unloaded barrel) except the pads themselves.
+The tower is ~85 mm tall, well inside the TFMini's beam height, so the
+obstacle guard is what ends the approach.
+
 **Claude-driven:** everything in the loops, the diagnoses (one wrong),
 the cap, the turn guards, the dock concept, shelving the Eufy. **Enoch-decided:** every
 reposition, the pack swap, the edge call, the "is it flat?" question,
