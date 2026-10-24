@@ -396,12 +396,19 @@ design is waiting on:
    contact height above the floor - **height measured 10-24 evening:
    20 mm unloaded, 14 mm at full push (6 mm of sprung travel), so
    Grover's contacts want to sit ~17 mm above the floor, mid-travel;
-   plates 88 mm centre to centre** (plate width still to come);
+   plates 88 mm centre to centre.** Photos below: the plates are
+   chrome barrels about 10 mm wide, each recessed in a slot in the
+   base's ramp, with grooves on the ramp as the lead-in - domed sliding
+   contacts, which means Grover's side can be rigid pads and let the
+   base's springs do the work;
 2. whether the base is passive (12 V on the jack from the RD6018 shows
    on the plates);
 3. photos of the base, front and top;
 4. under Grover: bench-to-lowest-point gap between the tracks, and the
    inside width between the tracks.
+
+![The Eufy base's contact plates: chrome barrels, 88 mm apart](images/13-eufy-base-plates-2026-10-24.jpg)
+![The base's ramp and lead-in grooves, plate at the edge](images/14-eufy-base-ramp-2026-10-24.jpg)
 
 **Claude-driven:** everything in the loops, the diagnoses (one wrong),
 the cap, the turn guards, the dock concept, shelving the Eufy. **Enoch-decided:** every
