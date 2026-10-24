@@ -200,13 +200,20 @@ GOAL_CLEAR_MM = 450.0       # overhead leg stops here: Grover's nose then sits s
                             # sheet (printer paper under a scrubbing track stalls pivots, 10-24)
 
 
-async def dock_approach(goal_marker: int = 0, final_marker: int = 1, final_stop_mm: float = 120.0,
-                        camera: str = "bench", max_steps: int = 10, max_pulses: int = 12) -> dict:
-    """The two halves chained: `go_to` the goal-spot marker on the overhead
-    (stopping GOAL_CLEAR_MM out, nose toward it), then hand over to the
-    onboard camera's `home_to_marker` for the upright marker behind it."""
+async def dock_approach(goal_marker: int | None = 0, final_marker: int = 1, final_stop_mm: float = 120.0,
+                        camera: str = "bench", max_steps: int = 10, max_pulses: int = 12,
+                        goal_x_px: float | None = None, goal_y_px: float | None = None,
+                        goal_clear_mm: float = GOAL_CLEAR_MM) -> dict:
+    """The two halves chained: `go_to` the goal spot on the overhead - a flat
+    marker, or a pixel (`goal_x_px`, `goal_y_px`, e.g. the dock's position
+    when its tower hides the upright marker) - stopping `goal_clear_mm` out,
+    nose toward it, then hand over to the onboard camera's `home_to_marker`
+    for the upright marker (`final_marker`, id 3 at 50 mm on the dock tower)."""
     from brain.homing import home_to_marker
-    leg1 = await go_to(marker_id=goal_marker, stop_mm=GOAL_CLEAR_MM, camera=camera, max_steps=max_steps)
+    if goal_x_px is not None and goal_y_px is not None:
+        leg1 = await go_to(x_px=goal_x_px, y_px=goal_y_px, stop_mm=goal_clear_mm, camera=camera, max_steps=max_steps)
+    else:
+        leg1 = await go_to(marker_id=goal_marker, stop_mm=goal_clear_mm, camera=camera, max_steps=max_steps)
     out = {"overhead": leg1.as_dict()}
     if not leg1.ok:
         out.update(ok=False, reason=f"overhead leg: {leg1.reason}")
