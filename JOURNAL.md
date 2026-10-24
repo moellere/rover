@@ -315,11 +315,20 @@ parallax, when the gyro is reporting. From there `home_to_marker` took
 one 0.1 s step and reported **arrived (marker filled the frame)** from
 21 cm. Printer bed marked clear on Enoch's "printer bed is clear".
 
+**Run 4 - the whole thing, reported as success by the loop itself.**
+Overhead: 1.5 m in one 1 s pulse, +15 turn, a 0.16 s step, handover at
+29 cm from the goal spot. Onboard: turn -7, two 0.1 s steps, turn +6,
+one more step, marker filled the frame. 66 s, no human input, `ok:
+true`. The post-Phase-1 goal set on 2026-09-28 - find the marker from
+anywhere on the bench and park nose-on with no human input - is met,
+with the overhead camera doing the far half and the onboard camera the
+near half. Still to measure: the final standoff in cm (the marker
+overfilling the frame says "a few", not a number); that is the dock
+design's input.
 
-**Claude-driven:** the test sequence, the clipping hypothesis and its
-rejection, the scale slider, the steering loop, the reprint. **Enoch-
-decided:** taping the markers (twice), Grover on, putting it back at the
-start for the second run.
+**Claude-driven:** everything in the loops, the diagnoses, the cap.
+**Enoch-decided:** every reposition, the pack swap, the edge call.
+
 
 ## 2026-10-22 - The tank drives: pack in, camera on, first gyro turns
 

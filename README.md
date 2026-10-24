@@ -42,9 +42,11 @@ instructions, and readable as plain English by anyone.
 - **Visual homing works** (since 10-05): `home_to_marker` finds a printed
   ArUco marker with the onboard camera and parks in front of it. Steering
   from the overhead camera's view of the marker on Grover's top **works
-  (10-24)**: `go_to(marker 0)` took Grover from the far end of the bench
-  to 30 cm of the goal marker in 13 s, four steps, no human input; `face`
-  closes a heading on the overhead the same way.
+  (10-24)**: `go_to` / `face` close on the overhead pose, and
+  `dock_approach` chains them with the onboard homing - **far end of the
+  bench to nose-on the upright marker in 66 s, no human input** (run 4,
+  10-24). That was the goal set after Phase 1; next is turning the
+  marker into a dock.
 - **It has been through the house** (2026-10-04, as the trike): dining
   room to kitchen doorway, ~12-14 m, in camera-checked legs.
 - **Sensors:** TFMini forward LiDAR (obstacle stop at 50 cm), two TCRT5000

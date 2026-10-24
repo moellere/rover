@@ -37,6 +37,7 @@ parks nose-on within ~2 cm, unattended.
 | 1.4 | `home_to_marker` | 1.2, 1.3, 0.5 | **done 2026-09-29** - closed loop with adaptive pivots; arrivals: 12 pulses 594 -> 90 mm (80 mm marker), 14 pulses 667 -> 214 mm (160 mm marker) |
 | 1.4a | ~~Re-tune homing on the trike~~ **done 2026-09-29** | - | pivot duty 50% (live slider), `PIVOT_S` 0.1 s ~6 deg, near step 0.1 s; first trike arrival 1109 -> 168 mm in 7 pulses |
 | 1.4b | Overhead steering | id 2 on Grover, gyro calibrated | **done 2026-10-24** - `face(heading)` and `go_to(marker/pixel)` closed on the overhead pose; 1.43 m to 30 cm of the goal in 13 s, 4 steps |
+| 1.4c | Chained approach | 1.4, 1.4b | **done 2026-10-24** - `dock_approach`: overhead `go_to` to the goal spot, onboard `home_to_marker` to the upright marker; 66 s, hands off. Final standoff still to measure |
 | 1.5 | Bench lap demo | all above | drive a lap around a clutter-free zone using markers as waypoints - `go_to` is the primitive |
 
 ## Tier 2E - the Eufy path (issue #1; revised 2026-09-28)

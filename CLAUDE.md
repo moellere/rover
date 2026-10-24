@@ -20,8 +20,10 @@ Enoch having to re-explain context.
 2. **Phase 2:** figure out recharging.
 3. **Phase 3:** roam the house.
 
-**Proposed next goal after Phase 1 (Claude's pick, 2026-09-28, Fable 5.1;
-Enoch can veto or reshape it): visual homing.** From anywhere on the bench,
+**Next goal after Phase 1 (Claude's pick, 2026-09-28, Fable 5.1) - visual
+homing - met 2026-10-24** (`dock_approach`: overhead camera to the goal
+spot, onboard camera to the marker, 66 s hands off; standoff still to
+measure). The original statement, kept for the record: visual homing. From anywhere on the bench,
 the rover finds a printed marker with its onboard camera and parks nose-on
 within ~2 cm of it, with no human input. It's the front half of docking
 (find dock -> align -> drive onto contacts), so it feeds Phase 2 directly,
