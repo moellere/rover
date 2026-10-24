@@ -472,6 +472,16 @@ Needed to draw it: the grid pitch and hole diameter, the plate's
 thickness, the deck underside's height above the track bottom, and the
 barrel's fore-aft offset from the plate's front edge when docked.
 
+![Docked, ruler along the base from the tower: roller at ~45-55 mm, cliff sensor at ~20 mm](images/24-docked-ruler-angle-2026-10-24.jpg)
+![Docked, side: the roller sits under the track's front end, the cliff sensor hangs ahead of it](images/25-docked-ruler-side-2026-10-24.jpg)
+![Docked, from above: the roller lies at the track's inner face, the cliff mount's foot starts at the roller and runs inboard](images/26-docked-ruler-top-2026-10-24.jpg)
+
+Read off the ruler photos (zero at the tower): roller centre ~47 mm
+from the tower face, the cliff sensor boards ~20 mm, so the roller sits
+~15-20 mm behind the deck plate's front edge, under the plate, at the
+track's inner face just outboard of the cliff mount's foot. Exact
+numbers to confirm with a ruler before slicing.
+
 **Claude-driven:** everything in the loops, the diagnoses (one wrong),
 the cap, the turn guards, the dock concept, shelving the Eufy. **Enoch-decided:** every
 reposition, the pack swap, the edge call, the "is it flat?" question,
