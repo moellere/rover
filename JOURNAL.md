@@ -445,6 +445,17 @@ within a few mm; the chassis has no funnel, the approach's own accuracy
 (2 cm, 5 deg today) is the funnel. The cliff sensors ride a few mm above
 the plate near the tower, clear of the barrels' slots.
 
+![Close-up, left: the barrel sits just behind the cliff mount's foot, beside the track](images/21-barrel-under-cliff-mount-left-2026-10-24.jpg)
+![Close-up, right: the same - the barrel lands directly under the deck plate's front edge next to the cliff mount](images/22-barrel-under-cliff-mount-right-2026-10-24.jpg)
+
+The close-ups settle where the pads go: with the nose at the tower each
+barrel lands directly under the deck plate's front edge, right beside
+the cliff mount's foot. So the pad carrier is not a bar between the
+tracks at all - it is a small bracket per side on the deck plate's front
+edge, next to (or part of) the cliff mount, with a bolt-head pad hanging
+to ~6 mm above the base's surface. Same bolt pattern as the cliff
+mounts, so measure before slicing (the rule from the TFMini bracket).
+
 **Claude-driven:** everything in the loops, the diagnoses (one wrong),
 the cap, the turn guards, the dock concept, shelving the Eufy. **Enoch-decided:** every
 reposition, the pack swap, the edge call, the "is it flat?" question,
