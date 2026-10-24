@@ -565,6 +565,17 @@ bolts and washers) and the first charge through them.
 
 ![Docked: Grover on the Eufy base at the marker end after run C](images/32-docked-2026-10-24.jpg)
 
+After run C Enoch checked under the deck: "it's not actually aligned
+with the contacts" - the rollers sit at the cliff mounts' edges, partly
+under a foot on one side, and the lateral landing scatters a centimetre
+or two run to run. His fix, adopted: a contact **bar across the roller**
+instead of a bolt head - `hardware/dock-pad-bar.scad`, 32 x 12 x 5 mm on
+the pad plate's M4 with the head pocketed into its underside and copper
+tape over the face, rotated to lie across the roller.
+
+![Under the deck after run C, left: the roller at the cliff mount's edge](images/33-docked-roller-left-2026-10-24.jpg)
+![Right side: the roller between the cliff mount's foot and the track](images/34-docked-roller-right-2026-10-24.jpg)
+
 **Claude-driven:** the overhead-only method, the taught pose, the
 routine. **Enoch-decided:** the white tape, the marker reprint with
 margins, every reposition, closing the garage door.
