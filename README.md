@@ -45,7 +45,7 @@ instructions, and readable as plain English by anyone.
   (10-24)**: `go_to` / `face` close on the overhead pose, and
   `dock_approach` chains them with the onboard homing - **far end of the
   bench to nose-on the upright marker in 66 s, no human input** (run 4,
-  10-24). That was the goal set after Phase 1; next is turning the
+  10-24; ends 33 mm from the marker face). That was the goal set after Phase 1; next is turning the
   marker into a dock.
 - **It has been through the house** (2026-10-04, as the trike): dining
   room to kitchen doorway, ~12-14 m, in camera-checked legs.

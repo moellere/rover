@@ -322,9 +322,12 @@ one more step, marker filled the frame. 66 s, no human input, `ok:
 true`. The post-Phase-1 goal set on 2026-09-28 - find the marker from
 anywhere on the bench and park nose-on with no human input - is met,
 with the overhead camera doing the far half and the onboard camera the
-near half. Still to measure: the final standoff in cm (the marker
-overfilling the frame says "a few", not a number); that is the dock
-design's input.
+near half. Standoff, measured by Enoch at the end of run 4: **camera lens 6 cm
+from the marker face, the cliff bracket (the frontmost part) 33 mm.**
+The 09-28 goal said "within ~2 cm"; 3.3 cm with a 12 cm stop setting,
+and the stop is a parameter. That is the dock design's input: the
+rover arrives nose-on with ~3 cm to spare, so the dock's contacts can
+sit a few cm proud of the marker face and the last pulse closes on them.
 
 **Claude-driven:** everything in the loops, the diagnoses, the cap.
 **Enoch-decided:** every reposition, the pack swap, the edge call.
