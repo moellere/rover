@@ -534,9 +534,27 @@ end (hex pocket for its nut), radial slot 10-22 mm for the pad bolt.
 Enoch: "start it, although I suspect the wing bracket will wind up being
 better. This is a simple easy print" - job `cfe0f0d26c`, 11 min, 3 g,
 two copies, started 15:45.
-Grover was left docked on the base mid-bench under the overhead for
-reference; the next session starts from there (overhead: base tower on
-Grover's nose, heading toward the marker end).
+**Docking runs, late afternoon.** Base at the marker end, a 50 mm id 3
+on its tower (first try trimmed too tight - the black border ran into
+the black tower and the detector never saw a square; the reprint got a
+wide white margin; closing the garage door also helped the exposure).
+Run A, `dock_approach` to the base's pixel then onboard homing on id 3:
+the onboard leg aimed at the marker and arrived nose-at-tower but 8 cm
+off the base's centreline, angled 10 deg - aiming is not alignment, and
+from close in the camera looks over the 65 mm tower. So the last
+half-metre moved to the overhead alone: `dock()` with a **taught docked
+pose** (Enoch pushed Grover fully on by hand; marker at px 596,436,
+heading 187 - the base sits 7 deg off the bench axis), two waypoints on
+that axis, `face` at each, then creeping in with the obstacle guard
+relaxed. Run B from the right end: waypoint 45 cm, squared to 187.0,
+waypoint 20 cm, squared to 188.4, two creeps - **on the dock, square,
+nose at the tower, 68 mm short of the taught pose**, then stopped:
+`front_left_cliff` true. The base is black plastic and the TCRT5000
+reads it as no floor, so the firmware refused the last creeps, as it
+should. Fix for next time: white tape on the base where the cliff
+sensors pass. The creep now reports a cliff instead of grinding, and
+lengthens after a stall (the ramp lip needs more than a 0.12 s nudge).
+Grover was left on the dock, nose at the tower.
 
 **Claude-driven:** everything in the loops, the diagnoses (one wrong),
 the cap, the turn guards, the dock concept, shelving the Eufy. **Enoch-decided:** every

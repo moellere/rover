@@ -295,17 +295,27 @@ async def dock(camera: str = "bench", max_steps: int = 8) -> dict:
                 log.append({**entry, "action": "docked"})
                 return {"ok": True, "reason": f"docked: {dist_mm:.0f} mm from the taught pose", "log": log,
                         "pose": _pose_dict(rover)}
+            st = await client.state(timeout=3.0)
+            if st.front_left_cliff or st.front_right_cliff:
+                # The base is black plastic: the cliff sensors read it as no
+                # floor and the firmware refuses forward (run 1, 2026-10-24).
+                # White tape on the base under the sensor paths is the fix;
+                # report rather than grind.
+                log.append({**entry, "action": "cliff guard active on the dock"})
+                return {"ok": along <= 60.0, "reason": f"cliff sensor active {along:.0f} mm short of the taught pose "
+                        "(black base under the sensors? tape it white)", "log": log, "pose": _pose_dict(rover)}
             if prev is not None and math.hypot(rover.x_px - prev[0], rover.y_px - prev[1]) < DOCK_STALL_PX:
                 stalls += 1
-                if stalls >= 2:
+                if stalls >= 3:
                     log.append({**entry, "action": "stalled"})
                     return {"ok": along <= 60.0, "reason": f"stopped moving {along:.0f} mm short of the taught pose",
                             "log": log, "pose": _pose_dict(rover)}
             else:
                 stalls = 0
             prev = (rover.x_px, rover.y_px)
-            log.append({**entry, "action": f"creep {DOCK_CREEP_S}s"})
-            await client.drive("forward", DOCK_CREEP_S)
+            creep = DOCK_CREEP_S * (1 + stalls)      # a stalled creep gets longer: the ramp lip needs more than a nudge
+            log.append({**entry, "action": f"creep {creep:.2f}s"})
+            await client.drive("forward", creep)
             await asyncio.sleep(POST_MOVE_S)
         return {"ok": False, "reason": "creep cap reached", "log": log}
     finally:
