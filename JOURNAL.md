@@ -479,8 +479,11 @@ barrel's fore-aft offset from the plate's front edge when docked.
 Read off the ruler photos (zero at the tower): roller centre ~47 mm
 from the tower face, the cliff sensor boards ~20 mm, so the roller sits
 ~15-20 mm behind the deck plate's front edge, under the plate, at the
-track's inner face just outboard of the cliff mount's foot. Exact
-numbers to confirm with a ruler before slicing.
+track's inner face just outboard of the cliff mount's foot. Enoch's
+ruler, later: the roller is 18 mm long along the drive axis and the
+deck plate's front edge sits over its middle when docked - so the
+roller's centre is at the plate's front edge, give or take a few mm,
+and the pad hangs straight down from that edge with no reach-back.
 
 **Claude-driven:** everything in the loops, the diagnoses (one wrong),
 the cap, the turn guards, the dock concept, shelving the Eufy. **Enoch-decided:** every
