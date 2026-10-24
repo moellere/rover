@@ -329,8 +329,35 @@ and the stop is a parameter. That is the dock design's input: the
 rover arrives nose-on with ~3 cm to spare, so the dock's contacts can
 sit a few cm proud of the marker face and the last pulse closes on them.
 
-**Claude-driven:** everything in the loops, the diagnoses, the cap.
-**Enoch-decided:** every reposition, the pack swap, the edge call.
+**Afternoon: the gyro was tilted, not a clone.** Enoch asked whether the
+gyro's orientation matters. It does - the firmware integrates only the Z
+axis, so a board tilted off flat reads cos(tilt) of the true rate, and
+0.8 is 37 deg. He checked: "it was not flat". Remounted flat (face-up
+now, so the firmware sign flipped back), scale slider set to 1.0, and a
+quarter turn by hand gave **gyro +93.6 vs overhead +93.7**. The morning's
+"clone sensitivity" diagnosis is retracted; the `Gyro scale` slider stays
+at 1.0 and exists for checking, not correcting. The 500 dps range stays
+for headroom.
+
+Getting there cost an hour of wiring: after the remount the motors drew
+no current, the gyro read a constant -300 dps and the TFMini answered
+with empty frames - a 3.3 V rail problem Enoch found and fixed. Two
+lessons in firmware now: `turn` refuses when the gyro reports more than
+20 dps with the rover stopped, and aborts if yaw runs 20 deg the wrong
+way during a turn (a runaway gyro had spun Grover to the 3 s cap). And
+one for me: I commanded a pivot while Enoch had Grover in his hands,
+because I read "check now" as a go. Motion only on an explicit go, with a
+frame first.
+
+**Still open: the TFMini.** It ACKs on its bus but has returned empty
+frames all day; `front_range` has been "no return" since the first run
+this morning, so the obstacle guard was blind. Nothing left the bench
+and the overhead did the stopping, but it needs its plug checked before
+any house run.
+
+**Claude-driven:** everything in the loops, the diagnoses (one wrong),
+the cap, the turn guards. **Enoch-decided:** every reposition, the pack
+swap, the edge call, the "is it flat?" question, the rail fix.
 
 
 ## 2026-10-22 - The tank drives: pack in, camera on, first gyro turns

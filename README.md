@@ -32,10 +32,9 @@ instructions, and readable as plain English by anyone.
   both sides together, so stops no longer yaw the chassis (0-2 deg per
   stop, was 20-30). `move(direction, ms, duty)`, `set_speeds(l, r)`.
 - **Gyro heading** (L3G4200D, 10-19/22/24): yaw integrated on the ESP32,
-  `turn(deg)` pivots and brakes when the gyro says so. The sensor reads
-  24 % low (clone sensitivity); a `Gyro scale` slider calibrated against
-  the overhead marker (10-24) puts gyro and camera within 0.3 deg of each
-  other on +/-90 legs.
+  `turn(deg)` pivots and brakes when the gyro says so. Mounted flat
+  (10-24; it had been 37 deg off, reading 24 % low) it matches the
+  overhead camera to 0.1 deg on a quarter turn.
 - **Power:** 3x18650 through a 3S BMS (soldered 10-18) in a printed
   cradle on the deck posts, shifted rearward for balance; the camera
   mount (v6) rides on the cradle's front perch.
