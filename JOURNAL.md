@@ -529,6 +529,11 @@ face wants to be 46 mm below the deck (3 mm of roller compression); with
 the 4 mm plate under the deck, that is 42 mm of bolt from the plate's
 underside to the washer face - an M4 x 50 does it with the nuts setting
 the exact figure.
+`hardware/dock-pad-plate.scad`: a 31 x 14 x 4 plate, deck bolt at one
+end (hex pocket for its nut), radial slot 10-22 mm for the pad bolt.
+Enoch: "start it, although I suspect the wing bracket will wind up being
+better. This is a simple easy print" - job `cfe0f0d26c`, 11 min, 3 g,
+two copies, started 15:45.
 Grover was left docked on the base mid-bench under the overhead for
 reference; the next session starts from there (overhead: base tower on
 Grover's nose, heading toward the marker end).
