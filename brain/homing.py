@@ -39,10 +39,10 @@ PIVOT_MIN_EFFECT = 1.5  # deg of bearing change that counts as "it turned"
 FORWARD_S = 0.3         # forward pulse length
 FORWARD_NEAR_S = 0.1    # shorter step inside NEAR_MM so the stop isn't overshot
                         # (trike: 0.15 s went 247 -> 168 mm, past the 200 mm stop)
-NEAR_MM = 350.0
+NEAR_MM = 600.0         # tank (10-24): a 0.3 s pulse at 80 % covers ~30 cm, so step short from farther out
 STOP_MM = 200.0         # stop when the marker is this close
 ARRIVE_LATERAL_MM = 30.0  # ...or within this sideways offset (d*sin(bearing)) at the stop distance
-CLOSE_LOST_FACTOR = 1.25  # marker lost inside stop_mm*this after a pulse = it overfilled the frame
+CLOSE_LOST_FACTOR = 2.0   # marker lost inside stop_mm*this after a pulse = it overfilled the frame (10-24: lost at 153 with stop 120 - it was nose-on)
 SETTLE_S = 1.5          # wait after a pulse before looking (motion blur); _look adds its own second frame
 MAX_PULSES = 20         # hard cap on drive pulses per run
 MAX_LOST = 3            # consecutive frames without the marker -> give up

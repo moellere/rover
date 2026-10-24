@@ -63,7 +63,10 @@ class SteerResult:
         return {"ok": self.ok, "reason": self.reason, "steps": self.steps, "pose": self.pose, "log": self.log}
 
 
-SETTLE_TIMEOUT_S = 5.0      # overhead frames arrive up to ~2.5 s stale after motion (measured 10-24)
+POST_MOVE_S = 2.5           # overhead frames arrive up to ~2.5 s stale after motion (measured 10-24)
+SETTLE_GAP_S = 1.0          # frames compared for agreement are this far apart (the camera can
+                            # serve the same stale frame twice in a row, 10-24 run 2)
+SETTLE_TIMEOUT_S = 6.0
 SETTLE_PX = 3.0
 SETTLE_DEG = 1.5
 
@@ -78,6 +81,7 @@ def _rover(camera: str, settle: bool = True) -> tuple[Pose | None, list[Pose]]:
         return rover, found
     t0 = time.monotonic()
     while time.monotonic() - t0 < SETTLE_TIMEOUT_S:
+        time.sleep(SETTLE_GAP_S)
         found2 = poses(snapshot(camera))
         rover2 = next((p for p in found2 if p.id == ROVER_TOP_ID), None)
         if rover is not None and rover2 is not None and \
@@ -123,7 +127,7 @@ async def face(heading_deg: float, camera: str = "bench", tol: float = FACE_TOL_
             break
         if abs(err) >= MIN_TURN_DEG:
             await client.turn(err, duty)
-            await asyncio.sleep(0.5)
+            await asyncio.sleep(POST_MOVE_S)
         rover, _ = _rover(camera)
     return SteerResult(False, f"still {err:+.1f} deg off after {max_turns} turns", max_turns, _pose_dict(rover), log)
 
@@ -178,7 +182,7 @@ async def go_to(x_px: float | None = None, y_px: float | None = None, marker_id:
         if abs(err) > GO_HEADING_TOL:
             log.append({**entry, "action": f"turn {err:+.0f}"})
             await client.turn(err, 0)
-            await asyncio.sleep(0.5)
+            await asyncio.sleep(POST_MOVE_S)
             continue
         pulse = max(MIN_PULSE_S, min(MAX_PULSE_S, (dist_mm - stop_mm * 0.5) * PULSE_FRACTION / speed))
         log.append({**entry, "action": f"forward {pulse:.2f}s", "speed_mm_s": round(speed)})
@@ -187,7 +191,7 @@ async def go_to(x_px: float | None = None, y_px: float | None = None, marker_id:
             return SteerResult(False, "cliff sensor active", step, _pose_dict(rover), log)
         await client.drive("forward", pulse)
         prev = (rover, pulse, scale)
-        await asyncio.sleep(0.3)
+        await asyncio.sleep(POST_MOVE_S)
     rover, _ = _rover(camera)
     return SteerResult(False, f"step cap {max_steps} reached", max_steps, _pose_dict(rover), log)
 

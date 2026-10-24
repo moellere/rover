@@ -286,6 +286,23 @@ read 10.46 V, down from 11.8 in the morning; a 90 % pivot from rest on a
 tired pack sags past the firmware's battery guard. Charging before the
 next run.
 
+**Run 2, repowered (11.95 V), Grover back at the right end.** The chained
+approach reached the marker: overhead leg 1.37 m in one 1 s pulse plus a
++12 turn, handed over at 36 cm; onboard leg saw the upright marker at
+45 cm dead ahead, one forward pulse, two left nudges to recentre, one
+short step, and then "marker lost" - because the marker filled the whole
+frame. Grover's own camera at the end: nothing but the marker, nose-on.
+**From the far end of the bench to touching distance of the upright
+marker with no human input.** Two bookkeeping rules were wrong and are
+fixed: the overhead "two agreeing frames" test passed on the same stale
+frame served twice (now a 2.5 s wait after motion, frames 1 s apart);
+and the homing loop's "lost close = arrived" margin was 1.25 x stop
+(lost at 153 mm with a 120 stop), now 2 x. Tank tuning: the homing
+loop's short steps start at 60 cm, not 35 - a 0.3 s pulse at 80 % covers
+30 cm.
+
+![End of the chained approach: Grover's own camera, nose-on the upright marker](images/12-dock-approach-nose-on-2026-10-24.jpg)
+
 
 **Claude-driven:** the test sequence, the clipping hypothesis and its
 rejection, the scale slider, the steering loop, the reprint. **Enoch-
