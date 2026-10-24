@@ -455,6 +455,13 @@ tracks at all - it is a small bracket per side on the deck plate's front
 edge, next to (or part of) the cliff mount, with a bolt-head pad hanging
 to ~6 mm above the base's surface. Same bolt pattern as the cliff
 mounts, so measure before slicing (the rule from the TFMini bracket).
+Cliff sensors' lowest point: ~12 mm above the bench (Enoch). On the
+base the tracks ride 11 mm up, so the sensors pass 23 mm above the
+floor, 3 mm over an unloaded barrel - clear. The pads themselves have to
+hang to ~6-7 mm above the track bottom to press the barrels 2-3 mm, which
+makes them the lowest thing on Grover by 5 mm. Fine on the bench (the
+hatch lip is a millimetre or two); a house threshold could catch them,
+so Phase 3 may want the pads sprung or retractable. Noted, not solved.
 
 **Claude-driven:** everything in the loops, the diagnoses (one wrong),
 the cap, the turn guards, the dock concept, shelving the Eufy. **Enoch-decided:** every
