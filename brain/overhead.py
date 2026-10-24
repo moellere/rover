@@ -26,7 +26,7 @@ import numpy as np
 from brain.markers import _DETECTOR, _CLAHE
 
 ROVER_TOP_ID = 2
-TOP_MARKER_MM = {2: 60.0, 0: 80.0, 1: 160.0}
+TOP_MARKER_MM = {2: 60.0, 0: 80.0, 1: 160.0, 3: 50.0}
 
 
 @dataclass

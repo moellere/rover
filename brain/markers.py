@@ -19,7 +19,7 @@ import cv2
 import numpy as np
 
 MARKER_MM = float(os.environ.get("ROVER_MARKER_MM", "80"))   # default size
-MARKER_SIZES_MM = {0: 80.0, 1: 160.0}                             # printed pages in hardware/markers/
+MARKER_SIZES_MM = {0: 80.0, 1: 160.0, 3: 50.0}                    # printed pages in hardware/markers/ (3: the dock tower, 10-24)
 CAM_HFOV_DEG = float(os.environ.get("ROVER_CAM_HFOV_DEG", "66"))  # OV2640 typical
 
 # Per-camera focal length in pixels, from a marker of known size at a known
