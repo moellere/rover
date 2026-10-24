@@ -13,7 +13,9 @@ step, so the error only sizes the next pulse).
                   overhead reads within `tol` (the gyro's scale is
                   calibrated against this same camera, 2026-10-24, so one
                   turn normally does it).
-`go_to(target)`   repeat: locate; bearing and distance to the target; if
+`go_to(target)`   repeat: locate (settled: two overhead frames that agree,
+                  the camera lags the world by up to ~2.5 s); bearing and
+                  distance to the target; if
                   the heading error is large, face the target; else a
                   forward pulse sized from the distance and the measured
                   speed (learned from the previous pulse); stop inside
@@ -61,9 +63,29 @@ class SteerResult:
         return {"ok": self.ok, "reason": self.reason, "steps": self.steps, "pose": self.pose, "log": self.log}
 
 
-def _rover(camera: str) -> tuple[Pose | None, list[Pose]]:
+SETTLE_TIMEOUT_S = 5.0      # overhead frames arrive up to ~2.5 s stale after motion (measured 10-24)
+SETTLE_PX = 3.0
+SETTLE_DEG = 1.5
+
+
+def _rover(camera: str, settle: bool = True) -> tuple[Pose | None, list[Pose]]:
+    """Grover's pose from the overhead. With `settle`, keep taking frames until
+    two in a row agree (the camera's snapshot runs a couple of seconds behind
+    the world, so the first frame after a move still shows it moving)."""
     found = poses(snapshot(camera))
-    return next((p for p in found if p.id == ROVER_TOP_ID), None), found
+    rover = next((p for p in found if p.id == ROVER_TOP_ID), None)
+    if not settle:
+        return rover, found
+    t0 = time.monotonic()
+    while time.monotonic() - t0 < SETTLE_TIMEOUT_S:
+        found2 = poses(snapshot(camera))
+        rover2 = next((p for p in found2 if p.id == ROVER_TOP_ID), None)
+        if rover is not None and rover2 is not None and \
+           math.hypot(rover.x_px - rover2.x_px, rover.y_px - rover2.y_px) <= SETTLE_PX and \
+           abs(heading_change(rover.heading_deg, rover2.heading_deg)) <= SETTLE_DEG:
+            return rover2, found2
+        rover, found = rover2, found2
+    return rover, found
 
 
 def _pose_dict(p: Pose | None) -> dict | None:

@@ -270,6 +270,23 @@ Same morning Enoch renamed the overhead camera: **fishcam is now
 `benchcam`** (docs updated; the brain addresses it by env prefix, not
 by name, so nothing in code changed).
 
+**Cap on, `dock_approach` first run.** The cap went on and the overhead
+read it first frame. The overhead leg then overshot: the log shows a 1 s
+pulse that "moved 12 cm" and a second that "moved a metre" - together
+they are Grover's usual ~55 cm/s, so the frame after the first pulse was
+stale. Measured: after a 0.3 s pivot the overhead's heading kept creeping
+for ~2.5 s of frames after the drive had ended. The camera's snapshot
+runs that far behind the world. `steer.py` now takes frames until two in
+a row agree (3 px, 1.5 deg) before trusting a pose. The onboard leg never
+saw the upright marker from where the overshoot left Grover. Driving it
+back by `go_to` then failed differently: ten turn commands, no motion -
+Grover had ended up near the marker end close to the open edge (Enoch:
+"since it's close to the edge" - he repositioned by hand) and the pack
+read 10.46 V, down from 11.8 in the morning; a 90 % pivot from rest on a
+tired pack sags past the firmware's battery guard. Charging before the
+next run.
+
+
 **Claude-driven:** the test sequence, the clipping hypothesis and its
 rejection, the scale slider, the steering loop, the reprint. **Enoch-
 decided:** taping the markers (twice), Grover on, putting it back at the
