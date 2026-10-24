@@ -388,7 +388,17 @@ call: the Eufy's, unmodified, fed 12.6 V from the brick; the Eufy itself
 is shelved as a chassis (intact, so it can return), not abandoned. Grover
 needs a printed contact carrier under the chassis to match the base's
 plates. The Eufy IR test he offered is passed up: the hour-encoding hold
-stands and nothing here needs it.
+stands and nothing here needs it. Enoch is ordering the 12.6 V brick
+and will measure the base and Grover's underside; what the carrier
+design is waiting on:
+
+1. the base's contact plates: centre-to-centre spacing, plate width,
+   contact height above the floor;
+2. whether the base is passive (12 V on the jack from the RD6018 shows
+   on the plates);
+3. photos of the base, front and top;
+4. under Grover: bench-to-lowest-point gap between the tracks, and the
+   inside width between the tracks.
 
 **Claude-driven:** everything in the loops, the diagnoses (one wrong),
 the cap, the turn guards, the dock concept, shelving the Eufy. **Enoch-decided:** every
