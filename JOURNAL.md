@@ -261,7 +261,8 @@ web UI finally gave the real code in a script variable: **support code
 settings". The job carried a bare `media=na_letter` keyword; sending the
 full `media-col` (Letter, stationery, tray-1) exactly as the cassette is
 registered made the next job print in 15 s. The id 0 page (80 mm)
-followed the same way. Lesson filed in the script's docstring: on this
+followed the same way; Enoch: "both sheets measured out correctly"
+(the 100 mm bar). Lesson filed in the script's docstring: on this
 Canon, "other-error" means read the web UI, not the format.
 
 **Claude-driven:** the whole printing path, the page additions, the
