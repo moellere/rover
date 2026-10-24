@@ -430,6 +430,21 @@ tracks must clear 9 mm (an unloaded barrel) except the pads themselves.
 The tower is ~85 mm tall, well inside the TFMini's beam height, so the
 obstacle guard is what ends the approach.
 
+**Test fit, Grover nose-on the base (Enoch, evening).** Three photos:
+
+![Grover on the base from above: nose at the tower, tracks either side of the base's wings](images/18-grover-on-base-top-2026-10-24.jpg)
+![From the side: the track nose has climbed the plate's edge; a barrel sits under the chassis behind the track's front end; the cliff sensor hovers over the plate ahead of it](images/19-grover-on-base-side-2026-10-24.jpg)
+![From the front, bench level: both barrels visible between the tracks, just inside the track faces; the motors are the lowest things under the chassis](images/20-grover-on-base-underside-2026-10-24.jpg)
+
+What they say: the tracks climb the plate without trouble; with the nose
+at the tower the barrels fall under the chassis roughly below the front
+of the deck, and they sit just inside the tracks' inner faces - 88 mm
+between barrel centres against an inside width that looks only a little
+wider. So the pads must be at exactly 88 mm and the lateral arrival
+within a few mm; the chassis has no funnel, the approach's own accuracy
+(2 cm, 5 deg today) is the funnel. The cliff sensors ride a few mm above
+the plate near the tower, clear of the barrels' slots.
+
 **Claude-driven:** everything in the loops, the diagnoses (one wrong),
 the cap, the turn guards, the dock concept, shelving the Eufy. **Enoch-decided:** every
 reposition, the pack swap, the edge call, the "is it flat?" question,
