@@ -395,7 +395,8 @@ design is waiting on:
 1. the base's contact plates: centre-to-centre spacing, plate width,
    contact height above the floor - **height measured 10-24 evening:
    20 mm unloaded, 14 mm at full push (6 mm of sprung travel), so
-   Grover's contacts want to sit ~17 mm above the floor, mid-travel;**
+   Grover's contacts want to sit ~17 mm above the floor, mid-travel;
+   plates 88 mm centre to centre** (plate width still to come);
 2. whether the base is passive (12 V on the jack from the RD6018 shows
    on the plates);
 3. photos of the base, front and top;
