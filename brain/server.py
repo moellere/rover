@@ -236,6 +236,18 @@ async def go_to(marker_id: Optional[int] = None, x_px: Optional[float] = None, y
 
 
 @mcp.tool()
+async def dock_approach(goal_marker: int = 0, final_marker: int = 1, final_stop_mm: float = 120.0) -> dict:
+    """Overhead `go_to` the goal-spot marker (stops 45 cm out, nose on it), then
+    the onboard camera's `home_to_marker` on the upright marker behind it.
+    The front half of docking. Check the lane on the overhead first."""
+    global _last_drive_end
+    from brain.steer import dock_approach as _dock
+    r = await _dock(goal_marker, final_marker, final_stop_mm)
+    _last_drive_end = time.monotonic()
+    return r
+
+
+@mcp.tool()
 async def set_ramp(min_duty_pct: Optional[float] = None, accel_ms: Optional[float] = None,
                    decel_ms: Optional[float] = None) -> dict:
     """Tune the firmware's speed profile (persisted on the rover). min_duty_pct

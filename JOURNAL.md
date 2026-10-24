@@ -251,6 +251,20 @@ did the last half-metre; the two can now be chained.
 
 ![go_to arrival: Grover parked nose-on 30 cm from the id 0 goal marker](images/11-go-to-arrival-2026-10-24.jpg)
 
+**Handing over to the onboard camera, from there.** `home_to_marker(1)`
+from the arrival spot: the first pivot pulse took the upright marker from
+37 to 27 deg off centre, then nine growing right pulses (0.1 to 1.0 s)
+changed nothing and the stuck guard ended it. The firmware log of a
+rerun shows every pulse running ("Right" for 0.3 s, no guard block), and
+the rerun itself crept 34 -> 16 deg then stalled the same way: Grover's
+front sat on the id 0 sheet, and printer paper under a scrubbing track
+has no grip. So the chained `dock_approach` (overhead `go_to` then
+onboard `home_to_marker`) stops the overhead leg 45 cm out, short of the
+paper. Also: the taped id 2 sheet curled up during the pivots and the
+overhead lost it; Enoch: "maybe a bracket to hold Grover marker?" -
+`hardware/marker-cap.scad`, a lid over the cradle's long walls with the
+marker recessed in its top, awaiting his check before it prints.
+
 **Claude-driven:** the test sequence, the clipping hypothesis and its
 rejection, the scale slider, the steering loop, the reprint. **Enoch-
 decided:** taping the markers (twice), Grover on, putting it back at the

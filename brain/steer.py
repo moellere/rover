@@ -168,3 +168,24 @@ async def go_to(x_px: float | None = None, y_px: float | None = None, marker_id:
         await asyncio.sleep(0.3)
     rover, _ = _rover(camera)
     return SteerResult(False, f"step cap {max_steps} reached", max_steps, _pose_dict(rover), log)
+
+
+GOAL_CLEAR_MM = 450.0       # overhead leg stops here: Grover's nose then sits short of the goal
+                            # sheet (printer paper under a scrubbing track stalls pivots, 10-24)
+
+
+async def dock_approach(goal_marker: int = 0, final_marker: int = 1, final_stop_mm: float = 120.0,
+                        camera: str = "bench", max_steps: int = 10, max_pulses: int = 12) -> dict:
+    """The two halves chained: `go_to` the goal-spot marker on the overhead
+    (stopping GOAL_CLEAR_MM out, nose toward it), then hand over to the
+    onboard camera's `home_to_marker` for the upright marker behind it."""
+    from brain.homing import home_to_marker
+    leg1 = await go_to(marker_id=goal_marker, stop_mm=GOAL_CLEAR_MM, camera=camera, max_steps=max_steps)
+    out = {"overhead": leg1.as_dict()}
+    if not leg1.ok:
+        out.update(ok=False, reason=f"overhead leg: {leg1.reason}")
+        return out
+    leg2 = await home_to_marker(final_marker, "rover", final_stop_mm, max_pulses)
+    out["onboard"] = leg2.__dict__ if hasattr(leg2, "__dict__") else leg2
+    out.update(ok=leg2.ok, reason=f"onboard leg: {leg2.reason}")
+    return out
