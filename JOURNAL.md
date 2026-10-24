@@ -409,6 +409,15 @@ design is waiting on:
 
 ![The Eufy base's contact plates: chrome barrels, 88 mm apart](images/13-eufy-base-plates-2026-10-24.jpg)
 ![The base's ramp and lead-in grooves, plate at the edge](images/14-eufy-base-ramp-2026-10-24.jpg)
+![The whole base from the front: plates about 45 mm in from the front edge, a U-channel between them, the beacon tower behind](images/15-eufy-base-front-2026-10-24.jpg)
+![From the side: a flat plate a few mm thick with rounded edges, the tower about 140 mm wide](images/16-eufy-base-side-2026-10-24.jpg)
+
+From the whole-base photos (ruler in frame): plate ~160 mm wide, ~125 mm
+deep; the contact plates sit ~45 mm in from the front edge, the tower's
+face ~90 mm behind them. So Grover's pads go ~90-100 mm behind the nose
+tip, under the deck plate's front, and land on the plates when the
+TFMini guard stops the nose at the tower. The tower face is ~140 x 70 mm
+- room for an 80 mm marker (id 0's size), not the 160 mm id 1.
 
 **Claude-driven:** everything in the loops, the diagnoses (one wrong),
 the cap, the turn guards, the dock concept, shelving the Eufy. **Enoch-decided:** every
