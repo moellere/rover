@@ -85,7 +85,8 @@ settle, look again - talking to the rover over ESPHome's native API.
 - Sensing: Benewake TFMini LiDAR on a printed bracket (direct GH1.25 lead,
   5 V); two TCRT5000 cliff modules at 3.3 V on printed v4 mounts
 - Vision: TTGO T-Camera on the rover (fisheye, ~111 deg); two Thingino
-  cameras on the bench (`camv3` behind the rover, `fishcam` PTZ head-on)
+  cameras on the bench (`camv3`, and `benchcam` - the PTZ overhead, renamed
+  from fishcam 10-24)
 - Markers: ArUco 4x4_50, ids 0 (80 mm) and 1 (160 mm) as homing targets,
   id 2 (60 mm, FRONT-labelled) on Grover's top for the overhead camera -
   pages in `hardware/markers/`, each with a 100 mm scale bar; print at

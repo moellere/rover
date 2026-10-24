@@ -94,7 +94,8 @@ forward (correct) - spotters stand to the side of the line.
 
 ## Rover orientation on the bench
 
-Since 2026-10-05 the `bench` camera is **fishcam, mounted overhead looking
+Since 2026-10-05 the `bench` camera is **benchcam (renamed from fishcam
+2026-10-24), mounted overhead looking
 straight down** (PTZ; pan sweeps along the bench). In its frame the marker
 end is on the **left**, the open garage-side edge along the **top**, the
 pegboard along the **bottom**. Grover's heading reads directly off its
@@ -145,7 +146,7 @@ fallback is to switch to Opus 5.5 or wait for the reset.
 
 - **Dedicated to this project, flash/modify freely** (Enoch, 2026-09-29,
   "for the time being"): the rover's spinal cord (`rover32`), the
-  T-Camera (`redcam`), both bench cameras (`camv3`, `fishcam`), the
+  T-Camera (`redcam`), both bench cameras (`camv3`, `benchcam`, ex-`fishcam`), the
   Eufy's lid board (`blackcam`) and the IR test nodes (`eufy-ir8266`,
   `eufy-ir-c3`). Every other device still needs a check-in first.
 - **Printing while Enoch is away (2026-10-20, "If you need to print

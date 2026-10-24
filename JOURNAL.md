@@ -266,6 +266,10 @@ overhead lost it; Enoch: "maybe a bracket to hold Grover marker?" -
 marker recessed in its top. Enoch: "looks OK", then "start it" - job
 `ed36e13f16`, 41 min, 18 g PETG, started 10:49.
 
+Same morning Enoch renamed the overhead camera: **fishcam is now
+`benchcam`** (docs updated; the brain addresses it by env prefix, not
+by name, so nothing in code changed).
+
 **Claude-driven:** the test sequence, the clipping hypothesis and its
 rejection, the scale slider, the steering loop, the reprint. **Enoch-
 decided:** taping the markers (twice), Grover on, putting it back at the

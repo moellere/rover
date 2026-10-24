@@ -159,7 +159,7 @@ def locate(camera: str = "bench") -> dict:
     """Where are the markers on the bench, seen from the overhead camera?
     Grover carries ArUco id 2 (60 mm) on its top, FRONT edge toward its nose,
     so id 2's heading is Grover's heading. Angles are in the image frame:
-    0 = image right, 90 = image up (CCW +); with fishcam's mount the homing
+    0 = image right, 90 = image up (CCW +); with benchcam's mount the homing
     marker end is 180 and the open garage-side edge is 90. mm_per_px is the
     local scale from the marker's printed size (approximate away from the
     image centre - wide lens)."""

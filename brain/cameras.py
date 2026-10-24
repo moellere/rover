@@ -4,14 +4,14 @@ Still-frame capture from the three cameras.
     bench  - the fixed camera behind the rover's start end (camv3, Thingino):
              BENCH_CAM_HOST, BENCH_CAM_USER (default root), BENCH_CAM_PASS
     front  - the PTZ camera across the bench, facing the rover head-on
-             (fishcam, Thingino): FRONT_CAM_HOST, FRONT_CAM_USER, FRONT_CAM_PASS
+             (benchcam, ex-fishcam, Thingino): FRONT_CAM_HOST, FRONT_CAM_USER, FRONT_CAM_PASS
     rover  - the T-Camera on the rover (ESPHome snapshot server):
              ROVER_CAM_HOST, ROVER_CAM_SNAPSHOT_PORT (default 8081)
     eufy   - the camera on the Eufy's lid: EUFY_CAM_KIND = esphome (a
              T-Camera, blackcam; EUFY_CAM_HOST, snapshot port 8081) or
              thingino (camv3; EUFY_CAM_HOST, EUFY_CAM_USER, EUFY_CAM_PASS)
 
-(2026-10-05: `bench` is fishcam, overhead; `front` is camv3 until it moves
+(2026-10-05: `bench` is benchcam (fishcam until 2026-10-24), overhead; `front` is camv3 until it moves
 to the Eufy - names are just env prefixes, the hosts live in the env file.)
 """
 import os

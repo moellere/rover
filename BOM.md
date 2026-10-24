@@ -39,7 +39,7 @@ All from Enoch's inventory unless the Source column says otherwise.
 | Printed parts (PETG): battery cradle v3, camera mount v6, TFMini bracket, cliff mounts v4 (L+R) | - | see `hardware/README.md` | $0 | Installed on the tank (2026-10-19..22); camera-mount v5 and the adapter strip retired |
 | Printed caster skid (`hardware/caster-skid.scad`) + M5 bolt 25-30 mm + nut | 1 | Replaced the swivel caster on the trike | $0 | Printed and fitted 10-18, lost in the fall; superseded |
 | 3S BMS 40A board (1 of a 3-pack, B0G6JQ8ZFN) | 1 | Per-cell protection + balancing | $2.89 prorated (budget) | Soldered to a new 3x18650 holder 2026-10-18 (Enoch); in the printed cradle on the deck posts since 2026-10-22 |
-| Bench cameras: `camv3` (Thingino), `fishcam` (Wyze Pan v2, Thingino PTZ) | 2 | Watch the bench from behind and head-on | Inventory | Installed |
+| Bench cameras: `camv3` (Thingino), `benchcam` (Wyze Pan v2, Thingino PTZ; was `fishcam` until 2026-10-24) | 2 | Watch the bench from behind and head-on | Inventory | Installed |
 
 Retired: Wemos D1 Mini (now the bench IR test node `eufy-ir8266`), MCP23008
 expander, LD33V regulator (TFMini now on 5 V directly), the Qwiic adapter
