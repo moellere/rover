@@ -30,7 +30,8 @@ All from Enoch's inventory unless the Source column says otherwise.
 | ESP32 devkit (WROOM-32D, 38-pin) - `rover32` | 1 | Spinal cord (ESPHome): enables GPIO16/17, direction GPIO18/19/22/23, cliff GPIO35/32, TFMini I2C GPIO25/26, battery GPIO34 | Inventory (was the Eufy IR node's board) | Installed 2026-10-03 |
 | L298N dual H-bridge | 1 | Motor driver | Inventory | Installed |
 | 18650 Li-ion cells | 3 (3S) | Power, 12.6 V full / ~9 V empty | Inventory | Installed; one weak set retired 09-29, one bad cell found 10-04 - charge the set together and full |
-| LM2596 buck, set to 5.2 V | 1 | 5 V for the ESP32 (VIN), the camera (spliced micro-USB) and the TFMini | Inventory | Installed |
+| LM2596 buck, set to 5.2 V | 1 | 5 V for the ESP32 (VIN), the camera (spliced micro-USB) and the TFMini | Inventory | Installed. To do (10-24): Schottky (SS34 class) in its output lead so USB can't back-feed it, buck raised to ~5.5 V |
+| 12.6 V 2 A CC/CV Li-ion charger brick (5.5/2.1 mm) | 1 | Dock supply (Phase 2); the Riden RD6018 in battery mode stands in for testing | Shopping list, ~$7 (Waveshare direct) if not in inventory | Not yet ordered |
 | Resistors 100k + 27k | 1 each | Battery divider into GPIO34 (x4.664, calibrated 10-03 against a meter) | Inventory | Installed |
 | Benewake TFMini (SparkFun SEN-14786) | 1 | Forward LiDAR: obstacle stop 50 cm, range for homing | Inventory | Installed on the printed bracket; direct GH1.25 lead, 5 V |
 | GH1.25-to-Dupont lead (kit B087N4GY8Z) | 1 | TFMini direct connection (replaced the Qwiic boost chain and LD33V) | $0.40 prorated (budget) | Installed |

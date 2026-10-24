@@ -367,9 +367,23 @@ the monitor; the TFMini had been dead since at least the first run
 Motors after the remount: the gyro turn pair on the motors reads +87.1
 gyro / +86.1 overhead, so the whole chain agrees within a degree.
 
+**Phase 2 starts: the charge path works.** Enoch asked what the dock
+should look like; the answer (floor contact strips + a funnel + the
+marker on the back wall, CC/CV 12.6 V from a brick, diode and a sense
+path so the strips are only live under a rover) rests on one
+assumption, so he tested it: the pack on his Riden RD6018 in battery
+mode at 12.6 V, through the BMS's output terminals, **charging at 0.83 A
+and tapering** - the HW-288 accepts charge through the same terminals it
+discharges from. No charger board goes on Grover; the dock supplies
+CC/CV. Also found: the ESP32's USB back-feeds the 5 V rail into the
+buck; fix is a Schottky (SS34 class) in the buck's output lead and the
+buck raised to ~5.5 V, which also makes USB flashing with the pack on
+safe.
+
 **Claude-driven:** everything in the loops, the diagnoses (one wrong),
-the cap, the turn guards. **Enoch-decided:** every reposition, the pack
-swap, the edge call, the "is it flat?" question, the rail fix.
+the cap, the turn guards, the dock concept. **Enoch-decided:** every
+reposition, the pack swap, the edge call, the "is it flat?" question,
+the rail fix, the charge test.
 
 
 ## 2026-10-22 - The tank drives: pack in, camera on, first gyro turns
