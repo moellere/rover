@@ -222,3 +222,95 @@ async def dock_approach(goal_marker: int | None = 0, final_marker: int = 1, fina
     out["onboard"] = leg2.__dict__ if hasattr(leg2, "__dict__") else leg2
     out.update(ok=leg2.ok, reason=f"onboard leg: {leg2.reason}")
     return out
+
+
+# ---- Docking on the overhead alone (2026-10-24) ---------------------------
+# The onboard camera aims at the dock marker but cannot align to the dock's
+# axis, and looks over the 65 mm tower once close. The overhead sees Grover's
+# marker at ~1.4 mm/px at the dock, which is finer than the rollers need
+# (+/-9 mm fore-aft, +/-5 lateral). So: a taught docked pose (brain/
+# dock_pose.json, Enoch pushes Grover fully on by hand once), waypoints on
+# the dock's axis behind it, square up with `face`, creep in with the
+# obstacle guard relaxed until the overhead says the pose is reached or
+# Grover stops moving (the tower).
+import json
+from pathlib import Path
+
+DOCK_POSE_FILE = Path(__file__).with_name("dock_pose.json")
+DOCK_WAYPOINTS_MM = (450.0, 200.0)   # on the axis, behind the docked pose
+DOCK_ARRIVE_MM = 25.0
+DOCK_CREEP_S = 0.12
+DOCK_MAX_CREEPS = 14
+DOCK_STALL_PX = 4.0
+
+
+def load_dock_pose() -> dict:
+    return json.loads(DOCK_POSE_FILE.read_text())
+
+
+def _axis_point(pose: dict, back_mm: float) -> tuple[float, float]:
+    """A point `back_mm` behind the docked pose along its heading (image frame, y down)."""
+    h = math.radians(pose["heading_deg"])
+    px = back_mm / pose["mm_per_px"]
+    return pose["x_px"] - math.cos(h) * px, pose["y_px"] + math.sin(h) * px
+
+
+async def dock(camera: str = "bench", max_steps: int = 8) -> dict:
+    pose = load_dock_pose()
+    client = RoverClient()
+    bad = await _preflight(client)
+    if bad:
+        return {"ok": False, "reason": bad}
+    log: list = []
+    # 1. waypoints on the axis, squaring up at each
+    for back in DOCK_WAYPOINTS_MM:
+        wx, wy = _axis_point(pose, back)
+        r = await go_to(x_px=wx, y_px=wy, stop_mm=80.0, camera=camera, max_steps=max_steps)
+        log.append({"leg": f"waypoint {back:.0f} mm", **r.as_dict()})
+        if not r.ok:
+            return {"ok": False, "reason": f"waypoint {back:.0f}: {r.reason}", "log": log}
+        f = await face(pose["heading_deg"], camera, 2.0)
+        log.append({"leg": f"face at {back:.0f} mm", **f.as_dict()})
+        if not f.ok:
+            return {"ok": False, "reason": f"face at {back:.0f}: {f.reason}", "log": log}
+    # 2. creep in, guard relaxed, overhead watching
+    st = await client.state(timeout=3.0)
+    guard = st.obstacle_stop_cm or 0.0
+    if guard > 0:
+        await client.set_number("obstacle_stop", 0)
+    try:
+        prev = None
+        stalls = 0
+        for i in range(DOCK_MAX_CREEPS):
+            rover, _ = _rover(camera)
+            if rover is None:
+                return {"ok": False, "reason": "rover marker lost while creeping", "log": log}
+            dist_mm = math.hypot(rover.x_px - pose["x_px"], rover.y_px - pose["y_px"]) * pose["mm_per_px"]
+            # signed progress along the axis: + = still short of the docked pose
+            h = math.radians(pose["heading_deg"])
+            along = ((rover.x_px - pose["x_px"]) * (-math.cos(h)) + (rover.y_px - pose["y_px"]) * math.sin(h)) * pose["mm_per_px"]
+            entry = {"creep": i, "x": round(rover.x_px), "y": round(rover.y_px), "heading": rover.heading_deg,
+                     "dist_mm": round(dist_mm), "short_mm": round(along)}
+            if along <= DOCK_ARRIVE_MM:
+                log.append({**entry, "action": "docked"})
+                return {"ok": True, "reason": f"docked: {dist_mm:.0f} mm from the taught pose", "log": log,
+                        "pose": _pose_dict(rover)}
+            if prev is not None and math.hypot(rover.x_px - prev[0], rover.y_px - prev[1]) < DOCK_STALL_PX:
+                stalls += 1
+                if stalls >= 2:
+                    log.append({**entry, "action": "stalled"})
+                    return {"ok": along <= 60.0, "reason": f"stopped moving {along:.0f} mm short of the taught pose",
+                            "log": log, "pose": _pose_dict(rover)}
+            else:
+                stalls = 0
+            prev = (rover.x_px, rover.y_px)
+            log.append({**entry, "action": f"creep {DOCK_CREEP_S}s"})
+            await client.drive("forward", DOCK_CREEP_S)
+            await asyncio.sleep(POST_MOVE_S)
+        return {"ok": False, "reason": "creep cap reached", "log": log}
+    finally:
+        if guard > 0:
+            try:
+                await client.set_number("obstacle_stop", guard)
+            except Exception:
+                pass
