@@ -484,9 +484,14 @@ ruler, later: the roller is 18 mm long along the drive axis and the
 deck plate's front edge sits over its middle when docked - so the
 roller's centre is at the plate's front edge, give or take a few mm,
 and the pad hangs straight down from that edge with no reach-back.
-Deck plate grid (Enoch, corrected): 4 mm holes on a ~9 mm pitch - not
-the Makeblock 8 mm, so the bracket's holes follow 9 mm with +/-1 mm
-slots, and the cliff mount bolt positions get measured, not assumed.
+Deck plate grid (Enoch, after two tries: "trust the 8 mm pitch over my
+measurement"): 4 mm holes, 8 mm pitch, slots either way. Better still,
+the pad bracket does not need its own holes: it is a strap sandwiched
+under the cliff mount's two foot bolts (spacing known from
+cliff-mount.scad), reaching outboard over the roller with a drop leg to
+a wide pad - wide, because the approach lands within ~2 cm sideways and
+the roller is only 10 mm across, so the pad is a 40 mm strip (copper
+tape on PETG, or brass strip) rather than a bolt head.
 
 **Claude-driven:** everything in the loops, the diagnoses (one wrong),
 the cap, the turn guards, the dock concept, shelving the Eufy. **Enoch-decided:** every
