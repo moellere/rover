@@ -18,7 +18,7 @@ breakdown of the notable decisions. Newest entry on top.
 
 ## Current status (as of the latest entry below)
 
-**Where things stand, 2026-10-18:**
+**Where things stand, 2026-10-24:**
 
 - **Two robots, one brain.** **Grover** (Makeblock trike, bench platform)
   and a **Eufy RoboVac 12** (the house chassis, driven over IR). The
@@ -239,9 +239,22 @@ cells (edges only, or matte). Pulse sizing now assumes the tank is fast
 tools (`face`, `go_to`); the running server needs a reconnect to see
 them.
 
+**Second run, fresh markers (Enoch reprinted both at my request and taped
+the margins only).** `go_to(marker 0, stop 350 mm)` from the right end,
+1.43 m out: +12 deg turn to face the bearing, three forward pulses
+(1.0, 0.58, 0.29 s - each sized from the remaining distance), **arrived
+in 13 s, 30 cm from id 0, heading within 2.5 deg of the bearing.** No
+human input between the call and the stop. That is the roadmap's
+visual-homing goal met from the overhead side: anywhere on the bench to
+the goal spot. The onboard-camera version (`home_to_marker`) already
+did the last half-metre; the two can now be chained.
+
+![go_to arrival: Grover parked nose-on 30 cm from the id 0 goal marker](images/11-go-to-arrival-2026-10-24.jpg)
+
 **Claude-driven:** the test sequence, the clipping hypothesis and its
-rejection, the scale slider. **Enoch-decided:** taping the markers,
-Grover on.
+rejection, the scale slider, the steering loop, the reprint. **Enoch-
+decided:** taping the markers (twice), Grover on, putting it back at the
+start for the second run.
 
 ## 2026-10-22 - The tank drives: pack in, camera on, first gyro turns
 

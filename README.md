@@ -41,10 +41,10 @@ instructions, and readable as plain English by anyone.
   mount (v6) rides on the cradle's front perch.
 - **Visual homing works** (since 10-05): `home_to_marker` finds a printed
   ArUco marker with the onboard camera and parks in front of it. Steering
-  from the overhead camera's view of the marker on Grover's top is next -
-  the marker is on (10-24) and `locate` reads Grover's pose and heading
-  from it; a second marker (id 0) lies flat by the homing marker as the
-  goal spot.
+  from the overhead camera's view of the marker on Grover's top **works
+  (10-24)**: `go_to(marker 0)` took Grover from the far end of the bench
+  to 30 cm of the goal marker in 13 s, four steps, no human input; `face`
+  closes a heading on the overhead the same way.
 - **It has been through the house** (2026-10-04, as the trike): dining
   room to kitchen doorway, ~12-14 m, in camera-checked legs.
 - **Sensors:** TFMini forward LiDAR (obstacle stop at 50 cm), two TCRT5000

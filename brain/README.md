@@ -24,7 +24,7 @@ courtesy layer that refuses obviously bad requests early.
 | `set_brake(on)` | firmware `Brake on stop` switch (boots off) | - |
 | `locate(camera)` | overhead marker poses: Grover's position and heading from ArUco id 2 (60 mm, taped on top, FRONT edge to the nose; page in `hardware/markers/`), plus any other markers; image-frame angles, local mm/px | - |
 | `face(heading_deg, tol_deg)` | turn until the overhead reads that heading (image frame: 180 = toward the homing marker end, 270 = toward the pegboard); gyro turns, overhead re-read after each | needs id 2 in view; up to 3 corrections |
-| `go_to(marker_id | x_px,y_px, stop_mm)` | drive to a marker or pixel seen overhead: locate, turn if >10 deg off, else a forward pulse sized from the distance (<= 1 s), re-locate; stops inside `stop_mm` | check the lane first; 10 steps max; first run 10-24 got to 30 cm of id 0 before glare on the tape hid Grover's marker |
+| `go_to(marker_id | x_px,y_px, stop_mm)` | drive to a marker or pixel seen overhead: locate, turn if >10 deg off, else a forward pulse sized from the distance (<= 1 s), re-locate; stops inside `stop_mm` | check the lane first; 10 steps max; 10-24: 1.43 m to 30 cm of id 0 in 13 s, 4 steps (tape only the marker margin - gloss over the cells blinds the overhead) |
 | `eufy(command)` | drive the Eufy RoboVac 12 over IR via its lid board: forward, backward, left, right, home, start_stop (one remote press each; floor only) | - |
 | `stop` | stop now | - |
 
