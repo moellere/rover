@@ -524,6 +524,9 @@ turning them, a 16 mm fender washer under the head as the pad face and
 a ring terminal for the wire. No print, adjustable, replaceable. A
 printed post is the fallback if the nearest hole is more than ~5 mm
 off the roller.
+Grover was left docked on the base mid-bench under the overhead for
+reference; the next session starts from there (overhead: base tower on
+Grover's nose, heading toward the marker end).
 
 **Claude-driven:** everything in the loops, the diagnoses (one wrong),
 the cap, the turn guards, the dock concept, shelving the Eufy. **Enoch-decided:** every
