@@ -46,8 +46,10 @@ instructions, and readable as plain English by anyone.
   (10-24)**: `go_to` / `face` close on the overhead pose, and
   `dock_approach` chains them with the onboard homing - **far end of the
   bench to nose-on the upright marker in 66 s, no human input** (run 4,
-  10-24; ends 33 mm from the marker face). That was the goal set after Phase 1; next is turning the
-  marker into a dock.
+  10-24; ends 33 mm from the marker face). That was the goal set after Phase 1. **The dock approach works too
+  (10-24 evening):** `dock` drives the axis of a taught docked pose on
+  the Eufy base and creeps on - on the dock, square, 28 mm from the
+  taught pose, hands off. Contacts and the first charge are next.
 - **It has been through the house** (2026-10-04, as the trike): dining
   room to kitchen doorway, ~12-14 m, in camera-checked legs.
 - **Sensors:** TFMini forward LiDAR (obstacle stop at 50 cm), two TCRT5000

@@ -554,7 +554,20 @@ reads it as no floor, so the firmware refused the last creeps, as it
 should. Fix for next time: white tape on the base where the cliff
 sensors pass. The creep now reports a cliff instead of grinding, and
 lengthens after a stall (the ramp lip needs more than a 0.12 s nudge).
-Grover was left on the dock, nose at the tower.
+
+**Run C, base taped white where the sensors pass: docked.** From the
+right end: waypoint 45 cm (two pulses), squared to 186.4; waypoint 20 cm
+(one pulse), squared to 186.8; four creeps - **28 mm from the taught
+pose, heading 188 against the base's 187**, on the dock, nose at the
+tower, about a minute, no human input. That is the dock approach done
+on the bench; what is left of Phase 2 is the contacts (plates printing,
+bolts and washers) and the first charge through them.
+
+![Docked: Grover on the Eufy base at the marker end after run C](images/32-docked-2026-10-24.jpg)
+
+**Claude-driven:** the overhead-only method, the taught pose, the
+routine. **Enoch-decided:** the white tape, the marker reprint with
+margins, every reposition, closing the garage door.
 
 **Claude-driven:** everything in the loops, the diagnoses (one wrong),
 the cap, the turn guards, the dock concept, shelving the Eufy. **Enoch-decided:** every

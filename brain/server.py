@@ -13,6 +13,7 @@ Tools:
     turn(degrees)       gyro-closed pivot on the ESP32 (2026-10-19 firmware)
     face(heading)       turn until the overhead camera sees that heading
     go_to(...)          drive to a marker or pixel target, closed on the overhead
+    dock                drive the dock's axis to the taught pose and creep on (2026-10-24)
     stop                immediate stop (no decel ramp)
 
 Safety here is a courtesy layer: the firmware's watchdog, disconnect-stop,
@@ -243,6 +244,21 @@ async def dock_approach(goal_marker: int = 0, final_marker: int = 1, final_stop_
     global _last_drive_end
     from brain.steer import dock_approach as _dock
     r = await _dock(goal_marker, final_marker, final_stop_mm)
+    _last_drive_end = time.monotonic()
+    return r
+
+
+@mcp.tool()
+async def dock() -> dict:
+    """Dock on the overhead alone: drive the dock's axis to the taught docked
+    pose (brain/dock_pose.json - re-teach by pushing Grover fully on by
+    hand and recording `locate`), squaring up at two waypoints, then creep
+    in with the obstacle guard relaxed until the overhead reads the pose or
+    Grover stops moving. The base must read as floor to the cliff sensors
+    (white tape on a black base). Check the lane first."""
+    global _last_drive_end
+    from brain.steer import dock as _dock
+    r = await _dock()
     _last_drive_end = time.monotonic()
     return r
 
