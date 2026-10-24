@@ -31,6 +31,9 @@ All from Enoch's inventory unless the Source column says otherwise.
 | L298N dual H-bridge | 1 | Motor driver | Inventory | Installed |
 | 18650 Li-ion cells | 3 (3S) | Power, 12.6 V full / ~9 V empty | Inventory | Installed; one weak set retired 09-29, one bad cell found 10-04 - charge the set together and full |
 | LM2596 buck, set to 5.2 V | 1 | 5 V for the ESP32 (VIN), the camera (spliced micro-USB) and the TFMini | Inventory | Installed. To do (10-24): 1N5822 Schottky in its output lead so USB can't back-feed it, buck raised to ~5.5 V - Enoch ordered a 30-pack ($5.99, his purchase, not budget), arriving 10-25 |
+| Copper foil tape, 1 in wide, conductive adhesive (1 roll) | 1 | Dock floor contact strips (two lanes on the dock plate) | Shopping list, ~$13 (1 in x 50 ft, Walmart listing) | Not yet ordered |
+| Pogo pins, P75 crown head, 10-pack (Adafruit 2429) | 1 | Chassis-side spring contacts under Grover, two per pole for current margin, housed in a printed carrier | Shopping list, $4.95 at Adafruit | Not yet ordered |
+| Panel-mount DC barrel jack 5.5/2.1 mm | 1 | Brick into the dock | Inventory if Enoch has one, else ~$1 | - |
 | 12.6 V 2 A CC/CV Li-ion charger brick (5.5/2.1 mm) | 1 | Dock supply (Phase 2); the Riden RD6018 in battery mode stands in for testing | Shopping list, ~$7 (Waveshare direct) if not in inventory | Not yet ordered |
 | Resistors 100k + 27k | 1 each | Battery divider into GPIO34 (x4.664, calibrated 10-03 against a meter) | Inventory | Installed |
 | Benewake TFMini (SparkFun SEN-14786) | 1 | Forward LiDAR: obstacle stop 50 cm, range for homing | Inventory | Installed on the printed bracket; direct GH1.25 lead, 5 V |
