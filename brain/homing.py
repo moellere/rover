@@ -48,6 +48,7 @@ MAX_PULSES = 20         # hard cap on drive pulses per run
 MAX_LOST = 3            # consecutive frames without the marker -> give up
 STUCK_PULSES = 3        # consecutive pulses with no measurable change -> stop (don't grind)
 STUCK_DEG = 0.5
+GYRO_PARALLAX_MM = 120.0  # camera-to-pivot-centre lever: bearing moves (1 + this/dist) deg per deg of turn
 STUCK_MM = 15.0
 
 
@@ -141,7 +142,7 @@ async def home_to_marker(marker_id: int = 0, camera: str = "rover",
             obs = (m.bearing_deg, m.distance_mm)
             no_change = prev_obs is not None and pulses > 0 and abs(obs[0] - prev_obs[0]) < STUCK_DEG and \
                 (obs[1] is None or prev_obs[1] is None or abs(obs[1] - prev_obs[1]) < STUCK_MM)
-            pivot_maxed = prev_dir is None or pivot_s[prev_dir] >= PIVOT_MAX_S
+            pivot_maxed = prev_dir is None or prev_dir == "turn" or pivot_s[prev_dir] >= PIVOT_MAX_S
             if no_change and pivot_maxed:
                 stuck += 1
                 if stuck >= STUCK_PULSES:
@@ -171,7 +172,20 @@ async def home_to_marker(marker_id: int = 0, camera: str = "rover",
                 return HomingResult(False, f"obstacle ahead at {st.front_range_cm:.0f} cm", pulses,
                                     m.bearing_deg, m.distance_mm, log)
 
-            if abs(m.bearing_deg) > CENTER_DEG:
+            if abs(m.bearing_deg) > CENTER_DEG and st.yaw_deg is not None:
+                # Gyro-closed centring (tank, 2026-10-24): a timed pivot pulse
+                # on tracks is ~25 deg at its shortest, so the loop hunted
+                # left-right for 12 pulses. `turn` lands small angles; the
+                # camera sits ~10 cm ahead of the pivot centre, so close to the
+                # marker a chassis turn moves the bearing by more than itself
+                # (x1.7 at 20 cm) - scale the request down with distance.
+                gain = 1.0 / (1.0 + GYRO_PARALLAX_MM / m.distance_mm) if m.distance_mm else 0.7
+                deg = -m.bearing_deg * gain          # + bearing = marker right = turn right = negative yaw
+                prev_bearing = m.bearing_deg
+                prev_dir = "turn"
+                await client.turn(deg, 0)
+                log[-1]["pulse"] = f"turn {deg:+.0f}"
+            elif abs(m.bearing_deg) > CENTER_DEG:
                 # + bearing = marker is right of centre -> pivot right
                 direction = "right" if m.bearing_deg > 0 else "left"
                 # Adapt the pulse per direction: stiction means short pulses

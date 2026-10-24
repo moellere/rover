@@ -303,6 +303,18 @@ loop's short steps start at 60 cm, not 35 - a 0.3 s pulse at 80 % covers
 
 ![End of the chained approach: Grover's own camera, nose-on the upright marker](images/12-dock-approach-nose-on-2026-10-24.jpg)
 
+**Run 3.** Overhead leg clean with the fixes: one 1 s pulse to 36 cm, no
+stale frame. Onboard leg exposed the tank's other quirk: the homing
+loop's shortest timed pivot (0.1 s at 90 %) swings ~25 deg, so it hunted
+-7, +15, -12, +17 ... for twelve pulses and never centred. Test by hand:
+`turn(+19)` then `turn(-12.6)` centred the marker in two moves (camera
+bearing -19 -> +12.6 -> -0.3; the camera sits ~10 cm ahead of the pivot
+centre, so at 20 cm a chassis turn moves the bearing 1.7x). The homing
+loop now centres with gyro turns, scaled down by distance for that
+parallax, when the gyro is reporting. From there `home_to_marker` took
+one 0.1 s step and reported **arrived (marker filled the frame)** from
+21 cm. Printer bed marked clear on Enoch's "printer bed is clear".
+
 
 **Claude-driven:** the test sequence, the clipping hypothesis and its
 rejection, the scale slider, the steering loop, the reprint. **Enoch-
