@@ -380,8 +380,18 @@ buck; fix is a Schottky (SS34 class) in the buck's output lead and the
 buck raised to ~5.5 V, which also makes USB flashing with the pack on
 safe.
 
+**The dock will be the Eufy's base.** Enoch's suggestion: a vacuum
+charging base comes with sprung contact plates, a lead-in, a barrel
+jack and a back wall for the marker - the hard parts solved - and he
+offered either a replacement base from Amazon or the Eufy's own. My
+call: the Eufy's, unmodified, fed 12.6 V from the brick; the Eufy itself
+is shelved as a chassis (intact, so it can return), not abandoned. Grover
+needs a printed contact carrier under the chassis to match the base's
+plates. The Eufy IR test he offered is passed up: the hour-encoding hold
+stands and nothing here needs it.
+
 **Claude-driven:** everything in the loops, the diagnoses (one wrong),
-the cap, the turn guards, the dock concept. **Enoch-decided:** every
+the cap, the turn guards, the dock concept, shelving the Eufy. **Enoch-decided:** every
 reposition, the pack swap, the edge call, the "is it flat?" question,
 the rail fix, the charge test.
 

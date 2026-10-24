@@ -67,7 +67,7 @@ and comes first.
 | # | Item | Needs | Notes |
 |---|---|---|---|
 | 2.0 | Charge path | BMS pack | **verified 2026-10-24**: 12.6 V CC/CV into the BMS output terminals charges the pack (0.83 A tapering on the RD6018 in battery mode). The dock only has to present CC/CV 12.6 V; nothing is added on Grover |
-| 2.1 | Dock design | 3D print | a wedge the rover drives into, marker on its face, contacts at the end of travel |
+| 2.1 | Dock | the Eufy RoboVac 12's charging base (decided 2026-10-24, Claude's call, Enoch's offer) | reuse the base as-is, fed 12.6 V CC/CV from a brick instead of the Eufy adapter; the upright marker on its back wall. Grover's side: a printed carrier under the chassis with two contacts at the base's plate spacing/height, wired to the BMS terminals. Needs the base measured (plate spacing, width, contact height) and confirmed passive. Fallback: a $20-class replacement vacuum base from Amazon |
 | 2.2 | Charge contacts | pogo pins or copper strips (~$5-10 budget) | on the rover's nose and the dock |
 | 2.3 | 3S charger + protection | protection half **ordered 2026-09-29** (3S 40A BMS, see BOM); still needs a 12.6 V CC/CV charger for in-place charging | charging the pack in place, safely - the one piece of this project with real fire risk; design reviewed with Enoch before anything is wired |
 | 2.4 | Auto-dock | 1.4, 2.1-2.3 | return-to-dock when `battery_voltage` drops below a threshold; confirm charging via voltage rise |

@@ -58,6 +58,13 @@ Orion board is *not* used - an ESP + ESPHome stays. (Rebuild pending
 Enoch; until then Grover is the trike minus its rear support, and cannot
 drive.)
 
+## The Eufy (decided 2026-10-24, Claude's call on Enoch's offer)
+
+The Eufy RoboVac 12 is **shelved as a chassis**, intact and unmodified;
+its charging base is Grover's dock (Phase 2), fed 12.6 V CC/CV from a
+brick instead of the Eufy adapter. The IR hold below still applies if
+it is ever driven again. `blackcam` stays a dedicated device.
+
 ## Homing runs need a clear lane
 
 The TFMini guard stops for things **straight ahead** above ~5 cm, but its
