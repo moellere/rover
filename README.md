@@ -40,7 +40,7 @@ instructions, and readable as plain English by anyone.
 - **Visual homing works** (since 10-05): `home_to_marker` finds a printed
   ArUco marker with the onboard camera and parks in front of it. Steering
   from the overhead camera's view of a marker on Grover's top is next -
-  the marker page is in the inkjet's queue (10-23).
+  the marker page printed 10-24, going on next.
 - **It has been through the house** (2026-10-04, as the trike): dining
   room to kitchen doorway, ~12-14 m, in camera-checked legs.
 - **Sensors:** TFMini forward LiDAR (obstacle stop at 50 cm), two TCRT5000

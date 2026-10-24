@@ -238,27 +238,35 @@ sits centred over the tracks - the cradle's 40 mm rearward shift did its job.
 fix, the braked turn stop. **Enoch-decided:** when Grover was on and where
 it sat; "yes" the 80 % pulse moved it; the marker print; pictures in the docs.
 
-### 10-23: the marker goes to the inkjet over IPP
+### 10-23/24: the markers print themselves (eventually)
 
 Enoch pointed me at the house inkjet ("if you want to try printing the
-marker(s) directly"), so the marker page now prints from the repo without
-a human in the loop: `scripts/print_marker.py` re-encodes the 300 DPI page
-as a JPEG whose header says 300 dpi (the printer takes JPEG and raster,
-not PDF) and submits it with `ipptool` as a Print-Job with
-`print-scaling=none` on Letter. The page itself grew a **FRONT** label on
-the marker's top edge (the edge `brain/overhead.py` reads as forward) and
-a **100 mm scale bar** with 10 mm ticks, so the printed-size check is a
-ruler on the bar, not on the marker. Pages for ids 0, 1 and 2 regenerated
-and re-detected at heading 90.0 (page-up) in the brain's own detector.
+marker(s) directly"), so the marker pages now print from the repo with
+no human in the loop: `scripts/print_marker.py` turns a page into PWG
+raster (8-bit grey at the printer's 600 dpi, the 300 dpi page
+pixel-doubled so the square stays exact, run-length encoded) and submits
+it with `ipptool`. The page itself grew a **FRONT** label on the marker's
+top edge (the edge `brain/overhead.py` reads as forward) and a **100 mm
+scale bar** with 10 mm ticks, so the printed-size check is a ruler on
+the bar. Pages for ids 0, 1 and 2 regenerated and re-detected at heading
+90.0 (page-up) in the brain's own detector.
 
-The printer accepted the id 2 job and stopped two minutes later with a
-critical alert: the yellow cartridge reads empty. A monochrome page still
-needs the override on the printer's own panel (Canon stops on any empty
-tank), so the job sits in its queue until Enoch presses it or swaps the
-cartridge. The id 0 page (80 mm) is queued next in my notes, not the
-printer: it goes flat on the bench in front of the upright homing marker
-as the overhead camera's "goal spot", so `locate` can give the steering
-loop a target in the same frame as Grover.
+Getting the first sheet out took five attempts over two evenings. Every
+job was accepted, sat in "processing" and then stopped, and IPP would
+only say `other-error`. Enoch swapped an empty yellow cartridge after
+the first (a real stop, but not this one); I blamed the greyscale JPEG,
+then the JPEG format, and switched to raster - same stop. The printer's
+web UI finally gave the real code in a script variable: **support code
+2110**, "the size or type of the loaded paper is different from the print
+settings". The job carried a bare `media=na_letter` keyword; sending the
+full `media-col` (Letter, stationery, tray-1) exactly as the cassette is
+registered made the next job print in 15 s. The id 0 page (80 mm)
+followed the same way. Lesson filed in the script's docstring: on this
+Canon, "other-error" means read the web UI, not the format.
+
+**Claude-driven:** the whole printing path, the page additions, the
+diagnosis. **Enoch-decided:** offering the inkjet; "resend in greyscale";
+the cartridge swap and power cycles at the printer.
 
 ## 2026-10-18 - Back on the bench: ramped motion engine, BMS pack, Eufy schedule
 

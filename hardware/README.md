@@ -26,8 +26,9 @@ ticks, and with `--front` a FRONT label on the top edge (what
 id 1 160 mm (homing targets), id 2 60 mm FRONT-labelled (Grover's top).
 Print at 100 %, never fit-to-page, and check the scale bar with a ruler.
 `scripts/print_marker.py <page.png> --printer <host>` sends a page to an
-IPP inkjet at native size (needs `ipptool` from `cups-ipp-utils`; the
-address stays out of the repo).
+IPP inkjet at native size as PWG raster (needs `ipptool` from
+`cups-ipp-utils`; the address stays out of the repo). Ids 0 and 2
+printed this way 2026-10-24.
 
 ## Render
 
