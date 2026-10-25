@@ -49,7 +49,9 @@ instructions, and readable as plain English by anyone.
   10-24; ends 33 mm from the marker face). That was the goal set after Phase 1. **The dock approach works too
   (10-24 evening):** `dock` drives the axis of a taught docked pose on
   the Eufy base and creeps on - on the dock, square, 28 mm from the
-  taught pose, hands off. Contacts and the first charge are next.
+  taught pose, hands off. Next: the contacts (printed pad plates and
+  bars with 12 AWG Romex staples, lying across the base's sprung rollers)
+  and the first charge through them.
 - **It has been through the house** (2026-10-04, as the trike): dining
   room to kitchen doorway, ~12-14 m, in camera-checked legs.
 - **Sensors:** TFMini forward LiDAR (obstacle stop at 50 cm), two TCRT5000
