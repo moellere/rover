@@ -200,7 +200,7 @@ to the ring terminal, as before. The roller rolls across a 2 mm copper
 line instead of a 10 mm tape face; with a sprung chrome roller pressing
 on solid copper that is plenty of contact. Nothing else changed: 32 x 12
 x 5, head pocket, one per side, rotate on the bolt to lie across the
-roller. The staged v1 job was skipped and v2 staged in its place; the
+roller. The staged v1 job was skipped and v2 staged in its place (`aa75802255`, 12 min, 3 g); the
 plates from last night are still on the bed, so it prints when Enoch
 clears it and says start.
 
