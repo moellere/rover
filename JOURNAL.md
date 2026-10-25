@@ -182,6 +182,28 @@ notes after it carry the detail (a few were appended out of order).
 
 ---
 
+## 2026-10-25 - Camera mount v7: the foot never touched at the back
+
+*Model: Opus 5.5. Guidance: Enoch snapped the camera bracket by
+accident and asked for a reprint, with a look at the obtuse side of
+the angle where it meets the base ("it looks like there was a gap").*
+
+He was right, and it was in the design, not the print. The cradle is
+built flat and rotated 100 deg (90 + the 10 deg tilt) onto the base, so
+its flat foot tips with it: the front edge touched the base and the rear
+(obtuse) edge floated ~1.6 mm above it. The whole pedestal hung on a
+sliver at the front of the foot - the same joint v5 tore at in the fall.
+v7 hulls each side's foot slice down to its own footprint on the base (a
+solid wedge, nothing floating) and adds a gusset per rail on the obtuse
+side, 14 mm up the back face and 12 mm aft along the base. Base, bolt
+slots, cable slot and cradle are unchanged, so it drops onto the same
+perch. Printing as warden job `5c9aff1b7b` (PETG, ~1 h 29 m, 23.5 g),
+started on his "print when ready - bed is clear".
+
+**Claude-driven:** the diagnosis, the wedge + gusset fix.
+**Enoch-decided:** the reprint; where to look.
+
+
 ## 2026-10-25 - Contact bar v2: a Romex staple
 
 *Model: Claude Fable 5.1. Guidance: Enoch, "I don't have any copper

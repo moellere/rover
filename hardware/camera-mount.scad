@@ -116,8 +116,58 @@ module cradle_flat() {
   }
 }
 
+// v7 (2026-10-25): the 10-degree lean tips the cradle's flat foot, so only
+// its front edge met the base and the rear (obtuse) edge floated ~1.6 mm
+// above it - the joint was a sliver and v6 snapped there. Each side's foot
+// is now hulled down to its own footprint on the base (a solid wedge, no
+// gap), and a gusset per rail braces the back face to the base.
+gusset_h = 14;      // how far up the back face the gussets reach
+gusset_l = 12;      // how far aft of the foot they spread on the base
+
+module cradle_placed() {
+  translate([0, 0, base_t])
+    rotate([90 + tilt, 0, 0])
+      translate([0, usb_clear, 0])
+        children();
+}
+
+module footing() {
+  z0 = -(comp_back + wall);
+  for (s = [-1, 1]) {
+    // a 3 mm slice of the foot, from the plug gap out to the rail's outer face
+    x_in = usb_plug_w/2;
+    hull() {
+      cradle_placed()
+        translate([s > 0 ? x_in : -outer_w/2, -usb_clear, z0])
+          cube([outer_w/2 - x_in, 3, depth]);
+      translate([0, 0, base_t - 0.01]) linear_extrude(0.01)
+        projection() cradle_placed()
+          translate([s > 0 ? x_in : -outer_w/2, -usb_clear, z0])
+            cube([outer_w/2 - x_in, 3, depth]);
+    }
+  }
+}
+
+module gussets() {
+  // back face of the back plate, in base coordinates: y_aft(h) for height h
+  // above the base top; the ribs start just inside it and run aft and down
+  back_y = (comp_back + wall) * sin(90 + tilt);
+  for (s = [-1, 1])
+    translate([s > 0 ? outer_w/2 - wall : -outer_w/2, 0, 0])
+      hull() {
+        translate([0, back_y - 3, base_t]) cube([wall, gusset_l + 3, 0.01]);
+        translate([0, back_y - 2 - gusset_h * tan(tilt), base_t + gusset_h])
+          cube([wall, 1, 1]);
+      }
+}
+
 module mount() {
-  base();
+  difference() {
+    union() { base(); footing(); gussets(); }
+    // keep the cable pass-through open through the new material
+    hull() for (y = [3 - (cable_slot_l - cable_slot_w)/2, 3 + (cable_slot_l - cable_slot_w)/2])
+      translate([usb_x, y, -1]) cylinder(d=cable_slot_w, h=base_t+5);
+  }
   // Stand the cradle up: 90 deg about X points the board face along -Y
   // (forward) with the board length up +Z; more than 90 leans the top
   // forward so the lens looks DOWN by `tilt`. The pedestal foot (y = -usb_clear

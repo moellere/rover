@@ -38,8 +38,8 @@ All from Enoch's inventory unless the Source column says otherwise.
 | Benewake TFMini (SparkFun SEN-14786) | 1 | Forward LiDAR: obstacle stop 50 cm, range for homing | Inventory | Installed on the printed bracket; direct GH1.25 lead, 5 V |
 | GH1.25-to-Dupont lead (kit B087N4GY8Z) | 1 | TFMini direct connection (replaced the Qwiic boost chain and LD33V) | $0.40 prorated (budget) | Installed |
 | TCRT5000 cliff modules (HW-870) | 2 | Front cliff detection, DO at 3.3 V | Enoch's purchase (not budget) | Installed on v4 mounts |
-| TTGO T-Camera (`redcam`) | 1 | Rover camera | Inventory | Installed on camera mount v6 on the battery cradle's perch (2026-10-22) |
-| Printed parts (PETG): battery cradle v3, camera mount v6, TFMini bracket, cliff mounts v4 (L+R) | - | see `hardware/README.md` | $0 | Installed on the tank (2026-10-19..22); camera-mount v5 and the adapter strip retired |
+| TTGO T-Camera (`redcam`) | 1 | Rover camera | Inventory | On the battery cradle's perch; mount v6 snapped 2026-10-25, v7 printing |
+| Printed parts (PETG): battery cradle v3, camera mount v7 (printing 10-25; v6 snapped), TFMini bracket, cliff mounts v4 (L+R) | - | see `hardware/README.md` | $0 | Installed on the tank (2026-10-19..22); camera-mount v5 and the adapter strip retired |
 | Printed caster skid (`hardware/caster-skid.scad`) + M5 bolt 25-30 mm + nut | 1 | Replaced the swivel caster on the trike | $0 | Printed and fitted 10-18, lost in the fall; superseded |
 | 3S BMS 40A board (1 of a 3-pack, B0G6JQ8ZFN) | 1 | Per-cell protection + balancing | $2.89 prorated (budget) | Soldered to a new 3x18650 holder 2026-10-18 (Enoch); in the printed cradle on the deck posts since 2026-10-22 |
 | Bench cameras: `camv3` (Thingino), `benchcam` (Wyze Pan v2, Thingino PTZ; was `fishcam` until 2026-10-24) | 2 | Watch the bench from behind and head-on | Inventory | Installed |

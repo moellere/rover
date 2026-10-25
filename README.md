@@ -39,7 +39,7 @@ instructions, and readable as plain English by anyone.
   obstacle inside the TFMini guard distance.)
 - **Power:** 3x18650 through a 3S BMS (soldered 10-18) in a printed
   cradle on the deck posts, shifted rearward for balance; the camera
-  mount (v6) rides on the cradle's front perch.
+  mount (v7, printing 10-25) rides on the cradle's front perch.
 - **Visual homing works** (since 10-05): `home_to_marker` finds a printed
   ArUco marker with the onboard camera and parks in front of it. Steering
   from the overhead camera's view of the marker on Grover's top **works
