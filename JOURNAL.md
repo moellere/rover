@@ -182,6 +182,36 @@ notes after it carry the detail (a few were appended out of order).
 
 ---
 
+## 2026-10-25 - Contact bar v2: a Romex staple
+
+*Model: Claude Fable 5.1. Guidance: Enoch, "I don't have any copper
+tape" ... "I'll use romex".*
+
+The contact bar's copper tape face (designed last night) fell at the
+first question: there is none in the house. Offered three substitutes -
+a copper-clad PCB offcut, a 1 inch fender washer under the bolt head, or
+a staple of bare 12 AWG solid copper from Romex ground wire in the
+printed bar - and Enoch picked the Romex. `hardware/dock-pad-bar.scad`
+v2: the wire lies in a 1 mm groove along the underside so it stands
+~1 mm proud and is the lowest point under the deck, turns up through
+3 mm holes at +/-13 mm, runs in a top groove back to the centre and both
+legs wrap the M4's shank under the nut, so the bolt is the conductor up
+to the ring terminal, as before. The roller rolls across a 2 mm copper
+line instead of a 10 mm tape face; with a sprung chrome roller pressing
+on solid copper that is plenty of contact. Nothing else changed: 32 x 12
+x 5, head pocket, one per side, rotate on the bolt to lie across the
+roller. The staged v1 job was skipped and v2 staged in its place; the
+plates from last night are still on the bed, so it prints when Enoch
+clears it and says start.
+
+The BOM loses the copper tape and the pogo pins: the Eufy base's sprung
+rollers are the spring side, the staples are the pad side, and both come
+from inventory.
+
+**Claude-driven:** the three substitutes, the v2 geometry.
+**Enoch-decided:** Romex.
+
+
 ## 2026-10-24 - Markers on, and the gyro was lying by a quarter
 
 **Model:** Claude Fable 5.1 (same session, continued).
@@ -570,8 +600,8 @@ with the contacts" - the rollers sit at the cliff mounts' edges, partly
 under a foot on one side, and the lateral landing scatters a centimetre
 or two run to run. His fix, adopted: a contact **bar across the roller**
 instead of a bolt head - `hardware/dock-pad-bar.scad`, 32 x 12 x 5 mm on
-the pad plate's M4 with the head pocketed into its underside and copper
-tape over the face, rotated to lie across the roller.
+the pad plate's M4 with the head pocketed into its underside, rotated to
+lie across the roller. (v1 wanted copper tape over the face; see 10-25.)
 
 ![Under the deck after run C, left: the roller at the cliff mount's edge](images/33-docked-roller-left-2026-10-24.jpg)
 ![Right side: the roller between the cliff mount's foot and the track](images/34-docked-roller-right-2026-10-24.jpg)
