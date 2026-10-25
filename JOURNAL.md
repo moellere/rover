@@ -208,8 +208,18 @@ The BOM loses the copper tape and the pogo pins: the Eufy base's sprung
 rollers are the spring side, the staples are the pad side, and both come
 from inventory.
 
+Later Enoch checked the base itself: with the bench supply on its jack
+in the LiPo-charger configuration (12.6 V CC/CV) **the base passes the
+adapter voltage straight through to the rollers**, and its indicator
+LED lights at 12 V and at 12.65 V. So there is no handshake, timer or
+dropper in the base to work around: the rollers are live at the brick's
+voltage whenever it is plugged in, and the BMS on Grover sees exactly
+what the bench supply gave it on 10-24. What is still to establish
+before the first charge is which roller is + (looking at the tower),
+so the ring terminals go to the right BMS terminals.
+
 **Claude-driven:** the three substitutes, the v2 geometry.
-**Enoch-decided:** Romex.
+**Enoch-decided:** Romex; the base pass-through check.
 
 
 ## 2026-10-24 - Markers on, and the gyro was lying by a quarter
