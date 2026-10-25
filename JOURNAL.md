@@ -218,8 +218,14 @@ what the bench supply gave it on 10-24. What is still to establish
 before the first charge is which roller is + (looking at the tower),
 so the ring terminals go to the right BMS terminals.
 
+Polarity, from Enoch the same day: **looking at the tower, the left
+roller is + and the right roller is ground (-)**. Grover docks nose-in,
+facing the tower, so its left pad bar goes to pack + (the 12.6 V pad)
+and its right pad bar to P- (where 10-24's charge went in). Mark the
+left bar's ring terminal red before it goes on.
+
 **Claude-driven:** the three substitutes, the v2 geometry.
-**Enoch-decided:** Romex; the base pass-through check.
+**Enoch-decided:** Romex; the base pass-through check and polarity.
 
 
 ## 2026-10-24 - Markers on, and the gyro was lying by a quarter
