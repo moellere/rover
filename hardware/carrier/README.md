@@ -109,10 +109,14 @@ and speed on a PWM EN pin; the DRV8871 takes PWM on IN1 (forward) or IN2
 ### The base board (Enoch, 2026-10-26)
 
 **v1 base = the Freenove Universal Breakout Board, FNK0101** (Amazon B0DT48T7CB,
-Enoch has one; spec sheet ~90 x 25 x 125 mm, read as a ~125 x 90 mm board ~25 mm
-tall - unconfirmed, may be packaging; **bigger than the 64 x 96 mm post rectangle**,
-so it suits the hinged plate above the battery rather than the breadboard's spot
-between the posts): screw terminal per pin, a status LED per GPIO, switchable 5 V / 3.3 V
+Enoch has one). **Freenove's size diagram (10-26): board 87.63 x 83.19 mm, four
+corner holes at 81 x 77 mm centres** (~3.3 mm in from the edges; diameter not
+given - looks M3, to be calipered with the spacing before slicing). Devkit
+sockets down the centre with eight LED driver chips between the rows; screw
+terminals along both long edges; power jack, three regulator caps and the rail
+jumpers on one short edge. 83 mm wide does not fit between the posts (64 mm) -
+**it goes on the hinged plate above the battery**, power-jack edge to the rear,
+terminal edges left/right: screw terminal per pin, a status LED per GPIO, switchable 5 V / 3.3 V
 rails; fits ESP32 / Pico / Nano. Screw terminals don't shake loose (better than
 Dupont for the cliff lines), and the pin LEDs make debugging visible. Checks
 before it carries Grover:
@@ -127,7 +131,7 @@ before it carries Grover:
    held over an edge, `front_left_cliff` must go true. Unbuffered -> cut or
    disable the LEDs on the cliff pins.
 2. **Does the 38-pin WROOM-32D devkit fit its socket?**
-3. Outline and mounting holes, for the plate (shield + half breadboard).
+3. Mounting-hole diameter, and the 81 x 77 spacing confirmed with calipers.
 
 ## Open questions for Enoch
 
@@ -139,5 +143,5 @@ before it carries Grover:
 4. **Height under the cradle:** is 30 mm the clear height, or is something else
    (breadboard, wiring) taking space there today?
 5. **The expansion shield:** two jumper-selected V rails (answered). Still
-   needed: its outline and mounting holes.
+   needed: hole diameter (diagram gives the 81 x 77 mm spacing).
 6. **Battery low + hinged electronics plate**, or battery on top as now?
