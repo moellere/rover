@@ -110,8 +110,8 @@ and speed on a PWM EN pin; the DRV8871 takes PWM on IN1 (forward) or IN2
 
 **v1 base = the Freenove Universal Breakout Board, FNK0101** (Amazon B0DT48T7CB,
 Enoch has one). **Freenove's size diagram (10-26): board 87.63 x 83.19 mm, four
-corner holes at 81 x 77 mm centres** (~3.3 mm in from the edges; diameter not
-given - looks M3, to be calipered with the spacing before slicing). Devkit
+corner holes at 81 x 77 mm centres**, **3.4 mm (M3)** (Enoch, from Freenove's
+design notes; ~3.3 mm in from the edges). Spacing to be calipered before slicing. Devkit
 sockets down the centre with eight LED driver chips between the rows; screw
 terminals along both long edges; power jack, three regulator caps and the rail
 jumpers on one short edge. 83 mm wide does not fit between the posts (64 mm) -
@@ -121,9 +121,11 @@ rails; fits ESP32 / Pico / Nano. Screw terminals don't shake loose (better than
 Dupont for the cliff lines), and the pin LEDs make debugging visible. Checks
 before it carries Grover:
 
-1. **Are the status LEDs buffered?** *Per Freenove's product info (Enoch, 10-26):
-   yes, dedicated driver chips isolate them from the GPIOs - so the edge test below
-   is now a confirmation, not a discovery.* The cliff modules signal "cliff" as a HIGH
+1. **Are the status LEDs buffered?** *Yes - Freenove's design explanation
+   (docs.freenove.com, fnk0101 "Design Explanation"): each pin feeds a buffer, no
+   pull-up/down, so nothing loads the GPIO (fine for the GPIO34 ADC and the I2C
+   lines too). An LED flickers on a floating pin - expected, not a fault. The edge
+   test below is now a confirmation.* The cliff modules signal "cliff" as a HIGH
    pulled up through ~10 k; an unbuffered LED to ground on that pin would sag it to
    ~2 V, under the ESP32's ~2.5 V threshold - the pin would read "floor" at a real
    edge and the cliff guard would silently die. Look for a transistor/driver by the
@@ -131,7 +133,7 @@ before it carries Grover:
    held over an edge, `front_left_cliff` must go true. Unbuffered -> cut or
    disable the LEDs on the cliff pins.
 2. **Does the 38-pin WROOM-32D devkit fit its socket?**
-3. Mounting-hole diameter, and the 81 x 77 spacing confirmed with calipers.
+3. The 81 x 77 mm hole spacing confirmed with calipers (holes are 3.4 mm).
 
 ## Open questions for Enoch
 
@@ -143,5 +145,5 @@ before it carries Grover:
 4. **Height under the cradle:** is 30 mm the clear height, or is something else
    (breadboard, wiring) taking space there today?
 5. **The expansion shield:** two jumper-selected V rails (answered). Still
-   needed: hole diameter (diagram gives the 81 x 77 mm spacing).
+   needed: nothing but the caliper check of the 81 x 77 spacing.
 6. **Battery low + hinged electronics plate**, or battery on top as now?
