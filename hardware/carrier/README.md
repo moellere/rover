@@ -86,6 +86,25 @@ and speed on a PWM EN pin; the DRV8871 takes PWM on IN1 (forward) or IN2
   Dupont acceptable elsewhere. 3-pin G-V-S per single-GPIO device, 4-pin
   G-V-SDA-SCL per I2C device.
 
+### Follow-up (same day)
+
+- **Shield + half breadboard on one printed plate** (Enoch): passives (LED
+  resistor and cap, battery divider, anything experimental) live on the
+  breadboard; jumpers to the shield. Needs the shield's outline/holes and the
+  half breadboard measured (nominally ~82 x 55 mm).
+- **The shield has two V rails, jumper-selected** (Enoch). His convention: 3.3 V
+  on the devkit's 3V3-pin side, 5 V on its 5V-pin side. Proposed pin swap so each
+  device sits on the rail it needs (firmware pins only; confirm against a photo of
+  the devkit's labels first - 38-pin boards differ):
+  - 3V3 side: cliffs 35 / 32 / 33 / 13, **gyro -> GPIO25/26**, battery 34
+  - 5V side: **TFMini -> GPIO21/16**, LED data 4, motors 22/23 + 19/18
+  - frees GPIO5 (strapping) entirely.
+- **GPIO expander:** not for anything safety-related, ever - the 10-03 MCP23008
+  wedge froze motor direction and cliff inputs. 14 pins in use once the rear
+  cliffs are in, ~4 spare (27, 14, 17, 5); new sensors go on I2C first (INA219 costs
+  no pins); an expander, if it comes, carries only non-critical inputs (bumpers,
+  buttons).
+
 ## Open questions for Enoch
 
 1. **Cliff module supply:** 3V3 (as drafted) or 5 V today? At 5 V their outputs
@@ -95,6 +114,7 @@ and speed on a PWM EN pin; the DRV8871 takes PWM on IN1 (forward) or IN2
 3. **Connector family:** do your crimp kits match 2.54 mm headers?
 4. **Height under the cradle:** is 30 mm the clear height, or is something else
    (breadboard, wiring) taking space there today?
-5. **The expansion shield:** a photo front and back - what its V jumper does, and
-   whether it has a DC jack / regulator.
+5. **The expansion shield:** two jumper-selected V rails (answered). Still
+   needed: its outline and mounting holes, and a photo of the devkit's pin
+   labels to confirm which side carries 3V3 and which 5V.
 6. **Battery low + hinged electronics plate**, or battery on top as now?
