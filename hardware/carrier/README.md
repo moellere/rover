@@ -108,8 +108,11 @@ and speed on a PWM EN pin; the DRV8871 takes PWM on IN1 (forward) or IN2
 
 ### The base board (Enoch, 2026-10-26)
 
-**v1 base = the Freenove Universal Breakout Board** (Amazon B0DT48T7CB, Enoch
-has one): screw terminal per pin, a status LED per GPIO, switchable 5 V / 3.3 V
+**v1 base = the Freenove Universal Breakout Board, FNK0101** (Amazon B0DT48T7CB,
+Enoch has one; spec sheet ~90 x 25 x 125 mm, read as a ~125 x 90 mm board ~25 mm
+tall - unconfirmed, may be packaging; **bigger than the 64 x 96 mm post rectangle**,
+so it suits the hinged plate above the battery rather than the breadboard's spot
+between the posts): screw terminal per pin, a status LED per GPIO, switchable 5 V / 3.3 V
 rails; fits ESP32 / Pico / Nano. Screw terminals don't shake loose (better than
 Dupont for the cliff lines), and the pin LEDs make debugging visible. Checks
 before it carries Grover:
