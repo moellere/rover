@@ -238,7 +238,12 @@ Then 11.98 and 12.00 V and flattening. Heat check at ~5 min (Enoch):
 nothing excessive on the diode or the BMS. The brick's LED shows
 **green** throughout - probably because the diode hides the pack's
 voltage from the brick's battery detection, so the LED can't be trusted
-on this wiring; an unplug test (resting vs. charging voltage) is next.
+on this wiring. Unplug test: the reading (a 25 s rolling average) fell
+12.00 -> 11.95 -> 11.87 V and still falling with the brick out, versus
+11.53 V before docking - the brick was holding the rail up, so the pack
+**was** charging and the green LED is just the brick not seeing the
+pack behind the diode. Charge state comes from `battery_voltage` (and a
+brief unplug for a resting reading), not the LED.
 rover32 rebooted once when the leads went on (uptime reset), harmless.
 
 **Claude-driven:** the charge-lead diode, the check order.
