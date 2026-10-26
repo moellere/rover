@@ -214,6 +214,10 @@ resting on top of the black roller, the white tape still under the
 cliff sensors. Next check before any wiring to the BMS: the brick on the
 base, meter across the two staple leads on Grover's side (expect ~12.6 V,
 left +), then rock the chassis to see it holds.
+Enoch: **12.47 V at Grover's terminals** with the TalentCell brick on the
+base - the whole path (brick, base, rollers, staples) conducts. 12.47 V
+is the brick's own CV (4.16 V/cell); behind the proposed diode the pack
+would stop near 12.0 V (~4.0 V/cell, ~75-80 % full).
 
 **Claude-driven:** the charge-lead diode, the check order.
 **Enoch-decided:** (pending his OK); the pad-bar fit.
