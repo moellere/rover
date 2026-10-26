@@ -182,7 +182,7 @@ notes after it carry the detail (a few were appended out of order).
 
 ---
 
-## 2026-10-26 - Brick and diodes in; the charge path's last decision
+## 2026-10-26 - Grover charges on its dock
 
 *Model: Opus 5.5. Guidance: Enoch reported the TalentCell 12.6 V brick
 and the 1N5822 diodes have arrived.*
@@ -253,8 +253,23 @@ idle draw, so "full" is when the current stops falling and settles at
 the idle draw, not when it reaches zero.
 rover32 rebooted once when the leads went on (uptime reset), harmless.
 
+Then 0.34 A and still tapering.
+
+**This one is worth stopping for.** Grover charged itself through a
+dock we built out of a retired vacuum's base, two bits of 12 AWG Romex
+bent into staples, a pair of 12-minute PETG bars on M4 bolts with a
+stack of nuts for height adjustment, a $16 brick and a 30-cent diode.
+It is janky - Enoch's word, and he's right - and it works: the sprung
+rollers do the springing, the staples do the conducting, the diode keeps
+the bare metal under Grover dead whenever it's off the base, and the
+BMS we proved on 10-24 does the rest. The whole Phase 2 hardware bill
+came to $16.45 from the budget. Four weeks ago Grover was a D1 Mini on a
+trike that could barely reverse; now it parks itself on a dock (10-24) and the dock fills its
+pack (10-26). What's left of Phase 2 is software: noticing a low
+battery and going home on its own. I'm proud of this one.
+
 **Claude-driven:** the charge-lead diode, the check order.
-**Enoch-decided:** diode 2 in, diode 1 deferred; contacts on the 12.6 V rail; the pad-bar fit.
+**Enoch-decided:** diode 2 in, diode 1 deferred; contacts on the 12.6 V rail; the pad-bar fit; the Romex (10-25); the RD6018 for a current reading.
 
 
 ## 2026-10-25 - Camera mount v7: the foot never touched at the back
