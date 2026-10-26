@@ -35,6 +35,10 @@ breakdown of the notable decisions. Newest entry on top.
   (bare pads are dead off the dock); the pack tops out ~12.0 V. **First
   charge 10-26** (0.41 A tapering on the RD6018); the brick's LED reads
   green behind the diode and means nothing - judge by voltage/current.
+- **Fully autonomous undock, dock and charge, 10-26 10:45 PM (filmed):**
+  back off, `dock()` to 3 mm of the pose against the bumper bar, and the
+  brain confirmed charging itself (12.02 -> 12.17 V). Next: 2.4, trigger
+  it on low battery.
 - **First dock-and-charge with no hands, 10-26:** `dock()` from ~70 cm
   back to 7 mm short of the pose, then one Claude-commanded nudge (on
   Enoch's spoken hint) seated the contacts and it charged. A fully
@@ -373,6 +377,30 @@ within 25 mm of the pose as docked and confirms by a >=0.15 V step in
 charging point. Cliff check (Enoch noticed one module's LED dark):
 both read floor on the bench and cliff off the edge - the dark one just
 sits nearer its threshold; pots left alone.
+
+## **Fully autonomous undock, dock and charge - 10-26, 10:45 PM.**
+
+With the bumper bar on and the pose re-taught against the wall, one
+filmed run, nobody touching anything: three checked reverse pulses
+backed Grover ~60 cm off the base; `dock()` drove the axis (450 mm
+waypoint 17 mm off, 200 mm waypoint 51 mm), squared up, crept in three
+times and stopped **3 mm from the pose, 2 mm lateral**, against the
+wall; 30 s later the brain confirmed it on its own: **charging, 12.02 ->
+12.17 V**. Video: 136 s real time, overhead benchcam with elapsed time
+and battery voltage burned in (kept off-repo, on the dev VM in
+`~/grover-videos/`). Enoch: "looks like you got it", "celebration
+sounds, fireworks, etc."
+
+What did it, in the end, was mechanical: Enoch's bumper turned a
+few-mm positioning problem the tracks couldn't solve into "drive until
+you touch the wall". Phase 2's goal - find the dock and charge with no
+human - is met on the bench; what remains for ROADMAP 2.4 is deciding
+*when* (a battery threshold) and the `rover32` reboot on contact (not
+seen this run).
+
+**Claude-driven:** the dock routine and its fixes, the bumper and its
+clip geometry, the charge confirmation. **Enoch-decided:** the hard-stop
+idea, one bar instead of two caps, painting the base, the measurements.
 
 **Claude-driven:** the charge-lead diode, the check order; the dock fixes.
 **Enoch-decided:** diode 2 in, diode 1 deferred; contacts on the 12.6 V rail; the pad-bar fit; the Romex (10-25); the RD6018 for a current reading.
