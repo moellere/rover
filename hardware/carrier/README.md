@@ -135,6 +135,28 @@ before it carries Grover:
 2. **Does the 38-pin WROOM-32D devkit fit its socket?**
 3. ~~Hole spacing~~ - confirmed 81 x 77 mm, 3.4 mm holes (Enoch, 10-26).
 
+### Layout decided (Enoch: "either works - reuse the battery tray, just moving it down", 10-26)
+
+Bottom to top:
+
+1. **Deck:** printed driver tray (2x DRV8871, LM2596) + **battery cradle v3
+   lowered onto the deck** (its proven pack fit unchanged), replacing the L298N
+   and the breadboard. Pack slides out the rear.
+2. **The four 30 mm standoff posts** (64 x 96 mm, M4) stay, now spanning the battery.
+3. **Hinged electronics plate** at the cradle's current height: FNK0101 on its
+   81 x 77 mm M3 holes (power jack to the rear) + the half breadboard (82 x 54) in a
+   pocket; **hinge on the two rear posts** (printed blocks on the post tops, M3 pin
+   across), front edge resting on the front posts with M4 thumb screws; **a front
+   perch for the camera mount** with the same +/-24 mm slots, so the camera keeps
+   its height and view (homing and docking are tuned to it).
+
+Footprint: board + breadboard need ~88 x 140 mm vs 64 x 96 mm between the posts,
+so the plate overhangs - sideways (over the tracks) or fore-aft (toward the camera
+mount). **Measurements needed before design:** deck length/width and track
+inboard edges; height of the tracks' top run above the deck; a top-down photo
+with the cradle off and the deck holes for the lowered cradle and driver tray,
+positions measured from a beam end.
+
 ## Open questions for Enoch
 
 1. **Cliff module supply:** 3V3 (as drafted) or 5 V today? At 5 V their outputs
@@ -146,4 +168,4 @@ before it carries Grover:
    (breadboard, wiring) taking space there today?
 5. **The expansion shield:** two jumper-selected V rails (answered). Still
    fully specified (spacing calipered 10-26).
-6. **Battery low + hinged electronics plate**, or battery on top as now?
+6. ~~Battery position~~ - decided: low (cradle v3 lowered), hinged plate above.
