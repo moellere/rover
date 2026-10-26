@@ -117,7 +117,9 @@ rails; fits ESP32 / Pico / Nano. Screw terminals don't shake loose (better than
 Dupont for the cliff lines), and the pin LEDs make debugging visible. Checks
 before it carries Grover:
 
-1. **Are the status LEDs buffered?** The cliff modules signal "cliff" as a HIGH
+1. **Are the status LEDs buffered?** *Per Freenove's product info (Enoch, 10-26):
+   yes, dedicated driver chips isolate them from the GPIOs - so the edge test below
+   is now a confirmation, not a discovery.* The cliff modules signal "cliff" as a HIGH
    pulled up through ~10 k; an unbuffered LED to ground on that pin would sag it to
    ~2 V, under the ESP32's ~2.5 V threshold - the pin would read "floor" at a real
    edge and the cliff guard would silently die. Look for a transistor/driver by the
