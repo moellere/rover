@@ -111,7 +111,7 @@ and speed on a PWM EN pin; the DRV8871 takes PWM on IN1 (forward) or IN2
 **v1 base = the Freenove Universal Breakout Board, FNK0101** (Amazon B0DT48T7CB,
 Enoch has one). **Freenove's size diagram (10-26): board 87.63 x 83.19 mm, four
 corner holes at 81 x 77 mm centres**, **3.4 mm (M3)** (Enoch, from Freenove's
-design notes; ~3.3 mm in from the edges). Spacing to be calipered before slicing. Devkit
+design notes; ~3.3 mm in from the edges). Spacing calipered and confirmed (Enoch, 10-26). Devkit
 sockets down the centre with eight LED driver chips between the rows; screw
 terminals along both long edges; power jack, three regulator caps and the rail
 jumpers on one short edge. 83 mm wide does not fit between the posts (64 mm) -
@@ -133,7 +133,7 @@ before it carries Grover:
    held over an edge, `front_left_cliff` must go true. Unbuffered -> cut or
    disable the LEDs on the cliff pins.
 2. **Does the 38-pin WROOM-32D devkit fit its socket?**
-3. The 81 x 77 mm hole spacing confirmed with calipers (holes are 3.4 mm).
+3. ~~Hole spacing~~ - confirmed 81 x 77 mm, 3.4 mm holes (Enoch, 10-26).
 
 ## Open questions for Enoch
 
@@ -145,5 +145,5 @@ before it carries Grover:
 4. **Height under the cradle:** is 30 mm the clear height, or is something else
    (breadboard, wiring) taking space there today?
 5. **The expansion shield:** two jumper-selected V rails (answered). Still
-   needed: nothing but the caliper check of the 81 x 77 spacing.
+   fully specified (spacing calipered 10-26).
 6. **Battery low + hinged electronics plate**, or battery on top as now?
