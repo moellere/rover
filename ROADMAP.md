@@ -105,6 +105,13 @@ is janky; these make docking work unattended:
    at the strip, 5 V from the buck. Data pin: **GPIO4** (reachable without lifting the board - Enoch; the only non-strapping pin of 15/0/4/2); chain GPIO4 -> 330 ohm -> left dot -> right dot -> 6-pixel strip (12 mm, 64 mm, adhesive; Enoch's). Parts (Enoch's drawer, 10-26): headlight =
    BTF-Lighting WS2812B single-pixel dots, **10 mm dia, 3 mm thick with LED**
    (pads on the back: Din top, Dout bottom, 5V right, gnd left); status = 10 mm wide 60/m strip, 6-8 pixels.
+6b. **Smart dock (candidate for Enoch's Raspberry Pi Pico 2 Ws, 10-26):** a
+   controller at the dock so it can be trusted unattended - a MOSFET switching
+   the brick's output to the rollers (live only when Grover is on the base and
+   asking), an INA219 reading charge current (true "charging" / "full", which
+   the brick's LED can't give behind the diode), a charge timeout and a
+   temperature cutoff, reporting over WiFi. Check ESPHome's RP2350 support
+   before choosing firmware; an ESP32-C3 is the fallback.
 7. Later: one perfboard for the electronics; a welded 3S pack instead of the
    spring holder (and 3S2P only if Phase 3 runtime demands it); ESP32-S3 camera
    consolidation (Freenove ESP32-S3 CAM) only when perception moves on board -

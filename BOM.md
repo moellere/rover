@@ -48,6 +48,15 @@ Retired: Wemos D1 Mini (now the bench IR test node `eufy-ir8266`), MCP23008
 expander, LD33V regulator (TFMini now on 5 V directly), the Qwiic adapter
 chain.
 
+## Inventory noted for later (Enoch's, not yet assigned)
+
+| Part | Qty | Possible use |
+|---|---|---|
+| Raspberry Pi Pico 2 W (RP2350, WiFi) | a couple | Smart-dock controller (ROADMAP 6b) |
+| 28BYJ-48 stepper + ULN2003 | several | `redcam` pan mount, Phase 3 dock search |
+| AI-Thinker ESP32-CAM | a couple | Spare cameras (too few free GPIOs to be the spinal cord) |
+| WS2812B dots / strips, TCRT5000 (10-pack spares) | many | Lights; rear cliff sensors |
+
 ## Candidates (researched, not ordered)
 
 | Part | Why | Price (checked 2026-10-26) | Status |
