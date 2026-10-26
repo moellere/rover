@@ -164,7 +164,7 @@ Bottom to top:
 
 **Chassis, from the kit manual** (Makeblock Starter Robot Kit, Monoprice 13959,
 Robot Tank build): two 0824-144 beams carry wheels and motors, joined by a short
-cross beam; the deck is a Makeblock **BaseBracket** on an 0824-128 beam; the kit's
+cross beam; the deck is a Makeblock **Base Bracket B** (part 14403, acrylic; CC BY 4.0 model on Sketchfab, 1ab39585739d4af393f190fd28d4fc33 - needs a login to download) on an 0824-128 beam; the kit's
 upper tier is a second BaseBracket on **M4 x 30 nylon studs** (six in the kit,
 four used: our "30 mm posts" at 64 x 96). Battery cradle v3 replaced that upper
 BaseBracket - so the redesign replaces the kit's second tier.
