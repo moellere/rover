@@ -162,12 +162,18 @@ Bottom to top:
    perch for the camera mount** with the same +/-24 mm slots, so the camera keeps
    its height and view (homing and docking are tuned to it).
 
+**Chassis, from the kit manual** (Makeblock Starter Robot Kit, Monoprice 13959,
+Robot Tank build): two 0824-144 beams carry wheels and motors, joined by a short
+cross beam; the deck is a Makeblock **BaseBracket** on an 0824-128 beam; the kit's
+upper tier is a second BaseBracket on **M4 x 30 nylon studs** (six in the kit,
+four used: our "30 mm posts" at 64 x 96). Battery cradle v3 replaced that upper
+BaseBracket - so the redesign replaces the kit's second tier.
+
 Footprint: board + breadboard need ~88 x 140 mm vs 64 x 96 mm between the posts,
 so the plate overhangs - sideways (over the tracks) or fore-aft (toward the camera
-mount). **Measurements needed before design:** deck length/width and track
-inboard edges; height of the tracks' top run above the deck; a top-down photo
-with the cradle off and the deck holes for the lowered cradle and driver tray,
-positions measured from a beam end.
+mount). **Measurements needed before design:** the BaseBracket's outline;
+the height from the deck's top surface to the tracks' top run; a top-down photo
+of the bare deck with a ruler (which holes the studs are in, which are free).
 
 ## Open questions for Enoch
 
