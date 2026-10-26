@@ -33,7 +33,7 @@ dot_d   = 10.0;  // measured (Enoch)
 dot_t   = 3.0;   // board + LED
 window  = 7.0;   // the 5050 LED is 5 mm square
 lip_t   = 1.2;
-pocket_clear = 2.0;   // pocket dia over dot_d. v1 +0.4 and v2 +1.4 (with a snap rim) were
+pocket_clear = 1.7;   // pocket dia over dot_d (11.7 mm). 10-26: 11.4 (v2) too tight, 12 and 13 (v3) slightly loose - glue holds them. v1 +0.4 and v2 +1.4 (with a snap rim) were
                       // both too tight: the pockets print as horizontal holes, which come out
                       // small and sag at the top. v3: 12 mm, teardrop top, no snap rim - the
                       // dot is held against the front lip by a dab of glue (Enoch, 10-26).
