@@ -378,7 +378,7 @@ charging point. Cliff check (Enoch noticed one module's LED dark):
 both read floor on the bench and cliff off the edge - the dark one just
 sits nearer its threshold; pots left alone.
 
-## **Fully autonomous undock, dock and charge - 10-26, 10:45 PM.**
+### Fully autonomous undock, dock and charge - 10:45 PM
 
 With the bumper bar on and the pose re-taught against the wall, one
 filmed run, nobody touching anything: three checked reverse pulses
