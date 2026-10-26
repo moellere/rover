@@ -105,7 +105,19 @@ is janky; these make docking work unattended:
    at the strip, 5 V from the buck. Data pin: **GPIO4** (reachable without lifting the board - Enoch; the only non-strapping pin of 15/0/4/2); chain GPIO4 -> 330 ohm -> left dot -> right dot -> 6-pixel strip (12 mm, 64 mm, adhesive; Enoch's). Parts (Enoch's drawer, 10-26): headlight =
    BTF-Lighting WS2812B single-pixel dots, **10 mm dia, 3 mm thick with LED**
    (pads on the back: Din top, Dout bottom, 5V right, gnd left); status = 10 mm wide 60/m strip, 6-8 pixels.
-6b. **Smart dock (candidate for Enoch's Raspberry Pi Pico 2 Ws, 10-26):** a
+6a'. **Carrier board for the electronics (decided 10-26, with Enoch: "almost
+   unmanageable today")** - with the DRV8871 swap, before more sensors and before
+   the status-strip plate / rear cliff mounts: ESP32 devkit in header sockets
+   (removable; a later S3 or other MCU is a new carrier, not a teardown), a keyed
+   JST-XH connector per peripheral (4 cliff, TFMini, gyro, LED chain, battery
+   sense), screw terminals for pack / motors / dock contacts, fuse, charge diode,
+   buck, sockets for both DRV8871s, labelled spare GPIO and I2C headers; mounted on
+   Makeblock-pattern standoffs (holes measured first). Designed in wirestudio ->
+   KiCad, Enoch reviews before ordering (JLCPCB ~$5 + $10-20 shipping; perfboard
+   from the same schematic as the fallback). Spinal cord stays an ESP32: a Pico 2 W
+   (Enoch's, more clean GPIO, no strapping pins) would mean re-proving the
+   firmware guards on uncertain ESPHome RP2350 support - not worth it for pins.
+6b. **Smart dock (a use for Enoch's Raspberry Pi Pico 2 Ws, 10-26):** a
    controller at the dock so it can be trusted unattended - a MOSFET switching
    the brick's output to the rollers (live only when Grover is on the base and
    asking), an INA219 reading charge current (true "charging" / "full", which
