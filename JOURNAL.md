@@ -55,6 +55,9 @@ breakdown of the notable decisions. Newest entry on top.
   contact margin at +/-1 cm untested; motion still jerky (75 % min-duty
   jump); the buck's USB back-feed diode deferred (no USB on `rover32`
   with the pack connected). Next: ROADMAP 2.4, auto-dock on low battery.
+- **LEDs (10-26):** headlight dots on GPIO4 work; the 6-pixel status strip
+  after them stays dark - check direction, Dout->Din joint, 5 V at the
+  strip, and whether it is a 12 V strip.
 - The Eufy is shelved as a chassis (IR hold stands); the spare C3
   SuperMini left the project for a Wyola fish feeder (10-26).
 
@@ -407,7 +410,13 @@ chain (`LED chain`, partitions `Headlight` 0-1 and `Status strip` 2-7,
 colour correction 60 % to cap current) and a `debug` **Reset Reason**
 sensor for the reboot-on-contact question; after the flash it reads
 "software via esp_restart" (the OTA itself). Test: headlight white,
-strip green. Enoch then unplugged the dock and left Grover off the
+strip green - **Enoch: the two headlight dots work, the 6-pixel strip
+does not light.** Since the dots are first in the chain, GPIO4 and the
+firmware are fine; the fault is at or after the right dot's Dout.
+To check on return, in order: the strip's arrows point away from the
+dots (Din at the dot end); the Dout -> Din joint; 5 V and GND reach the
+strip (meter at its pads); the strip's voltage and chip (a 12 mm strip
+can be a 12 V WS2815 / WS2811, which stays dark on 5 V). Enoch then unplugged the dock and left Grover off the
 charger: he is travelling ~5 days, and the dock is not trusted
 unattended yet.
 
