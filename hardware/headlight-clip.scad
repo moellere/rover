@@ -34,7 +34,8 @@ dot_d   = 10.0;  // measured (Enoch)
 dot_t   = 3.0;   // board + LED
 window  = 7.0;   // the 5050 LED is 5 mm square
 lip_t   = 1.2;
-snap    = 0.3;   // back rim this much under the dot radius
+snap    = 0.15;  // back rim this much under the dot radius (v2: 0.3 was too tight)
+pocket_clear = 1.4;   // pocket dia over dot_d (v2: +0.4 was too tight - Enoch, 10-26, "about a mm more")
 dot_x   = 25;    // dot centre from the lens axis, each side (Enoch's spacing: 50 mm)
 pod_w   = dot_d + 2.4;
 
@@ -66,7 +67,7 @@ module pod() {
     // window through the front lip
     translate([dot_x, band / 2, zfront - lip_t - 0.01]) cylinder(d = window, h = lip_t + 0.02);
     // pocket for the board, behind the lip
-    translate([dot_x, band / 2, zfront - lip_t - dot_t - 0.01]) cylinder(d = dot_d + 0.4, h = dot_t + 0.02);
+    translate([dot_x, band / 2, zfront - lip_t - dot_t - 0.01]) cylinder(d = dot_d + pocket_clear, h = dot_t + 0.02);
     // snap rim at the back: slightly under the board's diameter
     translate([dot_x, band / 2, zfront - depth - 0.01]) cylinder(d = dot_d - 2 * snap, h = 1.02);
   }
