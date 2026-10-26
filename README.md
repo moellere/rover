@@ -52,8 +52,10 @@ instructions, and readable as plain English by anyone.
   taught pose, hands off. **And it charges there (10-26):** printed pad
   bars with 12 AWG Romex staples lie across the base's sprung rollers,
   a 1N5822 keeps the bare pads dead off the dock, and the pack took
-  charge through them (0.41 A tapering on the bench supply). `dock()`
-  backs off, drives back on and charges (10-26). Next: auto-dock - go
+  charge through them (0.41 A tapering on the bench supply). Grover
+  backed off, drove back on with `dock()` and charged with nobody
+  touching it (10-26; one nudge at the end was still commanded by
+  Claude). Next: auto-dock - go
   home on low battery by itself.
 - **It has been through the house** (2026-10-04, as the trike): dining
   room to kitchen doorway, ~12-14 m, in camera-checked legs.

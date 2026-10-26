@@ -35,11 +35,14 @@ breakdown of the notable decisions. Newest entry on top.
   (bare pads are dead off the dock); the pack tops out ~12.0 V. **First
   charge 10-26** (0.41 A tapering on the RD6018); the brick's LED reads
   green behind the diode and means nothing - judge by voltage/current.
-- **`dock()` drives back on and charges** (10-26 test: backed off ~70 cm,
-  docked hands off 7 mm from the taught pose, then a 14 mm nudge made
-  contact - since fixed: the creep now goes all the way to the pose,
-  relaxes the obstacle guard from the 200 mm waypoint and steers back
-  onto the axis). Contact window is a few mm fore-aft.
+- **First dock-and-charge with no hands, 10-26:** `dock()` from ~70 cm
+  back to 7 mm short of the pose, then one Claude-commanded nudge (on
+  Enoch's spoken hint) seated the contacts and it charged. A fully
+  unaided run is pending the base being painted white (the bare grey
+  plastic trips the front-left cliff sensor at ~30 mm short). Contact
+  window is a few mm fore-aft; the creep now runs to the pose, relaxes
+  the obstacle guard from the 200 mm waypoint, steers back onto the axis
+  and re-squares.
 - **Open:** `rover32` reboots the moment the charge contacts touch
   (seen twice) - find out why before auto-dock relies on the link;
   contact margin at +/-1 cm untested; motion still jerky (75 % min-duty
@@ -313,6 +316,26 @@ leg). Rerun: docked 7 mm from the pose, 1-3 mm lateral - but no charge
 until a 14 mm nudge (Enoch: "5-10 mm"), so the creep now stops at the
 pose, not 25 mm short. `rover32` rebooted on contact, as it did when
 the leads first went on - open.
+
+**First dock-and-charge without hands, 10-26 ~8:08 PM.** Put plainly:
+Grover backed off the base, drove ~70 cm back onto it with `dock()`
+and the overhead camera, and stopped 7 mm short of the taught pose;
+one more forward pulse - commanded by Claude after Enoch said "just a
+little nudge should put you up on it" - seated the contacts and the
+pack began charging (11.77 -> 12.05 V). Nobody touched it. Enoch: "You
+docked and are charging autonomously." The creep has since been changed
+to go that last bit on its own.
+
+Two more runs to get it fully unaided, one with the overhead filmed
+(343 s, the brain's own recorder; the homelab session also started a
+Frigate-container capture of benchcam 8:18-8:42 PM): the first ended
+21 mm to the side (the new steering overshot - it now squares up again
+once back on the axis), the second 31 mm short with the front-left
+cliff sensor over the base's bare (grey, not white) plastic, so the
+firmware refused forward - correct. Small steering pivots also failed
+six times in a row (the tracks don't move for a pivot that small); the
+creep now gives up after two. Fix for the surface: **Enoch is painting
+the base white** (matte, rollers and contacts masked) - drying.
 
 **Claude-driven:** the charge-lead diode, the check order; the dock fixes.
 **Enoch-decided:** diode 2 in, diode 1 deferred; contacts on the 12.6 V rail; the pad-bar fit; the Romex (10-25); the RD6018 for a current reading.
