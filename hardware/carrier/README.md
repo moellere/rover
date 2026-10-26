@@ -106,6 +106,24 @@ and speed on a PWM EN pin; the DRV8871 takes PWM on IN1 (forward) or IN2
   no pins); an expander, if it comes, carries only non-critical inputs (bumpers,
   buttons).
 
+### The base board (Enoch, 2026-10-26)
+
+**v1 base = the Freenove Universal Breakout Board** (Amazon B0DT48T7CB, Enoch
+has one): screw terminal per pin, a status LED per GPIO, switchable 5 V / 3.3 V
+rails; fits ESP32 / Pico / Nano. Screw terminals don't shake loose (better than
+Dupont for the cliff lines), and the pin LEDs make debugging visible. Checks
+before it carries Grover:
+
+1. **Are the status LEDs buffered?** The cliff modules signal "cliff" as a HIGH
+   pulled up through ~10 k; an unbuffered LED to ground on that pin would sag it to
+   ~2 V, under the ESP32's ~2.5 V threshold - the pin would read "floor" at a real
+   edge and the cliff guard would silently die. Look for a transistor/driver by the
+   LEDs or an LED-disable jumper; then **test**: cliff sensor plugged in, Grover
+   held over an edge, `front_left_cliff` must go true. Unbuffered -> cut or
+   disable the LEDs on the cliff pins.
+2. **Does the 38-pin WROOM-32D devkit fit its socket?**
+3. Outline and mounting holes, for the plate (shield + half breadboard).
+
 ## Open questions for Enoch
 
 1. **Cliff module supply:** 3V3 (as drafted) or 5 V today? At 5 V their outputs
