@@ -229,6 +229,12 @@ the buck is still there). Docked, the brick carries Grover's idle load
 too, so its "full" LED may never come on and `battery_voltage` reads
 the charger, not the pack.
 
+Diode 2 in: 12.33 V on the leads to the rail with no load (a Schottky
+drops only ~0.15 V at microamps). **First dock charge, 10-26:** Grover
+docked with the brick plugged in; `battery_voltage` read 11.53, then
+11.58, then 11.95 V over a couple of minutes - the pack is taking
+charge through the contacts, the diode and the BMS.
+
 **Claude-driven:** the charge-lead diode, the check order.
 **Enoch-decided:** diode 2 in, diode 1 deferred; contacts on the 12.6 V rail; the pad-bar fit.
 
