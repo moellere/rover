@@ -55,7 +55,7 @@ instructions, and readable as plain English by anyone.
   charge through them (0.41 A tapering on the bench supply). Grover
   backs off, drives back on with `dock()` until its bumper bar meets the
   base's wall, and confirms it is charging - fully autonomous, filmed
-  (10-26). Next: auto-dock - go
+  (10-26): [timelapse](images/grover-autonomous-dock-2026-10-26.mp4). Next: auto-dock - go
   home on low battery by itself.
 - **It has been through the house** (2026-10-04, as the trike): dining
   room to kitchen doorway, ~12-14 m, in camera-checked legs.

@@ -102,7 +102,7 @@ is janky; these make docking work unattended:
    inventory: 2-3 white "headlight" pixels by `redcam` (on only during
    onboard homing) plus ~8 dim status pixels on the deck (docking / charging /
    cliff / fault - also reads well in a video). 330 ohm on the data line, 470 uF
-   at the strip, 5 V from the buck. Parts (Enoch's drawer, 10-26): headlight =
+   at the strip, 5 V from the buck. Data pin: **GPIO27** (free, not strapping, quiet at boot); chain GPIO27 -> 330 ohm -> left dot -> right dot -> 6-pixel strip (12 mm, 64 mm, adhesive; Enoch's). Parts (Enoch's drawer, 10-26): headlight =
    BTF-Lighting WS2812B single-pixel dots, **10 mm dia, 3 mm thick with LED**
    (pads on the back: Din top, Dout bottom, 5V right, gnd left); status = 10 mm wide 60/m strip, 6-8 pixels.
 7. Later: one perfboard for the electronics; a welded 3S pack instead of the
