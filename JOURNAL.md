@@ -182,6 +182,36 @@ notes after it carry the detail (a few were appended out of order).
 
 ---
 
+## 2026-10-26 - Brick and diodes in; the charge path's last decision
+
+*Model: Opus 5.5. Guidance: Enoch reported the TalentCell 12.6 V brick
+and the 1N5822 diodes have arrived.*
+
+Both prints from 10-25 finished (pad bars v2 `c36cb73e52`, camera mount
+v7 `5c9aff1b7b`). This was the review ROADMAP 2.3 asks for before
+anything is wired. Proposed to Enoch:
+
+- **Brick first, without Grover:** meter the barrel (~12.6 V no load,
+  centre +), then on the base's jack confirm left roller + / right -.
+- **5 V rail (the 10-24 to-do):** buck raised to ~5.5 V at its output,
+  then a 1N5822 in its output lead (band toward the rail), so the rail
+  sits ~5.0-5.1 V and USB can't back-feed the buck.
+- **Charge path, new:** wired straight through, the bare pad staples
+  under Grover would *be* the pack terminals, an inch off the floor. A
+  1N5822 in the + lead (left pad -> pack +, band toward the pack) makes
+  them dead unless the dock is feeding them. Cost: ~0.45 V, so the pack
+  stops near 12.15 V (~4.05 V/cell, ~85-90 % full) - gentler on the cells
+  and plenty for the bench. ~1 W in the diode at the start of a 2 A
+  charge, tapering; short leads, off the plastic. The - pad goes straight
+  to P-.
+- **First charge attended** start to finish, Grover set on the base by
+  hand: `battery_voltage` rising, the brick's LED, a touch check of the
+  diode and the BMS at 5 minutes.
+
+**Claude-driven:** the charge-lead diode, the check order.
+**Enoch-decided:** (pending his OK).
+
+
 ## 2026-10-25 - Camera mount v7: the foot never touched at the back
 
 *Model: Opus 5.5. Guidance: Enoch snapped the camera bracket by
