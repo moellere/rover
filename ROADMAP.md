@@ -88,7 +88,15 @@ is janky; these make docking work unattended:
    is the one reverse move auto-dock makes unattended.
 5. **Break-away-then-slow ramp** in firmware: ~80 ms at 75 % to break the tracks
    free, then a 45-55 % cruise - slow, precise creeps.
-6. Only if 5 isn't enough: 2x DRV8871 for the L298N (BOM candidates).
+6. DRV8871 swap for the L298N (3-pack approved 10-26, after the ramp test).
+6a. **Lights for docking in the dark** (auto-dock will happen at night):
+   first test whether benchcam's IR night mode still reads the ArUco markers
+   (free); fallback, the brain turns the bench light on for a dock and off
+   after. On Grover, one WS2812 chain on a single free GPIO from Enoch's
+   inventory: 2-3 white "headlight" pixels by `redcam` (on only during
+   onboard homing) plus ~8 dim status pixels on the deck (docking / charging /
+   cliff / fault - also reads well in a video). 330 ohm on the data line, 470 uF
+   at the strip, 5 V from the buck.
 7. Later: one perfboard for the electronics; a welded 3S pack instead of the
    spring holder (and 3S2P only if Phase 3 runtime demands it); ESP32-S3 camera
    consolidation (Freenove ESP32-S3 CAM) only when perception moves on board -
