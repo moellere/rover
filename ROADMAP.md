@@ -83,7 +83,13 @@ is janky; these make docking work unattended:
    the next dock, then the likely fix - 470-1000 uF on the 12 V rail at the buck
    (inventory).
 2. **5 A blade fuse in the pack + lead** (Enoch has one).
-3. **Wider pad bars - now the top item (10-26 runs):** wide in the direction of travel as well as across, for a ~+/-15 mm window instead of ~+/-3 fore-aft; plus a marker on the base so the taught pose follows the base.
+3. **Dock hard stop - top item (Enoch's idea, 10-26):** an adjustable M4 bolt
+   forward from Grover's nose (length set with nuts, printed cap) so Grover creeps
+   until it bumps the tower and the pads land on the rollers every time; `dock()`
+   treats the stall as docked and confirms by the voltage step. Nose-to-wall is
+   ~5 mm too far (Enoch), so the stop starts ~6 mm proud of whatever touches first
+   and is tuned with the nuts. Then pads need only lateral width.
+3b. Wider pad bars - now only across (lateral error in the logs stays within ~+/-6 mm): wide in the direction of travel as well as across, for a ~+/-15 mm window instead of ~+/-3 fore-aft; plus a marker on the base so the taught pose follows the base.
 4. **Rear cliff sensors** - two of Enoch's spare TCRT5000s; backing off the dock
    is the one reverse move auto-dock makes unattended.
 5. **Break-away-then-slow ramp** in firmware: ~80 ms at 75 % to break the tracks
