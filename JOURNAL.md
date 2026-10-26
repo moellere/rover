@@ -234,6 +234,12 @@ drops only ~0.15 V at microamps). **First dock charge, 10-26:** Grover
 docked with the brick plugged in; `battery_voltage` read 11.53, then
 11.58, then 11.95 V over a couple of minutes - the pack is taking
 charge through the contacts, the diode and the BMS.
+Then 11.98 and 12.00 V and flattening. Heat check at ~5 min (Enoch):
+nothing excessive on the diode or the BMS. The brick's LED shows
+**green** throughout - probably because the diode hides the pack's
+voltage from the brick's battery detection, so the LED can't be trusted
+on this wiring; an unplug test (resting vs. charging voltage) is next.
+rover32 rebooted once when the leads went on (uptime reset), harmless.
 
 **Claude-driven:** the charge-lead diode, the check order.
 **Enoch-decided:** diode 2 in, diode 1 deferred; contacts on the 12.6 V rail; the pad-bar fit.
