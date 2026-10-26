@@ -220,8 +220,17 @@ is the brick's own CV (4.16 V/cell); behind the proposed diode the pack
 would stop near 12.0 V (~4.0 V/cell, ~75-80 % full).
 Polarity at Grover confirmed: left lead + (Enoch).
 
+**Decided (Enoch):** the contacts feed the 12.6 V rail (pack + and the
+buck's input are one net on the common-port HW-288), - pad to P-.
+**Diode 2 goes in** (left pad -> 1N5822 -> rail, band toward the rail).
+**Diode 1 is deferred** until rover32 actually needs USB; until then,
+never plug USB into rover32 with the pack connected (the back-feed into
+the buck is still there). Docked, the brick carries Grover's idle load
+too, so its "full" LED may never come on and `battery_voltage` reads
+the charger, not the pack.
+
 **Claude-driven:** the charge-lead diode, the check order.
-**Enoch-decided:** (pending his OK); the pad-bar fit.
+**Enoch-decided:** diode 2 in, diode 1 deferred; contacts on the 12.6 V rail; the pad-bar fit.
 
 
 ## 2026-10-25 - Camera mount v7: the foot never touched at the back
