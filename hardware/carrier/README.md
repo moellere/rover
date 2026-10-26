@@ -91,8 +91,8 @@ and speed on a PWM EN pin; the DRV8871 takes PWM on IN1 (forward) or IN2
 
 - **Shield + half breadboard on one printed plate** (Enoch): passives (LED
   resistor and cap, battery divider, anything experimental) live on the
-  breadboard; jumpers to the shield. Needs the shield's outline/holes and the
-  half breadboard measured (nominally ~82 x 55 mm).
+  breadboard; jumpers to the shield. Half breadboard: **400-point, 82 x 54 x
+  9 mm** (Enoch, 10-26).
 - **The shield has two V rails, jumper-selected** (Enoch). His convention: 3.3 V
   on the devkit's 3V3-pin side, 5 V on its 5V-pin side. **No pin swap needed**
   (Enoch): with single Dupont leads a device's V wire can go to the other rail, so
