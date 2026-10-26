@@ -149,7 +149,11 @@ Bottom to top:
    the cable run to the driver tray); (b) v3's pocket is shifted rearward on the
    post pattern (mass over mid-track, Enoch 10-19), so on the deck the rear posts
    would land inside the pocket - the new base must move those bolt points
-   outboard, or the posts move.
+   outboard, or the posts move. **Enoch: "scrap the existing plate if it doesn't
+   work"** - the cradle base, the posts and their positions are all open. Keep
+   only: the pocket/BMS-window geometry, the pack over mid-track, the camera's
+   height and view, Makeblock-grid mounting. Likely result: one printed base
+   (lowered cradle + driver tray + hinge posts) with the hinged plate above.
 2. **The four 30 mm standoff posts** (64 x 96 mm, M4) stay, now spanning the battery.
 3. **Hinged electronics plate** at the cradle's current height: FNK0101 on its
    81 x 77 mm M3 holes (power jack to the rear) + the half breadboard (82 x 54) in a
