@@ -361,6 +361,19 @@ Also worth doing: a marker on the base itself so the pose follows the
 base when it moves. LED dots for the headlight: pads on the back (Din
 top, Dout bottom, 5V right, gnd left, as printed).
 
+**Hard stop instead of precision (~10 PM).** Enoch's idea: a spacer so
+Grover simply drives until it bumps. The cliff-mount shelves are the
+frontmost points and sit 10 mm short of the base's back wall when it
+charges (Enoch, both sides; shelf gap 20 mm). `hardware/dock-bumper.scad`
+v2 - Enoch's refinement of two caps into one bar clipped to both
+shelves, which also squares Grover against the wall - printing
+(`1e45706abf`, on his "print at will"). `dock()` now treats a stall
+within 25 mm of the pose as docked and confirms by a >=0.15 V step in
+`battery_voltage` after 30 s. Dock pose re-taught at a verified
+charging point. Cliff check (Enoch noticed one module's LED dark):
+both read floor on the bench and cliff off the edge - the dark one just
+sits nearer its threshold; pots left alone.
+
 **Claude-driven:** the charge-lead diode, the check order; the dock fixes.
 **Enoch-decided:** diode 2 in, diode 1 deferred; contacts on the 12.6 V rail; the pad-bar fit; the Romex (10-25); the RD6018 for a current reading.
 
