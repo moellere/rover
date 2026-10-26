@@ -83,8 +83,9 @@ and speed on a PWM EN pin; the DRV8871 takes PWM on IN1 (forward) or IN2
   5 V); we need both (TFMini, LEDs on 5 V; gyro, cliffs on 3.3 V).
 - **Connectors:** XH2.54 latching (JST-XH clone pitch) for safety-relevant lines -
   cliff sensors, motors, power - since an unlatched Dupont can shake loose;
-  Dupont acceptable elsewhere. 3-pin G-V-S per single-GPIO device, 4-pin
-  G-V-SDA-SCL per I2C device.
+  Dupont acceptable elsewhere. 3-pin G-V-S per single-GPIO device; an I2C
+  device spans two G-V-S triples on the shield (SDA's and SCL's), so it is
+  individual leads anyway - one plug per device only arrives with a custom PCB.
 
 ### Follow-up (same day)
 
