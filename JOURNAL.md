@@ -218,6 +218,7 @@ Enoch: **12.47 V at Grover's terminals** with the TalentCell brick on the
 base - the whole path (brick, base, rollers, staples) conducts. 12.47 V
 is the brick's own CV (4.16 V/cell); behind the proposed diode the pack
 would stop near 12.0 V (~4.0 V/cell, ~75-80 % full).
+Polarity at Grover confirmed: left lead + (Enoch).
 
 **Claude-driven:** the charge-lead diode, the check order.
 **Enoch-decided:** (pending his OK); the pad-bar fit.
