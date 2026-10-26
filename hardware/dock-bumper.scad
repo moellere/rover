@@ -16,7 +16,8 @@
 // Frame: as cliff-mount.scad - X along the beam (outboard +X on the right
 // part), +Y forward; origin at the shelf's front-bottom inboard corner.
 //
-// Render:  openscad -D side=\"right\" -o dock-bumper-right.stl dock-bumper.scad
+// Render:  openscad -o dock-bumper-bar.stl dock-bumper.scad      (v2 bar)
+//          openscad -D kind=\"cap\" -D side=\"right\" -o dock-bumper-right.stl dock-bumper.scad
 // Print:   profile flat on the bed (print_orient), no supports, no brim.
 
 side = "right";
@@ -54,8 +55,29 @@ module part() {
   profile_block(pcb_free, width, low_flat);
 }
 
+// v2 (Enoch, 10-26): ONE bar clipped to both shelves - both stop faces in
+// one plane squares Grover better than two caps, and it can't lose a half.
+// The shelves' inboard ends are `shelf_gap` apart (Enoch: 20 mm); the bridge
+// across it is only the bumper block, in front of the shelves, clear of the
+// TFMini wires that loop down through the gap. Origin: the bar's centre.
+shelf_gap = 20;
+module bar() {
+  for (s = [1, -1]) mirror([s < 0 ? 1 : 0, 0, 0]) translate([shelf_gap / 2, 0, 0]) part();
+  hull() {   // bridge: the bumper block between the two clips
+    translate([-shelf_gap / 2 - 0.01, 0, -jaw_t]) cube([shelf_gap + 0.02, 0.01, gap + 2 * jaw_t]);
+    translate([-shelf_gap / 2 - 0.01, stop - chamfer, -jaw_t]) cube([shelf_gap + 0.02, 0.01, gap + 2 * jaw_t]);
+    translate([-shelf_gap / 2 - 0.01, stop, -jaw_t + chamfer]) cube([shelf_gap + 0.02, 0.01, gap + 2 * jaw_t - 2 * chamfer]);
+  }
+}
+
+kind = "bar";          // "bar" (v2) or "cap" (v1, with `side`)
 print_orient = true;
 module oriented() { if (side == "left") mirror([1, 0, 0]) part(); else part(); }
-// stand it on its inboard (x = 0) end: the profile lies flat on the bed
-if (print_orient) { if (side == "left") rotate([0, 90, 0]) oriented(); else rotate([0, -90, 0]) oriented(); }
-else oriented();
+if (kind == "bar") {
+  // print on its bumper face: the jaws rise straight up from the block, no overhangs
+  if (print_orient) translate([0, 0, stop]) rotate([-90, 0, 0]) bar(); else bar();
+} else {
+  // a single cap stands on its inboard (x = 0) end: the profile lies flat on the bed
+  if (print_orient) { if (side == "left") rotate([0, 90, 0]) oriented(); else rotate([0, -90, 0]) oriented(); }
+  else oriented();
+}
