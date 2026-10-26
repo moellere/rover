@@ -83,7 +83,7 @@ is janky; these make docking work unattended:
    the next dock, then the likely fix - 470-1000 uF on the 12 V rail at the buck
    (inventory).
 2. **5 A blade fuse in the pack + lead** (Enoch has one).
-3. **Wider pad bars** (~+/-15 mm lateral tolerance instead of ~+/-5) - reprint.
+3. **Wider pad bars - now the top item (10-26 runs):** wide in the direction of travel as well as across, for a ~+/-15 mm window instead of ~+/-3 fore-aft; plus a marker on the base so the taught pose follows the base.
 4. **Rear cliff sensors** - two of Enoch's spare TCRT5000s; backing off the dock
    is the one reverse move auto-dock makes unattended.
 5. **Break-away-then-slow ramp** in firmware: ~80 ms at 75 % to break the tracks
@@ -98,7 +98,7 @@ is janky; these make docking work unattended:
    cliff / fault - also reads well in a video). 330 ohm on the data line, 470 uF
    at the strip, 5 V from the buck. Parts (Enoch's drawer, 10-26): headlight =
    BTF-Lighting WS2812B single-pixel dots, **10 mm dia, 3 mm thick with LED**
-   (pad layout still to note); status = 10 mm wide 60/m strip, 6-8 pixels.
+   (pads on the back: Din top, Dout bottom, 5V right, gnd left); status = 10 mm wide 60/m strip, 6-8 pixels.
 7. Later: one perfboard for the electronics; a welded 3S pack instead of the
    spring holder (and 3S2P only if Phase 3 runtime demands it); ESP32-S3 camera
    consolidation (Freenove ESP32-S3 CAM) only when perception moves on board -

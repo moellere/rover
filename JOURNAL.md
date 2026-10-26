@@ -39,7 +39,10 @@ breakdown of the notable decisions. Newest entry on top.
   back to 7 mm short of the pose, then one Claude-commanded nudge (on
   Enoch's spoken hint) seated the contacts and it charged. A fully
   unaided run is pending the base being painted white (the bare grey
-  plastic trips the front-left cliff sensor at ~30 mm short). Contact
+  plastic trips the front-left cliff sensor at ~30 mm short - painted
+  white since). Later runs dock hands-off to within a few mm of the pose
+  but miss the contacts' few-mm window; wider pad bars and finer creeps
+  come first now. Contact
   window is a few mm fore-aft; the creep now runs to the pose, relaxes
   the obstacle guard from the 200 mm waypoint, steers back onto the axis
   and re-squares.
@@ -336,6 +339,27 @@ firmware refused forward - correct. Small steering pivots also failed
 six times in a row (the tracks don't move for a pivot that small); the
 creep now gives up after two. Fix for the surface: **Enoch is painting
 the base white** (matte, rollers and contacts masked) - drying.
+
+**Painted base, filmed runs (~9:45 PM).** The paint works: both cliff
+sensors read the base as floor. Enoch had moved the base to paint it,
+so the taught pose was stale. Filmed run B (back-off + `dock()`, the
+brain's own recorder, 96 s): docked **1 mm from the taught pose with no
+help** - but ~10 mm shy of the contacts (Enoch). Pose moved 11 mm on to
+where Enoch's hand-placed Grover had charged; filmed run C (202 s):
+docked 15 mm past it - the final 0.12 s creep moved ~28 mm on the base -
+and Enoch: "about 3 mm too far". No charge either time. A 0.1 s reverse
+then did nothing and a 0.2 s one threw Grover ~115 mm back off the base.
+
+What tonight proves: the navigation is there (repeatable to a few mm,
+hands off, square), but **the contact window is only a few mm fore-aft
+and the drive can't place Grover to a few mm** - the tracks either
+don't move or jump. Two fixes, both already on the revision list and
+now first: (1) **wider pad bars, in the direction of travel too**, so
+the window is ~+/-15 mm instead of ~+/-3; (2) the break-away-then-slow
+ramp (and the DRV8871s, ordered) so the last creep is a few mm, not 28.
+Also worth doing: a marker on the base itself so the pose follows the
+base when it moves. LED dots for the headlight: pads on the back (Din
+top, Dout bottom, 5V right, gnd left, as printed).
 
 **Claude-driven:** the charge-lead diode, the check order; the dock fixes.
 **Enoch-decided:** diode 2 in, diode 1 deferred; contacts on the 12.6 V rail; the pad-bar fit; the Romex (10-25); the RD6018 for a current reading.
