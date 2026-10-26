@@ -76,6 +76,24 @@ and comes first.
 
 ## Tier 3 - robustness and efficiency
 
+**Hardware revisions, in order (Claude's call, 2026-10-26)** - the rig works but
+is janky; these make docking work unattended:
+
+1. **Reboot on charge contact:** add `debug:` reset reason to `rover32`, read it on
+   the next dock, then the likely fix - 470-1000 uF on the 12 V rail at the buck
+   (inventory).
+2. **5 A blade fuse in the pack + lead** (Enoch has one).
+3. **Wider pad bars** (~+/-15 mm lateral tolerance instead of ~+/-5) - reprint.
+4. **Rear cliff sensors** - two of Enoch's spare TCRT5000s; backing off the dock
+   is the one reverse move auto-dock makes unattended.
+5. **Break-away-then-slow ramp** in firmware: ~80 ms at 75 % to break the tracks
+   free, then a 45-55 % cruise - slow, precise creeps.
+6. Only if 5 isn't enough: 2x DRV8871 for the L298N (BOM candidates).
+7. Later: one perfboard for the electronics; a welded 3S pack instead of the
+   spring holder (and 3S2P only if Phase 3 runtime demands it); ESP32-S3 camera
+   consolidation (Freenove ESP32-S3 CAM) only when perception moves on board -
+   the AI-Thinker ESP32-CAMs have too few free GPIOs to be the spinal cord.
+
 | # | Item | Needs | Notes |
 |---|---|---|---|
 | 3.1 | ~~Spinal cord on the buck~~ **done** (ESP32 fed from the buck at 5.2 V) | - | the L298N's linear regulator no longer feeds the controller |
