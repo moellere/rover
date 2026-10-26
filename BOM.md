@@ -9,7 +9,7 @@ to just go buy something himself (as with the IR sensors below), it doesn't
 draw against it. Update the running total every time something *is* drawn
 from it - don't let it go stale.
 
-**Budget spent so far: $19.74 — remaining: $80.26** (as of 2026-10-24: + $16.45 TalentCell charger)
+**Budget spent so far: $34.00 — remaining: $66.00** (as of 2026-10-26: + $14.26 DRV8871 3-pack)
 
 | Date | Item | Cost |
 |---|---|---|
@@ -52,7 +52,7 @@ chain.
 
 | Part | Why | Price (checked 2026-10-26) | Status |
 |---|---|---|---|
-| DRV8871 H-bridge module, 3-pack (Amazon B0G4C6VFGQ; listing checked: DRV8871, 6.5-45 V, 3.6 A) | Replaces the L298N, which loses ~2-4 V inside itself - much of why the tracks need 75 % duty to start; third board is a spare | **$12 + tax (budget)**, approved 2026-10-26 (Claude's call; Adafruit #3190 is $7.50 each) | Enoch ordering; fit after the break-away-then-slow firmware test |
+| DRV8871 H-bridge module, 3-pack (Amazon; Enoch picked a better-rated listing than B0G4C6VFGQ) | Replaces the L298N, which loses ~2-4 V inside itself - much of why the tracks need 75 % duty to start; third board is a spare | **$14.26 incl. tax (budget)**, ordered 2026-10-26 | Ordered; fit after the break-away-then-slow firmware test |
 | INA219 current/voltage monitor (I2C) | Real charge current and "full" detection behind the diode (ROADMAP 2.5); on the second I2C bus, the TFMini keeps its own | ~$3-5 (not yet priced) | Ask Enoch's drawers first |
 
 ## Bill of Materials - the Eufy (house chassis)
