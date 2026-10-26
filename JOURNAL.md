@@ -388,7 +388,7 @@ times and stopped **3 mm from the pose, 2 mm lateral**, against the
 wall; 30 s later the brain confirmed it on its own: **charging, 12.02 ->
 12.17 V**. Video: 136 s real time, overhead benchcam with elapsed time
 and battery voltage burned in. **Timelapse (4x, cropped to the dock
-lane): [images/grover-autonomous-dock-2026-10-26.mp4](images/grover-autonomous-dock-2026-10-26.mp4)**;
+lane): [images/35-autonomous-dock-timelapse-2026-10-26.mp4](images/35-autonomous-dock-timelapse-2026-10-26.mp4)**;
 the full-length original stays on the dev VM (`~/grover-videos/`). Enoch: "looks like you got it", "celebration
 sounds, fireworks, etc."
 
