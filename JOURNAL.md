@@ -244,6 +244,13 @@ on this wiring. Unplug test: the reading (a 25 s rolling average) fell
 **was** charging and the green LED is just the brick not seeing the
 pack behind the diode. Charge state comes from `battery_voltage` (and a
 brief unplug for a resting reading), not the LED.
+
+For a current reading the brick was swapped for the RD6018 (normal
+output, 12.5 V / 1.5 A limit; its battery port stays off because it
+can't see the pack behind the diode either): **0.41 A** with the rail at
+11.99 V, after ~15 min on the brick. That figure includes Grover's own
+idle draw, so "full" is when the current stops falling and settles at
+the idle draw, not when it reaches zero.
 rover32 rebooted once when the leads went on (uptime reset), harmless.
 
 **Claude-driven:** the charge-lead diode, the check order.
