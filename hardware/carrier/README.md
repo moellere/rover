@@ -66,6 +66,26 @@ and speed on a PWM EN pin; the DRV8871 takes PWM on IN1 (forward) or IN2
 - **Connectors:** 2.54 mm headers (`pin_header` - most "JST-XH" kits are XH2.54
   clones) for signals; 5 mm screw terminals for battery, dock, motors.
 
+## Enoch's layout input (2026-10-26) and where it points
+
+- **The Makeblock baseplate is optional.** Today: L298N at the rear, breadboard at
+  the front between the standoffs. With the L298N gone, a **printed electronics
+  tray** (DRV8871 and buck sockets, cable channels) can replace it.
+- **Battery:** stays removable. Claude's proposal: battery **low** (centre of
+  gravity - see 10-18) sliding out the rear, electronics on a **hinged plate above**
+  it (service access, and the ESP32 antenna on top). Pending Enoch.
+- **One nose bracket** for cliff sensors, charge contacts, TFMini and the dock
+  bumper, with wire channels - after the carrier, once cable routes are known.
+- **Modular connectors grouped as GPIO + power + ground.** Enoch has a 38-pin
+  ESP32 expansion shield (Amazon B0GX917MNR, G-V-S triple per GPIO). **v1 may be
+  that shield + printed mounts instead of a custom PCB**; the custom PCB waits until
+  the layout stops changing. Catch: most shields have one V rail (jumper 3.3 or
+  5 V); we need both (TFMini, LEDs on 5 V; gyro, cliffs on 3.3 V).
+- **Connectors:** XH2.54 latching (JST-XH clone pitch) for safety-relevant lines -
+  cliff sensors, motors, power - since an unlatched Dupont can shake loose;
+  Dupont acceptable elsewhere. 3-pin G-V-S per single-GPIO device, 4-pin
+  G-V-SDA-SCL per I2C device.
+
 ## Open questions for Enoch
 
 1. **Cliff module supply:** 3V3 (as drafted) or 5 V today? At 5 V their outputs
@@ -75,3 +95,6 @@ and speed on a PWM EN pin; the DRV8871 takes PWM on IN1 (forward) or IN2
 3. **Connector family:** do your crimp kits match 2.54 mm headers?
 4. **Height under the cradle:** is 30 mm the clear height, or is something else
    (breadboard, wiring) taking space there today?
+5. **The expansion shield:** a photo front and back - what its V jumper does, and
+   whether it has a DC jack / regulator.
+6. **Battery low + hinged electronics plate**, or battery on top as now?
