@@ -242,6 +242,9 @@ DOCK_ARRIVE_MM = 0.0        # creep until AT the taught pose: 6 mm short had no 
 DOCK_CREEP_S = 0.12
 DOCK_MAX_CREEPS = 14
 DOCK_STALL_PX = 4.0
+DOCK_BUMP_MM = 25.0         # a stall this close to the pose = bumper against the wall
+DOCK_CHARGE_WAIT_S = 30.0   # battery_voltage is a 25 s rolling average
+DOCK_CHARGE_STEP_V = 0.15   # resting ~11.8 V -> ~12.0-12.2 V on the dock
 DOCK_GUARD_OFF_MM = 250.0  # waypoints this close relax the obstacle guard (the tower is in range)
 DOCK_LATERAL_MM = 8.0       # creep steers back onto the axis beyond this (the rollers allow ~+/-5)
 DOCK_LOOKAHEAD_MM = 100.0   # ... aiming at the axis this far ahead of Grover
@@ -267,8 +270,22 @@ async def dock(camera: str = "bench", max_steps: int = 8) -> dict:
     log: list = []
     st = await client.state(timeout=3.0)
     guard = st.obstacle_stop_cm or 0.0
+    v_before = st.battery_voltage
     try:
-        return await _dock_legs(client, pose, camera, max_steps, log, guard)
+        r = await _dock_legs(client, pose, camera, max_steps, log, guard)
+        if r.get("ok"):
+            # on the pose (or stalled against the bumper): confirm by the voltage step.
+            # battery_voltage is a 25 s rolling average, so wait it out.
+            await asyncio.sleep(DOCK_CHARGE_WAIT_S)
+            st = await client.state(timeout=3.0)
+            v_after = st.battery_voltage
+            charging = (v_before is not None and v_after is not None
+                        and v_after - v_before >= DOCK_CHARGE_STEP_V)
+            r["charging"] = charging
+            r["volts"] = {"before": v_before, "after": v_after}
+            r["reason"] += (f"; charging ({v_before:.2f} -> {v_after:.2f} V)" if charging
+                            else f"; NOT charging ({v_before} -> {v_after} V) - contacts missed")
+        return r
     finally:
         if guard > 0:
             try:
@@ -348,7 +365,9 @@ async def _dock_legs(client: RoverClient, pose: dict, camera: str, max_steps: in
             stalls += 1
             if stalls >= 3:
                 log.append({**entry, "action": "stalled"})
-                return {"ok": along <= 60.0, "reason": f"stopped moving {along:.0f} mm short of the taught pose",
+                # with the bumper bar (10-26) the wall is the stop: a stall within
+                # DOCK_BUMP_MM of the pose is a dock, not a failure
+                return {"ok": along <= DOCK_BUMP_MM, "reason": f"stalled {along:.0f} mm short of the taught pose",
                         "log": log, "pose": _pose_dict(rover)}
         else:
             stalls = 0
