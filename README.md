@@ -52,8 +52,9 @@ instructions, and readable as plain English by anyone.
   taught pose, hands off. **And it charges there (10-26):** printed pad
   bars with 12 AWG Romex staples lie across the base's sprung rollers,
   a 1N5822 keeps the bare pads dead off the dock, and the pack took
-  charge through them (0.41 A tapering on the bench supply). Next:
-  auto-dock - go home on low battery by itself.
+  charge through them (0.41 A tapering on the bench supply). `dock()`
+  backs off, drives back on and charges (10-26). Next: auto-dock - go
+  home on low battery by itself.
 - **It has been through the house** (2026-10-04, as the trike): dining
   room to kitchen doorway, ~12-14 m, in camera-checked legs.
 - **Sensors:** TFMini forward LiDAR (obstacle stop at 50 cm), two TCRT5000
@@ -151,8 +152,9 @@ lost-marker and stuck detection) but never replaces the firmware's.
 
 ## The house chassis: a Eufy RoboVac 12
 
-Phases 2 and 3 ride on a **Eufy RoboVac 12**, keeping its own docking,
-charging, cliff and bumper behaviour, driven over infrared. Its remote
+**Shelved as a chassis since 2026-10-24** (intact; its charging base is
+now Grover's dock). It was the plan for Phases 2 and 3, keeping its own
+docking, charging, cliff and bumper behaviour, driven over infrared. Its remote
 sends a 6-byte frame `68 CMD HH MM 5C SUM` - **the current time is stamped
 into every command**, and stale frames are ignored. `blackcam`, a T-Camera
 on the lid (`firmware/blackcam.yaml`), stamps each frame from SNTP and

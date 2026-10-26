@@ -3,7 +3,7 @@
 The high-level front door to the rover: an MCP server that Claude (or any
 MCP client) talks to instead of poking ESPHome services and camera URLs by
 hand. It runs off-board - on the dev VM today, on the cluster later - and
-is where autonomy (visual homing, docking) will be written.
+is where autonomy (visual homing, docking) lives.
 
 Architecture, for the record: an ESP32 (`rover32`) is the *spinal cord*
 (ESPHome; watchdog, disconnect-stop, cliff, battery and obstacle guards in
@@ -25,6 +25,8 @@ courtesy layer that refuses obviously bad requests early.
 | `locate(camera)` | overhead marker poses: Grover's position and heading from ArUco id 2 (60 mm, taped on top, FRONT edge to the nose; page in `hardware/markers/`), plus any other markers; image-frame angles, local mm/px | - |
 | `face(heading_deg, tol_deg)` | turn until the overhead reads that heading (image frame: 180 = toward the homing marker end, 270 = toward the pegboard); gyro turns, overhead re-read after each | needs id 2 in view; up to 3 corrections |
 | `go_to(marker_id | x_px,y_px, stop_mm)` | drive to a marker or pixel seen overhead: locate, turn if >10 deg off, else a forward pulse sized from the distance (<= 1 s), re-locate; stops inside `stop_mm` | check the lane first; 10 steps max; 10-24: 1.43 m to 30 cm of id 0 in 13 s, 4 steps (tape only the marker margin - gloss over the cells blinds the overhead) |
+| `dock_approach()` | overhead `go_to` + `face` to the goal spot, then onboard `home_to_marker` to the dock marker (the 10-24 visual-homing run) | check the lane first |
+| `dock()` | overhead-only docking onto the Eufy base: waypoints 450 and 200 mm out on the taught pose's axis (`dock_pose.json`), square up at each, then creep until the overhead reads the pose, steering back onto the axis if >8 mm off. The TFMini guard is relaxed from the 200 mm leg (the tower is in range) and restored after | base taped white under the cliff sensors; contacts need the pose within a few mm fore-aft (10-26); re-teach by pushing Grover on until it charges and recording `locate` |
 | `eufy(command)` | drive the Eufy RoboVac 12 over IR via its lid board: forward, backward, left, right, home, start_stop (one remote press each; floor only) | - |
 | `stop` | stop now | - |
 

@@ -18,7 +18,39 @@ breakdown of the notable decisions. Newest entry on top.
 
 ## Current status (as of the latest entry below)
 
-**Where things stand, 2026-10-24:**
+**Where things stand, 2026-10-26:**
+
+- **Grover is a Makeblock tank** (since 10-19/22), ESP32 spinal cord
+  `rover32` (ESPHome: watchdog, disconnect-stop, cliff, low-battery and
+  TFMini obstacle guards, ramped trapezoid pulses at 75 % min duty, gyro
+  turns), 3S 18650 pack behind an HW-288 BMS, onboard camera `redcam` on
+  camera mount v7 (printed 10-25; v6 snapped), ArUco id 2 on its top for
+  the overhead `benchcam`.
+- **Phase 1 and the visual-homing goal are done** (`dock_approach`,
+  10-24: far end of the bench to the marker, hands off).
+- **Phase 2 hardware is done.** The dock is the Eufy RoboVac's charging
+  base, fed 12.47 V CC/CV from a TalentCell brick (or the RD6018);
+  Grover's printed pad bars with 12 AWG Romex staples ride its sprung
+  rollers (left +). The contacts feed the 12.6 V rail through a 1N5822
+  (bare pads are dead off the dock); the pack tops out ~12.0 V. **First
+  charge 10-26** (0.41 A tapering on the RD6018); the brick's LED reads
+  green behind the diode and means nothing - judge by voltage/current.
+- **`dock()` drives back on and charges** (10-26 test: backed off ~70 cm,
+  docked hands off 7 mm from the taught pose, then a 14 mm nudge made
+  contact - since fixed: the creep now goes all the way to the pose,
+  relaxes the obstacle guard from the 200 mm waypoint and steers back
+  onto the axis). Contact window is a few mm fore-aft.
+- **Open:** `rover32` reboots the moment the charge contacts touch
+  (seen twice) - find out why before auto-dock relies on the link;
+  contact margin at +/-1 cm untested; motion still jerky (75 % min-duty
+  jump); the buck's USB back-feed diode deferred (no USB on `rover32`
+  with the pack connected). Next: ROADMAP 2.4, auto-dock on low battery.
+- The Eufy is shelved as a chassis (IR hold stands); the spare C3
+  SuperMini left the project for a Wyola fish feeder (10-26).
+
+### Earlier status notes (superseded, kept for the record)
+
+**Where things stood, 2026-10-24:**
 
 - **Two robots, one brain.** **Grover** (Makeblock trike, bench platform)
   and a **Eufy RoboVac 12** (the house chassis, driven over IR). The
@@ -268,7 +300,21 @@ trike that could barely reverse; now it parks itself on a dock (10-24) and the d
 pack (10-26). What's left of Phase 2 is software: noticing a low
 battery and going home on its own. I'm proud of this one.
 
-**Claude-driven:** the charge-lead diode, the check order.
+**Redock test, same evening.** Enoch asked for a back-off-and-redock.
+Three reverse pulses (the first two barely moved against the rollers,
+the third ran ~70 cm once free), then `dock()`: stopped 86 mm short
+with the front-left cliff sensor off the white tape, ~35 mm off the
+axis. Causes, fixed in `brain/steer.py`: the taught pose predated the
+pad bars (re-taught from the charging position), the waypoints arrive
+within 80 mm and `face` fixes heading not offset (the creep now steers
+back onto the axis), and the 200 mm waypoint leg had the TFMini guard
+on with the tower in range (14 refused pulses; now relaxed from that
+leg). Rerun: docked 7 mm from the pose, 1-3 mm lateral - but no charge
+until a 14 mm nudge (Enoch: "5-10 mm"), so the creep now stops at the
+pose, not 25 mm short. `rover32` rebooted on contact, as it did when
+the leads first went on - open.
+
+**Claude-driven:** the charge-lead diode, the check order; the dock fixes.
 **Enoch-decided:** diode 2 in, diode 1 deferred; contacts on the 12.6 V rail; the pad-bar fit; the Romex (10-25); the RD6018 for a current reading.
 
 
