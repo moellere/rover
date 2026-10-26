@@ -399,6 +399,18 @@ human - is met on the bench; what remains for ROADMAP 2.4 is deciding
 *when* (a battery threshold) and the `rover32` reboot on contact (not
 seen this run).
 
+**Late, same night.** Headlight clip printed (`534f48bdaf`). Enoch
+soldered the WS2812B chain - two headlight dots, then his 6-pixel 12 mm
+adhesive strip - with data on **GPIO4** (the one non-strapping pin he
+could reach without lifting the board). `rover32` flashed OTA with the
+chain (`LED chain`, partitions `Headlight` 0-1 and `Status strip` 2-7,
+colour correction 60 % to cap current) and a `debug` **Reset Reason**
+sensor for the reboot-on-contact question; after the flash it reads
+"software via esp_restart" (the OTA itself). Test: headlight white,
+strip green. Enoch then unplugged the dock and left Grover off the
+charger: he is travelling ~5 days, and the dock is not trusted
+unattended yet.
+
 **Claude-driven:** the dock routine and its fixes, the bumper and its
 clip geometry, the charge confirmation. **Enoch-decided:** the hard-stop
 idea, one bar instead of two caps, painting the base, the measurements.

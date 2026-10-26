@@ -810,6 +810,52 @@ text_sensor:
   - platform: template
     name: "Motion"
     id: motion_status
+  # Why the last boot happened (2026-10-26): rover32 restarts the moment the
+  # dock contacts touch; this says whether it's a brownout, a watchdog or a panic.
+  - platform: debug
+    reset_reason:
+      name: "Reset Reason"
+
+debug:
+  update_interval: 60s
+
+# WS2812B chain on GPIO4 (Enoch, 2026-10-26: reachable without lifting the
+# board), through 330 ohm: two headlight dots either side of the camera, then
+# a 6-pixel status strip. colour_correct caps the current (~0.3 A at full white).
+light:
+  - platform: esp32_rmt_led_strip
+    id: leds
+    name: "LED chain"
+    pin: GPIO4
+    num_leds: 8
+    chipset: WS2812
+    channel_colors: GRB
+    restore_mode: ALWAYS_OFF
+    default_transition_length: 0s
+    color_correct: [60%, 60%, 60%]
+  - platform: partition
+    id: headlight
+    name: "Headlight"
+    restore_mode: ALWAYS_OFF
+    segments:
+      - id: leds
+        from: 0
+        to: 1
+  - platform: partition
+    id: status_strip
+    name: "Status strip"
+    restore_mode: ALWAYS_OFF
+    segments:
+      - id: leds
+        from: 2
+        to: 7
+    effects:
+      - addressable_scan:
+          name: "Docking"
+      - pulse:
+          name: "Charging"
+          transition_length: 1s
+          update_interval: 1s
 
 api:
   on_client_disconnected:
