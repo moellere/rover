@@ -299,6 +299,7 @@ async def _dock_legs(client: RoverClient, pose: dict, camera: str, max_steps: in
         await client.set_number("obstacle_stop", 0)
     prev = None
     stalls = 0
+    steer_fails = 0
     for i in range(DOCK_MAX_CREEPS):
         rover, _ = _rover(camera)
         if rover is None:
@@ -318,13 +319,22 @@ async def _dock_legs(client: RoverClient, pose: dict, camera: str, max_steps: in
         # so steer back onto the axis while creeping (2026-10-26: 35 mm off tripped a cliff sensor)
         lateral = ((rover.x_px - pose["x_px"]) * (-math.sin(h)) + (rover.y_px - pose["y_px"]) * (-math.cos(h))) * pose["mm_per_px"]
         entry["lateral_mm"] = round(lateral)
-        if abs(lateral) > DOCK_LATERAL_MM and along > 40.0:
+        if abs(lateral) > DOCK_LATERAL_MM and along > 15.0:
             ax, ay = _axis_point(pose, max(along - DOCK_LOOKAHEAD_MM, 0.0))
             aim = math.degrees(math.atan2(-(ay - rover.y_px), ax - rover.x_px)) % 360
-            if abs(heading_change(rover.heading_deg, aim)) > 3.0:
-                f = await face(aim, camera, 2.0)
-                log.append({**entry, "action": f"steer to {aim:.1f}", "ok": f.ok})
-                continue
+        else:
+            # back on the axis (or too close to steer): square up again, or the
+            # correction angle carries Grover across the axis (10-26: 12 mm one
+            # way became 21 mm the other)
+            aim = pose["heading_deg"]
+        if along > 15.0 and abs(heading_change(rover.heading_deg, aim)) > 3.0 and steer_fails < 2:
+            f = await face(aim, camera, 2.0)
+            log.append({**entry, "action": f"steer to {aim:.1f}", "ok": f.ok})
+            # a pivot this small often doesn't move the tracks at all (10-26: six
+            # failed steers in a row); after two, creep on and let the offset grow
+            steer_fails = 0 if f.ok else steer_fails + 1
+            continue
+        steer_fails = 0
         st = await client.state(timeout=3.0)
         if st.front_left_cliff or st.front_right_cliff:
             # The base is black plastic: the cliff sensors read it as no
