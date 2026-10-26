@@ -156,8 +156,8 @@ fallback is to switch to Opus 5.5 or wait for the reset.
 - **Dedicated to this project, flash/modify freely** (Enoch, 2026-09-29,
   "for the time being"): the rover's spinal cord (`rover32`), the
   T-Camera (`redcam`), both bench cameras (`camv3`, `benchcam`, ex-`fishcam`), the
-  Eufy's lid board (`blackcam`) and the IR test nodes (`eufy-ir8266`,
-  `eufy-ir-c3`). Every other device still needs a check-in first.
+  Eufy's lid board (`blackcam`) and the IR test node `eufy-ir8266`
+  (`eufy-ir-c3`'s board went to a Wyola fish feeder, 2026-10-26). Every other device still needs a check-in first.
 - **Printing while Enoch is away (2026-10-20, "If you need to print
   something else, you can"):** Claude may submit and start prints on his
   standing OK, quoting it, without a per-print go. The bed can only be

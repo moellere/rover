@@ -56,7 +56,7 @@ chain.
 | TTGO T-Camera V1.7 (`blackcam`) | 1 | Lid board: camera + IR (IO22), powered from its header 5 V | Inventory (spare) | Flashed and proven 2026-10-04; lid mounting/power next |
 | 940 nm IR LED + NPN (2N2222/2N3904) + 1k base + 33R | 1 set | IR driver, ~105 mA, 2 m range | Inventory (LED/receiver kit) | Wired on blackcam |
 | VS1838B 38 kHz receiver + Wemos D1 Mini (`eufy-ir8266`) | 1 | Bench tool for capturing/decoding remote frames | Inventory | In use |
-| ESP32-C3 Super Mini (`eufy-ir-c3` config) | 1 | Spare IR node if needed | Inventory | Config ready, not flashed |
+| ESP32-C3 Super Mini (`eufy-ir-c3` config) | 1 | Spare IR node | Inventory | **Leaves the project 2026-10-26** - Enoch is reusing it for a pond fish feeder at Wyola; `firmware/eufy-ir.yaml` stays as the reference if an IR node is ever needed again |
 
 (The Roomba plan - mini-DIN plug, level shifter - is shelved; the Roomba was gone.)
 
