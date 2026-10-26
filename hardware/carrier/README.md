@@ -141,7 +141,15 @@ Bottom to top:
 
 1. **Deck:** printed driver tray (2x DRV8871, LM2596) + **battery cradle v3
    lowered onto the deck** (its proven pack fit unchanged), replacing the L298N
-   and the breadboard. Pack slides out the rear.
+   and the breadboard. **The pack lifts out of its pocket** (it never slid - an
+   error in the first write-up, Enoch caught it): open the hinged plate, lift.
+   What carries over from v3: the pocket and the BMS window exactly. What changes:
+   (a) the BMS faces down through the floor window, so the lowered cradle needs
+   short legs / a raised floor to clear the BMS and its leads (and that gap can be
+   the cable run to the driver tray); (b) v3's pocket is shifted rearward on the
+   post pattern (mass over mid-track, Enoch 10-19), so on the deck the rear posts
+   would land inside the pocket - the new base must move those bolt points
+   outboard, or the posts move.
 2. **The four 30 mm standoff posts** (64 x 96 mm, M4) stay, now spanning the battery.
 3. **Hinged electronics plate** at the cradle's current height: FNK0101 on its
    81 x 77 mm M3 holes (power jack to the rear) + the half breadboard (82 x 54) in a
