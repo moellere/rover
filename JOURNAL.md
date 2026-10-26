@@ -208,8 +208,15 @@ anything is wired. Proposed to Enoch:
   hand: `battery_voltage` rising, the brick's LED, a touch check of the
   diode and the BMS at 5 minutes.
 
+Then Enoch's photo: the pad bars are on (M4 with stacked nuts as the
+height adjustment), Grover sitting on the base, the bar's underside
+resting on top of the black roller, the white tape still under the
+cliff sensors. Next check before any wiring to the BMS: the brick on the
+base, meter across the two staple leads on Grover's side (expect ~12.6 V,
+left +), then rock the chassis to see it holds.
+
 **Claude-driven:** the charge-lead diode, the check order.
-**Enoch-decided:** (pending his OK).
+**Enoch-decided:** (pending his OK); the pad-bar fit.
 
 
 ## 2026-10-25 - Camera mount v7: the foot never touched at the back
