@@ -181,10 +181,28 @@ the battery and the hinged plate (dock-tower and overhead-camera clearance). Wha
 moves: the dock pad plates/bars under the deck - to the base's underside or,
 better, into the **nose bracket** (cliffs + contacts + TFMini + bumper), built at
 the same time; the cliff mounts are on the front cross beam, unaffected until then.
-**Measurements needed:** the side beams' inside-to-inside spacing and the cross
-beams' lengths/positions; beam-top and track-top heights above the bench; a
-photo from underneath (Grover on its side). The Base Bracket outline / Sketchfab
-model are then not needed.
+**Frame geometry (kit specs + manual, 10-27):** 0824 beams are 8 x 24 mm 6061
+extrusion, M4-threaded ends and slot (hole pitch: listings say both "12 holes in
+96 mm" and "16 mm increments" - confirm from a photo). The two 0824-144 track
+beams stand **on their sides** (24 tall, 8 wide); the 0824-096 cross beam lies
+**flat** between them, bolted into their inside faces at the 5th hole from the
+motor end (step 5) -> track beams ~96 mm apart inside. The Base Bracket rides on
+an 0824-128 beam bolted onto the cross beam (2x M4 x 22, steps 8 and 11).
+
+**Correction (Enoch, 10-27):** the cliff brackets and the dock pad plates bolt to
+the acrylic Base Bracket, and the TFMini bracket to a metal plate (kit Plate 3x6)
+that bolts to it - so retiring the acrylic moves everything at the front, and the
+**nose bracket must be designed together with the base**, not after it.
+(cliff-mount.scad's notes call its mounting face a "beam top, 24 deep, two hole
+rows"; a front photo will settle which surface that is.)
+
+**Motor mounts:** the motor plates stand up above the track beams; Enoch may be
+able to rotate them to hang below, which would let the base lie flat across the
+frame - otherwise cut-outs.
+
+**Still needed:** heights above the bench (track-beam top, cross-beam top, track
+top run, motor-plate top); one front-on photo at bench level showing the acrylic,
+cliff brackets, pad plates and TFMini plate.
 
 ## Open questions for Enoch
 
