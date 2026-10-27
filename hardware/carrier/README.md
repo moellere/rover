@@ -201,8 +201,11 @@ able to rotate them to hang below, which would let the base lie flat across the
 frame - otherwise cut-outs.
 
 **Still needed:** heights above the bench (track-beam top, cross-beam top, track
-top run, motor-plate top); one front-on photo at bench level showing the acrylic,
-cliff brackets, pad plates and TFMini plate.
+top run, motor-plate top); **before anything comes off**, one front-on photo at
+bench level and one side-on with a ruler standing on the bench, showing the
+acrylic with the cliff brackets, pad plates, TFMini plate and bumper in place -
+the nose bracket must put each back exactly where it is (cliffs 65 mm ahead of the
+axle, pads over the rollers, TFMini height/aim, bumper 10 mm ahead).
 
 ## Open questions for Enoch
 
