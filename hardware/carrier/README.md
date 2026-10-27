@@ -171,9 +171,20 @@ BaseBracket - so the redesign replaces the kit's second tier.
 
 Footprint: board + breadboard need ~88 x 140 mm vs 64 x 96 mm between the posts,
 so the plate overhangs - sideways (over the tracks) or fore-aft (toward the camera
-mount). **Measurements needed before design:** the BaseBracket's outline;
-the height from the deck's top surface to the tracks' top run; a top-down photo
-of the bare deck with a ruler (which holes the studs are in, which are free).
+mount).
+
+**Proposed (Claude, 10-27, Enoch asked): bolt the printed base straight to the
+chassis beams and retire the acrylic Base Bracket.** The 0824 beams' threaded
+slot takes an M4 almost anywhere along them (no hole pattern to match), PETG on
+aluminium beats brittle acrylic (cf. the 10-18 fall), and dropping a layer lowers
+the battery and the hinged plate (dock-tower and overhead-camera clearance). What
+moves: the dock pad plates/bars under the deck - to the base's underside or,
+better, into the **nose bracket** (cliffs + contacts + TFMini + bumper), built at
+the same time; the cliff mounts are on the front cross beam, unaffected until then.
+**Measurements needed:** the side beams' inside-to-inside spacing and the cross
+beams' lengths/positions; beam-top and track-top heights above the bench; a
+photo from underneath (Grover on its side). The Base Bracket outline / Sketchfab
+model are then not needed.
 
 ## Open questions for Enoch
 
