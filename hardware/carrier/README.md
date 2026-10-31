@@ -259,6 +259,17 @@ below that plane must avoid them. The rear half between the tracks is open apart
 from the rear motor (wiring, driver holders). Next: the acrylic alone on the bench
 with a ruler on two edges (outline + free holes).
 
+**The acrylic (Enoch, 10-31): 90 x 104 mm** (fits the 105 mm between the tracks
+with ~7 mm a side). Front edge: cliff mounts, dock pad plates, the TFMini's metal
+plate in the middle - all stay. The **L298N is mounted under the acrylic at the
+rear**: once it's gone, that underside spot takes the two DRV8871s and the buck
+(next to the motors, short leads). The four post holes (64 x 96 mm) are near the
+corners; cradle v3 already bolts through them and keeps them, lowered (longer
+bolts). **Riser plan for the hinged plate:** front pair on the cradle's front tab
+through the front post holes (as the posts are now); rear pair on the acrylic's
+long-edge hole columns, outside the cradle's 71 mm width (~9 mm margin a side) -
+exact holes measured from an edge before slicing.
+
 **Front parts as they sit today (Enoch, measured 10-31)** - what the nose bracket
 must reproduce:
 
