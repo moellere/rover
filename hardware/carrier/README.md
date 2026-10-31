@@ -247,6 +247,16 @@ leads). Needed: top-down photo of the acrylic with the cradle off (free holes),
 the BMS's protrusion below the holder (v3 assumes 6 mm), the DRV8871 outline/holes.
 The base-on-the-cross-beam and nose-bracket design above is superseded.
 
+**Bare chassis (Enoch's top-down photo, 10-31):** H-frame - two track beams, the
+flat cross beam between them with two rows of six holes (look aligned, ~16 mm
+pitch: up to 12 bolt points). The cross beam sits just ahead of mid-track. Motors
+are staggered - right motor just ahead of the cross beam, left motor near the rear
+- each reaching about half way across, bodies below the cross beam's 55 mm top,
+so anything resting on the cross beam/acrylic clears them; only parts hanging
+below that plane must avoid them. The rear half between the tracks is open apart
+from the rear motor (wiring, driver holders). Next: the acrylic alone on the bench
+with a ruler on two edges (outline + free holes).
+
 **Front parts as they sit today (Enoch, measured 10-31)** - what the nose bracket
 must reproduce:
 
