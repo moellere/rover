@@ -25,9 +25,9 @@
 // part is symmetric, so handedness cannot go wrong; the right side is the
 // one next to the motor plate.
 //
-// Assumed, CONFIRM before slicing: end holes at 36 and 52 mm above the bench
-// (Makeblock 0824 on its side, top 56 mm, holes 4 mm in from each edge, 16
-// apart). The holes are slotted +/-3 mm vertically and +/-0.75 sideways.
+// End holes at 35 and 52 mm above the bench (Enoch, 10-31)
+// (Makeblock 0824 on its side, top 56 mm; 36/52 had been assumed). The holes
+// are slotted +/-3 mm vertically and +/-0.75 sideways.
 //
 // Render: openscad -o rear-cliff-bar.stl rear-cliff-bar.scad
 // Print:  as rendered (frame flat on the bed, end blocks and ribs up), no
@@ -37,7 +37,7 @@
 rail_in_x  = 95 / 2;          // rails' inside faces
 rail_w     = 8;               // 0824 on its side
 rail_cx    = rail_in_x + rail_w / 2;    // 51.5: end-hole column
-hole_z     = [36, 52];        // ASSUMED - see above
+hole_z     = [35, 52];        // measured (Enoch, 10-31)
 rail_top   = 56;
 standoff   = 6;               // clear of the right motor plate (~4 mm proud; 6 per Enoch)
 track_cx   = (105 / 2 + 165 / 2) / 2;   // 67.5: track centreline
