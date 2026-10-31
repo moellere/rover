@@ -247,7 +247,7 @@ slots +/-1 mm along that line (Enoch: leave slop), M3 screws; ~12 mm tall
 GND / VM / OUT1 / OUT2; header GND / VM / IN1 / IN2) - the board sits on 3 mm
 standoffs at its holes with relief under both rows. MOTOR = OUT1/OUT2,
 POWER + = VM, POWER - = GND. **Driver tray:** one printed plate with both DRV8871s and
-the LM2596, bolted through the L298N's existing holes (no new acrylic holes);
+the LM2596, **designed: `hardware/driver-tray.scad`** (52 x 70 mm, its own drill template - Enoch drills the acrylic to suit);
 terminals out toward each side's motor, headers to the middle. Needed: the L298N's
 hole spacing/diameter (often 37 x 37, M3 - measure), the LM2596 (module 21 x 44 mm, Enoch; two diagonal ~3.2 mm holes near the OUT- and IN+ corners at ~(2.4, 5.6) and (19.2, 35.9) mm from the OUT- corner = ~30 x 17 mm, read from his photo, confirmed by Enoch 10-31; joints on the back, 3 mm standoffs; IN toward the battery leads, OUT toward the 5 V run); the cradle's wall-top and
 battery-top heights and where the rear wall is solid (hinge blocks); how far back
