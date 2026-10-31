@@ -357,7 +357,7 @@ must reproduce:
 | Charge contacts (pad bars, bottom) | 9-10 mm | ~35 mm ahead of the front axle centre |
 | TFMini lens centre | 63 mm | - |
 
-**Axle to axle: ~128 mm** (Enoch). Mid-track is 64 mm behind the front axle; the
+**Axle to axle: ~128 mm** (Enoch). **Rear (Enoch, 10-31):** rear axle 8 mm in from the rail ends; rearmost tread 30 mm behind the rail ends. Rear cliff sensors at the front pair's 75 mm from the axle put their faces ~67 mm behind the rail ends (~37 mm beyond the tread). Mid-track is 64 mm behind the front axle; the
 cross beam spans 30-54 mm behind it, i.e. just ahead of mid-track.
 
 The cliff sensors work at 13-15 mm (edge-tested 10-26); the nose bracket holds
