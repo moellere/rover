@@ -106,7 +106,18 @@ and speed on a PWM EN pin; the DRV8871 takes PWM on IN1 (forward) or IN2
   no pins); an expander, if it comes, carries only non-critical inputs (bumpers,
   buttons).
 
-### The base board (Enoch, 2026-10-26)
+### The base board - OPEN (10-31)
+
+Enoch (10-31): the Freenove isn't in hand - "not sure where the Freenove board
+came from... just a conversation point" (on 10-26 his "that's the specific board I
+have" was recorded as the FNK0101; he may have meant the ESP32 expansion shields
+from his first link, B0GX917MNR). **Not ordering yet**: the driver swap runs on the
+existing breadboard (buck 5 V -> the breadboard rail as now). Choose the carrier
+base after Grover drives on the DRV8871s - a shield he has, or the FNK0101 (check
+price and its regulators' current first). The notes below about the FNK0101 stand
+as research.
+
+### The base board (Enoch, 2026-10-26) - research, not in hand
 
 **v1 base = the Freenove Universal Breakout Board, FNK0101** (Amazon B0DT48T7CB,
 Enoch has one). **Freenove's size diagram (10-26): board 87.63 x 83.19 mm, four
