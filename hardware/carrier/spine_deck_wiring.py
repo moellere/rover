@@ -122,34 +122,40 @@ for r in range(30):                                                    # hole gr
         add(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="1.3" fill="#c9c3b6"/>')
 bcx = bx0 + bw / 2
 
-# gyro, upright in the breadboard (seen from above: a thin edge)
-gy = by0 + 70
-rect(bx0 + 52, gy - 5, 150, 10, "#1e4fa0", "#0d2f66", rx=2)
-text(bx0 + 140, gy - 12, "L3G4200D gyro (upright)", 11, "middle", col="#0d2f66", weight="bold")
-gyro = {"VIN": bx0 + 62, "GND": bx0 + 86, "SCL": bx0 + 150, "SDA": bx0 + 174}
-for k, x in gyro.items():
-    dot(x, gy + 8, "#0d2f66", 3)
-    text(x, gy + 24, k, 9, "middle")
-line([(gyro["VIN"], gy + 8), (gyro["VIN"], gy + 40), (rail["3V3"], gy + 40)], C["v33"], 2)
-line([(gyro["GND"], gy + 8), (gyro["GND"], gy + 52), (rail["GNDa"], gy + 52)], C["gnd"], 2)
+# gyro, upright in the breadboard: its 8 in-line pins run ALONG a column, one
+# pin per 5-hole row (each row is one node), right half, column 6
+rp = (bh - 44) / 29
+def ry(r): return by0 + 22 + r * rp
+def cx(c): return bx0 + 46 + c * 17 + (12 if c >= 5 else 0)
+gx = cx(6)
+rect(gx - 5, ry(1) - 7, 10, ry(8) - ry(1) + 14, "#1e4fa0", "#0d2f66", rx=2)
+gpins = {1: "GND", 2: "VIN", 4: "SCL", 5: "SDA"}     # row order illustrative - follow the silkscreen
+for r in range(1, 9):
+    dot(gx, ry(r), "#0d2f66", 2.6)
+    text(gx - 10, ry(r) + 4, gpins.get(r, "-"), 9, "end", col="#0d2f66")
+text(gx - 34, ry(6) + 4, "gyro, upright:", 11, "end", col="#0d2f66", weight="bold")
+text(gx - 34, ry(7) + 4, "one pin per row", 10, "end", col="#0d2f66")
+text(gx - 34, ry(8) + 4, "(order per silkscreen)", 9, "end", col="#555")
+line([(cx(7), ry(2)), (rail["3V3"], ry(2))], C["v33"], 2)
+line([(cx(7), ry(1)), (rail["GNDb"], ry(1))], C["gnd"], 2)
+for r in (1, 2): dot(cx(7), ry(r), "#555", 2.4)
 
 # battery divider: 12 V bus -> 100k -> node -> 27k -> GND; node -> GPIO34
-dvy = by0 + 205
-def resistor(x, y, label, vertical=True):
-    if vertical:
-        rect(x - 6, y - 16, 12, 32, "#e9d8a6", "#7a6a3a", rx=4, sw=1.2)
-    text(x + 12, y + 4, label, 11, col="#5a4a1a", weight="bold")
-rx1 = bx0 + 140
+dvy = by0 + 280
+def resistor(x, y, label):
+    rect(x - 6, y - 16, 12, 32, "#e9d8a6", "#7a6a3a", rx=4, sw=1.2)
+    text(x - 10, y + 4, label, 11, "end", col="#5a4a1a", weight="bold")
+rx1 = cx(8)
 resistor(rx1, dvy - 30, "100k")
 resistor(rx1, dvy + 30, "27k")
 dot(rx1, dvy, C["bat"], 5)
-text(rx1 + 12, dvy + 6, "node -> 34", 10, col=C["bat"], weight="bold")
+text(rx1 - 10, dvy - 6, "node", 10, "end", col=C["bat"], weight="bold")
 line([(rx1, dvy + 46), (rx1, dvy + 62), (rail["GNDb"], dvy + 62)], C["gnd"], 2)
 
 # LED series resistor
-lry = by0 + 300
-rect(bx0 + 120, lry - 6, 34, 12, "#e9d8a6", "#7a6a3a", rx=4, sw=1.2)
-text(bx0 + 137, lry - 10, "330R", 11, "middle", col="#5a4a1a", weight="bold")
+lry = by0 + 372
+rect(bx0 + 60, lry - 6, 34, 12, "#e9d8a6", "#7a6a3a", rx=4, sw=1.2)
+text(bx0 + 77, lry - 10, "330R", 11, "middle", col="#5a4a1a", weight="bold")
 
 # ---- wires from the devkit ---------------------------------------------------
 # left side: front / rear sensors
@@ -189,22 +195,24 @@ line([P["RGND2"], (slot["GND2"], P["RGND2"][1]), (slot["GND2"], PDy)], C["gnd"])
 line([P["R19"], (slot["19"], P["R19"][1]), (slot["19"], PDy)], C["drv"])
 line([P["R18"], (slot["18"], P["R18"][1]), (slot["18"], PDy)], C["drv"])
 # gyro I2C (bus_c) and LED data cross over the slot wires
-line([P["R21"], (gyro["SDA"], P["R21"][1]), (gyro["SDA"], gy + 8)], C["i2c"])
-line([P["R5"], (gyro["SCL"] - 10, P["R5"][1]), (gyro["SCL"] - 10, gy + 30), (gyro["SCL"], gy + 30), (gyro["SCL"], gy + 8)], C["i2c"])
-line([P["R4"], (bx0 + 120, P["R4"][1]), (bx0 + 120, lry), (bx0 + 120, lry)], C["led"])
+line([P["R21"], (cx(8), P["R21"][1]), (cx(8), ry(5)), (cx(7), ry(5))], C["i2c"])
+dot(cx(7), ry(5), C["i2c"], 2.6)
+line([P["R5"], (cx(9), P["R5"][1]), (cx(9), ry(4)), (cx(7), ry(4))], C["i2c"])
+dot(cx(7), ry(4), C["i2c"], 2.6)
+line([P["R4"], (bx0 + 60, P["R4"][1]), (bx0 + 60, lry)], C["led"])
 # LED chain box (top right) <- 330R
 LEDx, LEDy = 1120, 150
 box(LEDx, LEDy, 350, [("LED chain (front)", True), ("Din <- GPIO4 via 330R (breadboard)", False),
                       ("headlight L -> R -> status strip (2-7)", False), ("5V and GND from the 5V / GND rails", False)],
     C["led"])
-line([(bx0 + 154, lry), (bx0 + bw + 40, lry), (bx0 + bw + 40, LEDy + 60), (LEDx, LEDy + 60)], C["led"])
+line([(bx0 + 94, lry), (bx0 + bw + 40, lry), (bx0 + bw + 40, LEDy + 60), (LEDx, LEDy + 60)], C["led"])
 
 # 5V: buck -> breadboard 5V rail -> devkit 5V pin
 line([(rail["5V"], PDy), (rail["5V"], by0 + bh - 12)], C["v5"])
 line([(rail["5V"], by0 + bh - 30), (gx0 - 4, by0 + bh - 30), (gx0 - 4, fy0 + fh + 8), (dx0 - 22, fy0 + fh + 8),
       (dx0 - 22, P["L5V"][1]), P["L5V"]], C["v5"])
 # 12 V bus -> 100k (top of divider)
-line([(bx0 + 185, PDy), (bx0 + 185, dvy - 60), (rx1, dvy - 60), (rx1, dvy - 46)], C["bat"])
+line([(bx0 + 228, PDy), (bx0 + 228, dvy - 60), (rx1, dvy - 60), (rx1, dvy - 46)], C["bat"])
 
 # ---- power deck box (below) ------------------------------------------------
 pdx, pdw = gx0 - 250, 650
@@ -231,14 +239,15 @@ for i, (k, s) in enumerate([("sig", "cliff sensor signal"), ("i2c", "I2C (TFMini
     text(lgx + 60, y, s, 12)
 
 nx, ny = 1120, 650
-rect(nx, ny, 350, 205, "#fffbe6", "#c9a227", rx=8)
+rect(nx, ny, 350, 225, "#fffbe6", "#c9a227", rx=8)
 text(nx + 12, ny + 24, "Notes", 14, weight="bold")
 for i, s in enumerate([
         "Cliff VCC on 3V3: the HW-870's output pulls up",
         "to its VCC, so on 5 V it would drive the ESP32",
         "input above 3.3 V.",
-        "Gyro: wire VIN/GND/SDA/SCL per its silkscreen;",
-        "yaw axis moves off Z once it stands upright.",
+        "Gyro: one pin per breadboard row; wire",
+        "VIN/GND/SDA/SCL by its silkscreen;",
+        "yaw axis moves off Z (stands upright).",
         "Pin side: GPIO 34/35 are input-only (fine here).",
         "Unused / avoid: 0, 2, 12, 15 (strapping), 6-11.",
         "Free: 14, 16, 17, 27."]):
