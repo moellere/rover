@@ -244,8 +244,7 @@ battery pocket, underside above the tracks (>= ~100 mm) so it can be ~160 mm wid
 with the FNK0101 and the breadboard side by side; (2) a **camera perch** at the
 plate's front edge (same +/-24 mm slots) - lowering the cradle would drop the
 camera ~30 mm, and homing/docking are tuned to its view; (3) small holders for the
-DRV8871s and the buck, beside the battery or under the plate (shortest motor
-leads). Needed: top-down photo of the acrylic with the cradle off (free holes),
+DRV8871s and the buck, on the hinged plate (see the acrylic note). Needed: top-down photo of the acrylic with the cradle off (free holes),
 the BMS's protrusion below the holder (v3 assumes 6 mm), the DRV8871 outline/holes.
 The base-on-the-cross-beam and nose-bracket design above is superseded.
 
@@ -261,9 +260,13 @@ with a ruler on two edges (outline + free holes).
 
 **The acrylic (Enoch, 10-31): 90 x 104 mm** (fits the 105 mm between the tracks
 with ~7 mm a side). Front edge: cliff mounts, dock pad plates, the TFMini's metal
-plate in the middle - all stay. The **L298N is mounted under the acrylic at the
-rear**: once it's gone, that underside spot takes the two DRV8871s and the buck
-(next to the motors, short leads). The four post holes (64 x 96 mm) are near the
+plate in the middle - all stay. **Correction (Enoch: the photo was the
+underside):** the L298N sits on TOP of the acrylic (seen through it), under the
+old cradle - a spot the lowered cradle now takes - and under the acrylic there's
+no room (its underside ~55 mm, motor tops ~52 mm). **So the DRV8871s and the buck
+go on the hinged plate** (underside outboard of the battery, or on top beside the
+FNK0101); motor leads run ~45 mm up. Hole choices will be described as seen from
+above (the underside photo is mirrored). The four post holes (64 x 96 mm) are near the
 corners; cradle v3 already bolts through them and keeps them, lowered (longer
 bolts). **Riser plan for the hinged plate:** front pair on the cradle's front tab
 through the front post holes (as the posts are now); rear pair on the acrylic's
