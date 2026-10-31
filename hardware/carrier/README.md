@@ -215,8 +215,11 @@ room for track slop: **base <= ~97 mm wide** up to the track top run.
 the track top (~95 mm over the sprockets, plus clearance) may be up to ~160 mm
 wide, e.g. the hinged electronics plate. For
 fore-aft stiffness on one cross beam: also bolt to the 0824-128 beam (if it stays,
-lengthwise on the cross beam), or a wide ribbed foot on the cross beam. Needed:
-is the 128 beam staying; cross-beam position (from the front axle) and top height;
+lengthwise on the cross beam), or a wide ribbed foot on the cross beam. **The
+cross beam has two rows of holes (Enoch)** - on an 0824's 24 mm face: rows 12 mm
+apart (6 and 18 mm from an edge), 16 mm pitch in each row (as measured for
+cliff-mount.scad, 10-03) - so a foot bolted through both rows resists fore-aft
+rocking and the 128 beam isn't needed. Needed: cross-beam position (from the front axle) and top height;
 free holes once the acrylic is off (top-down photo).
 
 ~~**Design direction from this:** bolt the printed base onto the **threaded slots
