@@ -1,133 +1,134 @@
-// Driver tray: the two DRV8871 motor drivers and the LM2596 buck on one
-// plate, in the L298N's old place on the acrylic deck, under the battery
-// cradle (2026-10-31). The tray is its own drill template: set it in place,
-// mark the acrylic through the four corner holes, drill, bolt it down (Enoch:
-// "I can drill any holes needed").
+// Driver tray v3: Grover's power deck under the battery cradle (2026-10-31).
+// The two DRV8871 motor drivers, the LM2596 buck and the two Wago 221-415
+// lever connectors that make the 12 V bus, on one plate in the L298N's old
+// place on the acrylic. The tray is its own drill template: set it between
+// the posts, mark the acrylic through the four holes, drill, bolt it down.
 //
-// Layout, seen from above (+Y forward, +X to Grover's right):
-//   front - the buck, lengthwise across, IN end at the right... see buck_flip;
-//           the BMS sits at the front of the battery pocket, so its leads
-//           reach the buck's IN first.
-//   rear  - the two DRV8871s side by side, screw terminals facing the REAR
-//           (motor and power leads), header edges facing forward to the buck;
-//           turned this way so the tray is 52 mm wide - the posts leave only
-//           ~57 mm between them (64 mm centres, ~7 mm posts).
-// Every board sits on 5 mm standoffs at its holes (v2 margin; v1's 3 mm clears
-// the DRV8871's ~2 mm terminal pins by ~1 mm and is fine as printed), with a
-// relief slot under each driver's terminal-pin row, M3 screws into the standoffs (self-tapping in PETG).
+// Layout, seen from above (+Y forward, +X to Grover's right) - Enoch's mock-up
+// (v3), so the 12 V parts sit together:
+//   front - the buck LENGTHWISE: OUT (5 V) forward, IN at the rear;
+//           the Wagos lengthwise either side of it, + on the left and GND on
+//           the right, levers facing OUTWARD (reachable from the sides with
+//           the cradle on), wire entries facing the buck.
+//   rear  - the two DRV8871s side by side, screw terminals to the REAR (motor
+//           and power leads), header edges forward; ~3 cm from the Wagos.
+// The posts stand only at the four corners (64 x 96 mm centres), so only the
+// ends must stay narrow (<~57 mm); the middle is wider for the Wagos, and the
+// narrow spine runs on forward between the front posts for the BMS-lead opening.
+//
+// Boards on 5 mm standoffs at their holes (solder joints underneath), slotted
+// +/-1 mm; relief under each driver's terminal-pin row; wire slot between the
+// drivers. Wagos press-fit: crush ribs on the pocket ends, 2 mm side rails.
 //
 // Measured (Enoch, 10-31): DRV8871 22 x 26 mm, two 3.2 mm holes on the header
-// edge 13 mm apart edge-to-edge (16.2 mm centres) - slotted +/-1 mm along that
-// edge as he asked; LM2596 21 x 44 mm, two diagonal 3.2 mm holes at
-// (2.4, 5.6) and (19.2, 35.9) mm from its OUT- corner (confirmed).
+// edge, 16.2 mm centres; LM2596 21 x 44 mm, diagonal 3.2 mm holes at
+// (2.4, 5.6) and (19.2, 35.9) mm from its OUT- corner; Wago 18 x 30 mm.
+// v1 (7e81c54605) had the buck diagonal mirrored; v2 put the Wagos across the
+// front; both superseded by this layout.
 //
 // Render: openscad -o driver-tray.stl driver-tray.scad
 // Print:  flat, standoffs up, no supports, no brim.
 
-plate_t   = 3;
-margin    = 2;
-corner_r  = 3;
-m3_clear  = 3.4;   // tray-to-acrylic bolts
-m3_pilot  = 2.6;   // standoff pilot for an M3 screw (self-taps PETG)
-stand_h   = 5;     // v2 margin: the DRV8871 terminal pins stick out ~2 mm (Enoch, 10-31) - v1's 3 mm already clears them by ~1 mm
-stand_d   = 6.5;
+plate_t  = 3;
+corner_r = 3;
+m3_clear = 3.4;
+m3_pilot = 2.6;
+stand_h  = 5;
+stand_d  = 6.5;
+slot     = 1;      // +/- on every board hole
 
 // DRV8871
-drv_l     = 26;    // terminal edge -> header edge (along X here)
-drv_w     = 22;    // along Y
-drv_hole_c = 16.2; // hole centres along the header edge: 13 mm edge-to-edge + 3.2 mm holes (Enoch corrected 4 -> 3.2, 10-31); v1 printed at 17, inside the +/-1 slots
-drv_hole_in = 2.8; // hole centre in from the header edge
-drv_slot  = 1;     // +/- along the header edge
-drv_gap   = 4;     // between the two boards (wire gap)
+drv_l = 26; drv_w = 22; drv_hole_c = 16.2; drv_hole_in = 2.8; drv_gap = 4;
+// LM2596 (board frame: x across its 21 mm, y along its 44 mm, origin OUT- corner)
+buck_l = 44; buck_w = 21; buck_h1 = [2.4, 5.6]; buck_h2 = [19.2, 35.9];
+// Wago
+wago_l = 30; wago_w = 18; wfit = 0.6; rib_h = 0.45; rib_w = 1.2;
+rail_h = 2; rail_t = 1.2; side_fit = 0.3; end_t = 2; end_h = 6;
 
-// LM2596
-buck_l    = 44;    // along X here
-buck_w    = 21;    // along Y
-// holes in the board's own frame: x across its 21 mm, y along its 44 mm,
-// origin at the OUT- corner
-buck_h1   = [2.4, 5.6];
-buck_h2   = [19.2, 35.9];
-buck_slot = 1;
+// stations along Y (rear -> front)
+y_rear   = -43;
+rear_tab = 7;
+y_drv0   = y_rear + rear_tab + 2;           // drivers' terminal (rear) edge
+y_drv1   = y_drv0 + drv_l;                  // their header edge
+y_buck0  = y_drv1 + 5;                      // buck IN end
+y_buck1  = y_buck0 + buck_l;                // buck OUT end
+y_wing1  = y_buck1 + 2;                     // the wide wings end here (behind the front posts)
+y_front  = y_buck1 + 11;                    // the narrow spine runs on, between the front posts, for the BMS-lead opening
 
-gap_y     = 5;     // between the buck and the drivers
-rear_tab  = 7;     // strip behind the drivers for the rear mounting bolts
-wago_d    = 22;    // v2: the Wago bus section ahead of the buck (wago-tray.scad's pockets)
-wago_x    = 87.8;  // its width - wider than the posts' gap, it sits ahead of them
-
-tray_x = 2 * drv_w + drv_gap + 2 * margin;                 // 52
-tray_y = rear_tab + margin + drv_l + gap_y + buck_w + margin;   // 63, plus the Wago section ahead
+narrow_x = 2 * drv_w + drv_gap + 4;         // 52: the ends, between the posts
+wago_cx  = buck_w / 2 + 3 + rail_t + side_fit / 2 + wago_w / 2;    // Wago centre lines
+wide_x   = 2 * (wago_cx + wago_w / 2 + side_fit / 2 + rail_t) + 2;  // ~70 mid-section
+pocket_l = wago_l + wfit;
+y_wago0  = y_buck0;                         // Wagos level with the buck's IN end
+y_wago1  = y_wago0 + pocket_l + 2 * end_t;
 
 $fn = 32;
 
-// board origins (lower-left corner of each board, plate frame centred in X)
-drv_y0  = -tray_y / 2 + rear_tab + margin;     // drivers at the rear (-Y), ahead of the tab
-buck_y0 = drv_y0 + drv_l + gap_y;              // buck in front
-buck_x0 = -buck_l / 2;
-
-module rounded(x, y, h) {
-  linear_extrude(h) offset(r = corner_r) offset(delta = -corner_r) square([x, y], center = true);
+module rrect(x0, y0, x1, y1, h) {
+  linear_extrude(h) offset(r = corner_r) offset(delta = -corner_r)
+    translate([x0, y0]) square([x1 - x0, y1 - y0]);
 }
 
-module slot_hole(d, len, h) {   // slot along Y, total travel 2*len
-  hull() for (dy = [-len, len]) translate([0, dy, 0]) cylinder(d = d, h = h);
+function drv_cx(s) = s * (drv_gap / 2 + drv_w / 2);
+function drv_holes(s) = [ for (dx = [-drv_hole_c / 2, drv_hole_c / 2]) [drv_cx(s) + dx, y_drv1 - drv_hole_in] ];
+// buck lengthwise, OUT forward, OUT- corner at front-right (Enoch's mock-up)
+function buck_holes() = [ for (h = [buck_h1, buck_h2]) [buck_w / 2 - h[0], y_buck1 - h[1]] ];
+
+module standoff(p, along_x) {
+  translate([p[0], p[1], 0]) hull() for (d = [-slot, slot])
+    translate(along_x ? [d, 0, 0] : [0, d, 0]) cylinder(d = stand_d, h = plate_t + stand_h);
+}
+module pilot(p, along_x) {
+  translate([p[0], p[1], -1]) hull() for (d = [-slot, slot])
+    translate(along_x ? [d, 0, 0] : [0, d, 0]) cylinder(d = m3_pilot, h = plate_t + stand_h + 2);
 }
 
-// DRV8871 hole centres: header edge faces forward (+Y), holes along it
-function drv_cx(side) = side * (drv_gap / 2 + drv_w / 2);
-function drv_holes(side) = [ for (dx = [-drv_hole_c / 2, drv_hole_c / 2])
-  [drv_cx(side) + dx, drv_y0 + drv_l - drv_hole_in] ];
+module wago_pocket(cx) {
+  // end walls (front and rear) with crush ribs, low rails along both long sides
+  for (e = [-1, 1]) {
+    yc = (y_wago0 + y_wago1) / 2 + e * (pocket_l / 2 + end_t / 2);
+    translate([cx - wago_w / 2 - side_fit / 2 - rail_t, yc - end_t / 2, 0])
+      cube([wago_w + side_fit + 2 * rail_t, end_t, plate_t + end_h]);
+    for (dx = [-5, 5])
+      translate([cx + dx - rib_w / 2, (y_wago0 + y_wago1) / 2 + e * pocket_l / 2 - (e > 0 ? rib_h : 0), plate_t])
+        cube([rib_w, rib_h, end_h]);
+  }
+  for (sx = [-1, 1])
+    translate([cx + (sx > 0 ? wago_w / 2 + side_fit / 2 : -wago_w / 2 - side_fit / 2 - rail_t), y_wago0 + end_t, 0])
+      cube([rail_t, pocket_l, plate_t + rail_h]);
+}
 
-// buck hole centres: board rotated so its 44 mm runs along X
-// v2: v1 had the diagonal mirrored (Enoch, 10-31) - the board's 21 mm axis
-// runs the other way along +Y here
-function buck_holes() = [ for (h = [buck_h1, buck_h2])
-  [buck_x0 + h[1], buck_y0 + buck_w - h[0]] ];
-
-module driver_tray() {
+module tray() {
   difference() {
     union() {
-      rounded(tray_x, tray_y, plate_t);
-      for (s = [-1, 1]) for (p = drv_holes(s))
-        translate([p[0], p[1], 0]) hull() for (dx = [-drv_slot, drv_slot])
-          translate([dx, 0, 0]) cylinder(d = stand_d, h = plate_t + stand_h);
-      for (p = buck_holes())
-        translate([p[0], p[1], 0]) hull() for (dx = [-buck_slot, buck_slot])
-          translate([dx, 0, 0]) cylinder(d = stand_d, h = plate_t + stand_h);
+      rrect(-narrow_x / 2, y_rear, narrow_x / 2, y_front, plate_t);              // spine
+      rrect(-wide_x / 2, y_wago0 - 2, wide_x / 2, y_wing1, plate_t);             // Wago wings
+      for (s = [-1, 1]) for (p = drv_holes(s)) standoff(p, true);
+      for (p = buck_holes()) standoff(p, false);
+      for (s = [-1, 1]) wago_pocket(s * wago_cx);
     }
-    // standoff pilots, slotted
-    for (s = [-1, 1]) for (p = drv_holes(s))
-      translate([p[0], p[1], -1]) hull() for (dx = [-drv_slot, drv_slot])
-        translate([dx, 0, 0]) cylinder(d = m3_pilot, h = plate_t + stand_h + 2);
-    for (p = buck_holes())
-      translate([p[0], p[1], -1]) hull() for (dx = [-buck_slot, buck_slot])
-        translate([dx, 0, 0]) cylinder(d = m3_pilot, h = plate_t + stand_h + 2);
-    // tray-to-acrylic holes (the drill template): the rear pair in the tab
-    // behind the drivers; the front pair is in the Wago section's bridge
-    for (sx = [-1, 1])
-      translate([sx * (tray_x / 2 - 8), -tray_y / 2 + rear_tab / 2, -1]) cylinder(d = m3_clear, h = plate_t + 2);
-    // relief under each driver's screw-terminal pin row (at its rear edge), so
-    // the ~3 mm pins can never bottom on the plate
-    for (s = [-1, 1])
-      translate([drv_cx(s) - (drv_w - 4) / 2, drv_y0 + 1, -1]) cube([drv_w - 4, 5, plate_t + 2]);
-    // wire gap between the drivers' headers: a slot through the plate for
-    // the logic leads to drop / rise without crossing the boards
-    translate([-drv_gap / 2 + 0.5, drv_y0 + 3, -1]) cube([drv_gap - 1, drv_l - 6, plate_t + 2]);
+    for (s = [-1, 1]) for (p = drv_holes(s)) pilot(p, true);
+    for (p = buck_holes()) pilot(p, false);
+    // relief under each driver's terminal-pin row
+    for (s = [-1, 1]) translate([drv_cx(s) - (drv_w - 4) / 2, y_drv0 + 1, -1]) cube([drv_w - 4, 5, plate_t + 2]);
+    // wire slot between the drivers
+    translate([-drv_gap / 2 + 0.5, y_drv0 + 3, -1]) cube([drv_gap - 1, drv_l - 6, plate_t + 2]);
+    // drill-template holes: rear tab pair, front wing pair (ahead of the Wagos)
+    for (sx = [-1, 1]) {
+      translate([sx * (narrow_x / 2 - 8), y_rear + rear_tab / 2, -1]) cylinder(d = m3_clear, h = plate_t + 2);
+      translate([sx * wago_cx, (y_wago1 + y_wing1) / 2, -1]) cylinder(d = m3_clear, h = plate_t + 2);
+    }
+    // BMS-lead opening ahead of the buck's OUT end, in the spine (the BMS sits at
+    // the front of the battery pocket and its leads drop here)
+    translate([-7, y_buck1 + 2.5, -1]) cube([14, 7, plate_t + 2]);
   }
 }
 
-module ghosts() {   // board outlines for checking, not printed
-  %for (s = [-1, 1]) translate([drv_cx(s) - drv_w / 2, drv_y0, plate_t + stand_h])
-    cube([drv_w, drv_l, 1.6]);
-  %translate([buck_x0, buck_y0, plate_t + stand_h]) cube([buck_l, buck_w, 1.6]);
+module ghosts() {
+  %for (s = [-1, 1]) translate([drv_cx(s) - drv_w / 2, y_drv0, plate_t + stand_h]) cube([drv_w, drv_l, 1.6]);
+  %translate([-buck_w / 2, y_buck0, plate_t + stand_h]) cube([buck_w, buck_l, 1.6]);
+  %for (s = [-1, 1]) translate([s * wago_cx - wago_w / 2, y_wago0 + end_t + wfit / 2, plate_t]) cube([wago_w, wago_l, 8.5]);
 }
 
-// v2: the Wago bus pockets (wago-tray.scad) joined to the front edge
-use <wago-tray.scad>
-module whole() {
-  driver_tray();
-  translate([0, tray_y / 2 + wago_d / 2 - 0.01, plate_t - 2]) tray();   // wago floor is 2 mm; flush underside
-  // fill the step where the 3 mm plate meets the 2 mm Wago floor
-  translate([-tray_x / 2 + corner_r, tray_y / 2 - corner_r, 0]) cube([tray_x - 2 * corner_r, corner_r + 1, plate_t]);
-}
-whole();
+tray();
 ghosts();
