@@ -15,8 +15,8 @@
 // Every board sits on 3 mm standoffs at its holes (solder joints under the pin
 // rows and corner pads), M3 screws into the standoffs (self-tapping in PETG).
 //
-// Measured (Enoch, 10-31): DRV8871 22 x 26 mm, two 4 mm holes on the header
-// edge 13 mm apart edge-to-edge (17 mm centres) - slotted +/-1 mm along that
+// Measured (Enoch, 10-31): DRV8871 22 x 26 mm, two 3.2 mm holes on the header
+// edge 13 mm apart edge-to-edge (16.2 mm centres) - slotted +/-1 mm along that
 // edge as he asked; LM2596 21 x 44 mm, two diagonal 3.2 mm holes at
 // (2.4, 5.6) and (19.2, 35.9) mm from its OUT- corner (confirmed).
 //
@@ -34,7 +34,7 @@ stand_d   = 6.5;
 // DRV8871
 drv_l     = 26;    // terminal edge -> header edge (along X here)
 drv_w     = 22;    // along Y
-drv_hole_c = 17;   // hole centres, along the header edge
+drv_hole_c = 16.2; // hole centres along the header edge: 13 mm edge-to-edge + 3.2 mm holes (Enoch corrected 4 -> 3.2, 10-31); v1 printed at 17, inside the +/-1 slots
 drv_hole_in = 2.8; // hole centre in from the header edge
 drv_slot  = 1;     // +/- along the header edge
 drv_gap   = 4;     // between the two boards (wire gap)

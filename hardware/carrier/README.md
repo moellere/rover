@@ -241,7 +241,7 @@ FNK0101 + breadboard side by side (up to ~160 mm wide, above the tracks), hinged
 the rear on printed blocks on the cradle behind the battery pocket, stopping short
 of the camera mount; battery access = swing the plate up, lift the pack. **DRV8871 module: 22 x 26 mm** (Enoch, 10-31): header IN2 / IN1 / VM / GND on
 one edge, screw terminals MOTOR (2) and POWER +/- (2) on the opposite edge; two
-4 mm holes on the header edge, 13 mm apart edge-to-edge (~17 mm centres) - holder
+3.2 mm holes on the header edge (corrected from 4 mm), 13 mm apart edge-to-edge (~16.2 mm centres) - holder
 slots +/-1 mm along that line (Enoch: leave slop), M3 screws; ~12 mm tall
 (terminals, 47 uF cap). Back: solder joints under both pin rows (terminals
 GND / VM / OUT1 / OUT2; header GND / VM / IN1 / IN2) - the board sits on 3 mm
