@@ -1,5 +1,5 @@
 // Top plate: Grover's electronics deck, fixed on the four 30 mm posts
-// (64 x 96 mm centres) via printed 15 mm risers (2026-10-31). Replaces battery
+// (64 x 96 mm centres), sitting directly on them (2026-10-31). Replaces battery
 // cradle v3 on the posts - the pack now rides in battery-tray.scad behind the
 // acrylic - so nothing under this plate needs regular access: no hinge.
 //
@@ -10,12 +10,15 @@
 //     locating pocket - right side;
 //   - the camera perch on a front tab, with cradle v3's M4 grid (8 mm pitch,
 //     columns +/-24..0, rows 12 and 20 mm ahead of the front posts) and its
-//     cable drop, so camera mount v7 bolts on exactly as before - ~15 mm higher;
+//     cable drop, so camera mount v7 bolts on exactly as before - ~7.5 mm lower
+//     than on cradle v3 (11 mm thick there, 3.5 here);
 //   - cable slots: between the two boards, and ahead of the FNK0101 for the
 //     sensor leads coming up from the deck.
-// Raised 15 mm (Claude's call, 10-31) so the plate clears the track tops and
-// can be wide enough for the two boards side by side; above the tracks the
-// limit is ~160 mm (tracks 165 mm outside).
+// No risers (Enoch, 10-31, with a photo of cradle v3 on the posts): the post
+// tops stand well clear of the track tops, so the plate can be wider than the
+// tracks' inside gap and still pass over them, and the driver tray and Wagos on
+// the acrylic fit underneath. Width limit ~160 mm (tracks 165 mm outside).
+// v1/v1b had 15 mm risers (job 5e2d54e100, skipped).
 //
 // Frame: +y FORWARD, +x Grover's RIGHT, z up (right-handed: forward x up =
 // right - checked per CLAUDE.md's handedness rule). Origin: centre of the posts.
@@ -24,11 +27,8 @@
 // 3.4 mm at 81 x 77 (Freenove diagram, spacing calipered by Enoch 10-26), 20 mm
 // tall with the devkit incl. the pins under the board (Enoch, 10-31); breadboard 82 x 54 x 9 (Enoch); camera grid from cradle v3.
 //
-// Render: openscad -o top-plate.stl top-plate.scad          (plate)
-//         openscad -D part=\"riser\" -o top-plate-riser.stl top-plate.scad   (print 4)
+// Render: openscad -o top-plate.stl top-plate.scad
 // Print:  flat, standoffs up, no supports, no brim. Blue PETG (Grover parts).
-
-part = "plate";
 
 plate_t  = 3.5;
 corner_r = 4;
@@ -63,8 +63,6 @@ perch_rows = [0, 8];                   // the second row 8 mm further forward
 perch_cols = [-24, -16, -8, 0, 8, 16, 24];
 tab_y1 = post_y + 38;                  // tab front edge, as cradle v3
 
-riser_h = 15;  riser_d = 10;
-
 $fn = 32;
 
 module rrect(xa, ya, xb, yb, h) {
@@ -97,18 +95,10 @@ module plate() {
   }
 }
 
-module riser() {   // one of four: sits on a post, M4 through
-  difference() {
-    cylinder(d = riser_d, h = riser_h);
-    translate([0, 0, -1]) cylinder(d = m4_hole, h = riser_h + 2);
-  }
-}
-
 module ghosts() {
   %translate([fn_cx - fn_w / 2, fn_cy - fn_l / 2, plate_t + fn_stand_h]) cube([fn_w, fn_l, 20]);
   %translate([bb_cx - bb_w / 2, bb_cy - bb_l / 2, plate_t - bb_recess]) cube([bb_w, bb_l, 9]);
   %translate([-30, perch_y - 18, plate_t]) cube([60, 44, 4]);   // camera mount base
 }
 
-if (part == "riser") riser();
-else { plate(); ghosts(); }
+plate(); ghosts();

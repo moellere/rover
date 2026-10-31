@@ -274,7 +274,10 @@ horizontal** - mid-track is a preference, not a rule.
   breadboard in line, ~97 x 140, overhanging the posts); raised ~12 mm (longer
   posts or printed risers) it clears the tracks and can be ~160 wide (side by
   side). Claude prefers raising it (shorter plate: front clear for the camera, rear
-  clear for battery access). Enoch to choose.
+  clear for battery access). Enoch to choose. **Resolved 10-31:** the ~88 mm
+  estimate was wrong - a side photo with cradle v3 on the posts shows the post
+  tops well clear of the track tops, so the plate sits directly on the posts,
+  side by side, no risers.
 - Needed: expansion-shield outline/holes/height; acrylic rear edge to the beams'
   rear end; rear motor top height and reach; the beams' inside spacing and hole
   positions at the rear.
