@@ -165,7 +165,36 @@ backed the Eufy off its dock and sent it home. See Tier 2E in the roadmap.
 
 ## Pictures
 
-The tank, 2026-10-22: assembled with the pack, cradle and camera, seen
+### How Grover changed
+
+Each big design change, newest first, with why it happened (the full story
+is in [JOURNAL.md](JOURNAL.md)). From the carrier rework on, each change gets
+the same three shots - side, top, rear - so the builds compare directly.
+
+| Date | Build | Why it changed | Photo |
+|---|---|---|---|
+| 10-31 | **Carrier rework** (in progress): DRV8871 drivers on a printed power deck with Wago buses; pack in a tray on the rails behind the deck; a fixed top plate on the posts for the FNK0101 breakout and a breadboard; rear cliff bar | The wiring had become "almost unmanageable" (Enoch); the DRV8871s are smaller than the L298N and drop far less voltage | [before](images/37-electronics-before-rework-2026-10-31.jpg), [top](images/44-battery-tray-and-power-deck-top-2026-10-31.jpg), [rear](images/45-rear-view-battery-tray-motor-2026-10-31.jpg) |
+| 10-24..26 | **Docking tank**: pad bars on the nose, bumper bar, LED headlight; docks and charges on the Eufy base by itself | Phase 2, recharging | [docked](images/32-docked-2026-10-24.jpg), [timelapse](images/35-autonomous-dock-timelapse-2026-10-26.mp4) |
+| 10-22 | **Tank again**: pack cradle on the deck posts, camera mount on the front perch, gyro | The ramped motion engine removed the reason for the trike; the trike's balance line made cliff stops tip it | [side](images/09-tank-side-2026-10-22.jpg) |
+| 09-29..10-18 | **Trike**: two driven wheels + caster, later a fixed skid | Tank pivots skidded (stiction, 100 % bursts); ended when it fell off the bench on 10-18 | [at the edge](images/04-trike-at-the-edge-2026-10-18.jpg) |
+| 09-27 | **First tank**, the Makeblock kit as built | First drive | [first drive](images/02-first-drive.jpg) |
+
+### The carrier rework, 2026-10-31
+
+![Before: the old deck, breadboard and L298N wiring](images/37-electronics-before-rework-2026-10-31.jpg)
+![Driver tray v3 on the acrylic: buck, Wago buses, two DRV8871s](images/40-driver-tray-v3-fitted-2026-10-31.jpg)
+![Top: blue battery tray on the rails behind the power deck](images/44-battery-tray-and-power-deck-top-2026-10-31.jpg)
+![Rear: battery tray, rear motor, rail end faces](images/45-rear-view-battery-tray-motor-2026-10-31.jpg)
+
+### Docking, 2026-10-24..26
+
+![Docked on the Eufy base](images/32-docked-2026-10-24.jpg)
+
+Autonomous undock, dock and charge: [timelapse](images/35-autonomous-dock-timelapse-2026-10-26.mp4).
+
+### The tank, 2026-10-22
+
+Assembled with the pack, cradle and camera, seen assembled with the pack, cradle and camera, seen
 from the overhead bench camera; its own view down the bench to the homing
 marker; and after its first gyro-closed 90 deg turn.
 
@@ -175,13 +204,17 @@ marker; and after its first gyro-closed 90 deg turn.
 ![Grover's own view down the bench](images/07-tank-eye-view-2026-10-22.jpg)
 ![After the first gyro-closed turn](images/08-first-gyro-turn-2026-10-22.jpg)
 
-The trike era, 2026-10-18: at the open edge with its skid an hour before
+### The trike, 2026-10-18
+
+At the open edge with its skid an hour before
 the fall, and the kit being rebuilt as the tank the same evening.
 
 ![The trike at the edge](images/04-trike-at-the-edge-2026-10-18.jpg)
 ![Rebuilding as the tank](images/05-tank-rebuild-2026-10-18.jpg)
 
-First drive, 2026-09-27 (the original Makeblock tank, before the trike):
+### First drive, 2026-09-27
+
+The original Makeblock tank, before the trike:
 
 ![First look at the workbench, lights on](images/01-first-look.jpg)
 ![Mid-drive, having moved a full bench-length](images/02-first-drive.jpg)
