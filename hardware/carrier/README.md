@@ -210,7 +210,10 @@ centre ~55 mm; battery cradle underside ~70 mm.
 
 **Correction (Enoch, 10-31): the base can only mount to the flat cross beam,
 not the track beams. Clearance between the rubber tracks is 105 mm** - leave
-room for track slop: **base <= ~97 mm wide** up to the track top run. For
+room for track slop: **base <= ~97 mm wide** up to the track top run.
+**Tracks 165 mm outside-to-outside** (Enoch) - each ~30 mm wide; anything above
+the track top (~95 mm over the sprockets, plus clearance) may be up to ~160 mm
+wide, e.g. the hinged electronics plate. For
 fore-aft stiffness on one cross beam: also bolt to the 0824-128 beam (if it stays,
 lengthwise on the cross beam), or a wide ribbed foot on the cross beam. Needed:
 is the 128 beam staying; cross-beam position (from the front axle) and top height;
