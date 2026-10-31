@@ -15,8 +15,12 @@
 // last ~31 mm of the rail). A low rear lip: lift the pack a little and slide it
 // out the back. Two slots take a velcro strap over the pack.
 //
-// Frame: x across (+x = Grover's right), y REARWARD from the acrylic's rear
-// edge, z up from the bench.
+// Frame: y REARWARD from the acrylic's rear edge, z up from the bench - so the
+// geometry below is built with +x = Grover's LEFT (a right-handed frame with y
+// pointing back). The 10-31 print (cfde5f9b89) came out mirrored because the
+// labels assumed +x = right; the final mirror() below fixes that: in the output
+// +x IS Grover's right, the short tab is on the right (clear of the motor
+// plate) and the BMS window on the left.
 // Measured (Enoch, 10-31): rail tops 56 mm; rails 95 mm apart inside; 60 mm
 // from the acrylic's rear edge to the rail ends; motor plate covers the rear
 // ~31 mm of the right rail. Holder + BMS 61 x 79 x ~23 (10-19; body 17 / BMS 6
@@ -89,5 +93,4 @@ module ghosts() {
   %for (s = [-1, 1]) translate([s * (rail_x + 4), rail_len / 2, rail_top - 12]) cube([8, rail_len, 24], center = true);
 }
 
-tray();
-ghosts();
+mirror([1, 0, 0]) { tray(); ghosts(); }   // see the frame note: the output has +x = Grover's right
