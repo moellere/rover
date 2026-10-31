@@ -235,7 +235,7 @@ must reproduce:
 
 | Part | Height above bench | Fore-aft |
 |---|---|---|
-| Cliff sensors (TCRT5000 face) | 13-15 mm (sides slightly uneven) | to measure: from the front axle centre |
+| Cliff sensors (TCRT5000 face) | 13-15 mm (sides slightly uneven) | ~75 mm ahead of the front axle centre |
 | Charge contacts (pad bars, bottom) | 9-10 mm | ~35 mm ahead of the front axle centre |
 | TFMini lens centre | 63 mm | - |
 
