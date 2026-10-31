@@ -211,9 +211,9 @@ centre ~55 mm; battery cradle underside ~70 mm.
 **Design direction from this:** bolt the printed base onto the **threaded slots
 on the track beams' top edges** (~112 mm outside-to-outside, ~72 mm high) - the
 FNK0101 (83 mm) and breadboard fit inside that width, nothing over the tracks.
-The motor plates (top ~80) are the obstacle: rotated to hang below the beam, the
-base lies flat; otherwise pockets. To confirm directly (ruler on the part, not
-from a photo): motor plates rotatable?; outside width across the two beam tops;
+The motor plates were the obstacle - **Enoch rotated them, now flush with the
+beam tops (10-31)**, so the base lies flat on the beams. To confirm directly
+(ruler on the part, not from a photo): outside width across the two beam tops;
 beam-top height.
 
 **Still needed (earlier list, now superseded by the above):** heights above the bench (track-beam top, cross-beam top, track
