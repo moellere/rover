@@ -203,8 +203,7 @@ frame - otherwise cut-outs.
 **Photos read (10-31, Enoch's front/side/ruler set; parallax ~+/-5 mm):** acrylic
 deck top ~51 mm - matching cliff-mount.scad's measured 51 mm, so that part's
 "beam top" is the acrylic, and the cliff mount, pad plates and TFMini bracket are
-all defined relative to it in the scad files (the nose bracket reproduces them
-from those numbers); track beams ~48-72 mm (on their sides); track top run
+all defined relative to it in the scad files (superseded: those numbers are trike-era - see the cross-beam note); track beams ~48-72 mm (on their sides); track top run
 ~85-90 mm, ~95 over the drive sprockets; motor plates top ~80 mm; TFMini lens
 centre ~55 mm; battery cradle underside ~70 mm.
 
@@ -220,7 +219,10 @@ cross beam has two rows of holes (Enoch)** - on an 0824's 24 mm face: rows 12 mm
 apart (6 and 18 mm from an edge), 16 mm pitch in each row (as measured for
 cliff-mount.scad, 10-03) - so a foot bolted through both rows resists fore-aft
 rocking and the 128 beam isn't needed. **Cross-beam top: 55 mm above the bench**
-(Enoch, measured). Needed: cross-beam position (from the front axle);
+(Enoch, measured). **No 0824-128 beam** (Enoch) - the acrylic sits directly on the
+cross beam, top ~58 mm. So cliff-mount.scad's 51 mm "beam top" is from the trike
+(10-03), not the tank: the nose bracket uses direct measurements of where the
+cliff sensors, pad bars and TFMini sit today, not the old scad numbers. Needed: cross-beam position (from the front axle);
 free holes once the acrylic is off (top-down photo).
 
 ~~**Design direction from this:** bolt the printed base onto the **threaded slots
