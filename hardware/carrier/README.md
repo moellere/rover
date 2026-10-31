@@ -252,6 +252,26 @@ matter much for balance; what caused trouble before was the original kit's pack
 standing *vertical* at the very back. Toward the rear is fine **as long as it lies
 horizontal** - mid-track is a preference, not a rule.
 
+### Revised again (10-31, Enoch's idea): battery BEHIND the acrylic, fixed top plate
+
+- **Battery compartment behind the acrylic, between the track beams:** a cut-down
+  cradle v3 pocket (the proven holder + BMS fit), tabbed to the acrylic's rear edge
+  and/or with vertical tabs down to the track beams' inside faces (their 24 mm
+  faces carry holes). Low, rearward, horizontal (Enoch: horizontal is what matters),
+  accessed from the back with nothing to lift.
+- **No hinge:** the top plate bolts straight onto the four existing posts (64 x 96,
+  M4) and carries the expansion shield, the breadboard, the camera perch (front,
+  same +/-24 mm slots, camera height kept) and the LED status strip.
+- **Height vs width:** post tops ~88 mm above the bench, level with the track tops
+  (85-95) - with 30 mm posts the plate must stay <= ~97 mm wide (shield and
+  breadboard in line, ~97 x 140, overhanging the posts); raised ~12 mm (longer
+  posts or printed risers) it clears the tracks and can be ~160 wide (side by
+  side). Claude prefers raising it (shorter plate: front clear for the camera, rear
+  clear for battery access). Enoch to choose.
+- Needed: expansion-shield outline/holes/height; acrylic rear edge to the beams'
+  rear end; rear motor top height and reach; the beams' inside spacing and hole
+  positions at the rear.
+
 ### Revised (10-31, after Enoch: "if the battery plate sits flat on the acrylic, there will be no room for the motor controllers")
 
 **Keep the existing stack.** The posts and cradle v3 stay where they are (battery
