@@ -239,8 +239,9 @@ stays on the cradle's front perch (height and view unchanged); the front end is
 untouched. **The only new part: the hinged electronics plate above the cradle** -
 FNK0101 + breadboard side by side (up to ~160 mm wide, above the tracks), hinged at
 the rear on printed blocks on the cradle behind the battery pocket, stopping short
-of the camera mount; battery access = swing the plate up, lift the pack. Needed:
-the DRV8871 outline/holes/pins (holder under the cradle); the cradle's wall-top and
+of the camera mount; battery access = swing the plate up, lift the pack. **DRV8871 module: 22 x 26 mm** (Enoch, 10-31). Needed:
+DRV8871 mounting holes (if any), height with its terminal block, and a pin-label
+photo (holder under the cradle); the cradle's wall-top and
 battery-top heights and where the rear wall is solid (hinge blocks); how far back
 the camera mount reaches. **This supersedes the "lower the cradle" plan below.**
 
