@@ -202,6 +202,10 @@ This is Claude's project to drive toward the goals; use whatever it needs:
   **Bolt patterns: measure hole positions from a beam end** and confirm
   with Enoch before slicing - the TFMini bracket assumed a centred pair
   and never fitted (one bolt used, 2026-09-29..10-19).
+  **Handedness: check left/right before slicing** - render a top view and
+  confirm Grover's left and right land where the labels say. The battery
+  tray (2026-10-31) printed mirrored because its frame had y pointing
+  rearward, which makes +x the LEFT in a right-handed frame.
   Designs are parametric OpenSCAD in `hardware/`; the toolchain installs
   with `scripts/install-tools.sh` (OpenSCAD + OrcaSlicer, no root needed).
   Prints are submitted and started through the print-warden MCP (since
