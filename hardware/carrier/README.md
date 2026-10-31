@@ -224,7 +224,11 @@ cross beam, top ~58 mm. So cliff-mount.scad's 51 mm "beam top" is from the trike
 (10-03), not the tank: the nose bracket uses direct measurements of where the
 cliff sensors, pad bars and TFMini sit today, not the old scad numbers.
 **Cross-beam front edge: 30 mm behind the front axle centre** (Enoch) - so the
-beam spans 30-54 mm behind the front axle, top at 55 mm. Needed: axle-to-axle distance (to centre the battery on the tracks);
+beam spans 30-54 mm behind the front axle, top at 55 mm.
+**Battery placement relaxed (Enoch, 10-31):** the pack isn't heavy enough to
+matter much for balance; what caused trouble before was the original kit's pack
+standing *vertical* at the very back. Toward the rear is fine **as long as it lies
+horizontal** - mid-track is a preference, not a rule. Needed: axle-to-axle distance (to centre the battery on the tracks);
 free holes once the acrylic is off (top-down photo).
 
 ~~**Design direction from this:** bolt the printed base onto the **threaded slots
