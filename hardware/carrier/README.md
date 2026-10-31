@@ -219,7 +219,8 @@ lengthwise on the cross beam), or a wide ribbed foot on the cross beam. **The
 cross beam has two rows of holes (Enoch)** - on an 0824's 24 mm face: rows 12 mm
 apart (6 and 18 mm from an edge), 16 mm pitch in each row (as measured for
 cliff-mount.scad, 10-03) - so a foot bolted through both rows resists fore-aft
-rocking and the 128 beam isn't needed. Needed: cross-beam position (from the front axle) and top height;
+rocking and the 128 beam isn't needed. **Cross-beam top: 55 mm above the bench**
+(Enoch, measured). Needed: cross-beam position (from the front axle);
 free holes once the acrylic is off (top-down photo).
 
 ~~**Design direction from this:** bolt the printed base onto the **threaded slots
