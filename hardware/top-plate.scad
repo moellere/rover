@@ -36,6 +36,7 @@ m4_hole  = 4.5;
 m3_pilot = 2.6;
 
 post_x = 32;  post_y = 48;            // posts at (+/-32, +/-48)
+post_slot = 1.5;                       // +/- fore-aft; cradle v3 (which fitted these posts) had +/-1
 
 // Freenove FNK0101 - devkit's long axis along y (its 83.2 side)
 fn_w = 87.6;  fn_l = 83.2;  fn_hx = 81 / 2;  fn_hy = 77 / 2;
@@ -78,8 +79,9 @@ module plate() {
       for (sx = [-1, 1], sy = [-1, 1])                                    // FNK0101 standoffs
         translate([fn_cx + sx * fn_hx, fn_cy + sy * fn_hy, 0]) cylinder(d = fn_stand_d, h = plate_t + fn_stand_h);
     }
-    // post bolts
-    for (sx = [-1, 1], sy = [-1, 1]) translate([sx * post_x, sy * post_y, -1]) cylinder(d = m4_hole, h = plate_t + 2);
+    // post bolts, slotted fore-aft (cradle v3 had +/-1 mm and fitted these posts)
+    for (sx = [-1, 1], sy = [-1, 1]) hull() for (dy = [-post_slot, post_slot])
+      translate([sx * post_x, sy * post_y + dy, -1]) cylinder(d = m4_hole, h = plate_t + 2);
     // FNK0101 pilots
     for (sx = [-1, 1], sy = [-1, 1])
       translate([fn_cx + sx * fn_hx, fn_cy + sy * fn_hy, -1]) cylinder(d = m3_pilot, h = plate_t + fn_stand_h + 2);
