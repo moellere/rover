@@ -239,9 +239,12 @@ must reproduce:
 | Charge contacts (pad bars, bottom) | 9-10 mm | ~35 mm ahead of the front axle centre |
 | TFMini lens centre | 63 mm | - |
 
+**Axle to axle: ~128 mm** (Enoch). Mid-track is 64 mm behind the front axle; the
+cross beam spans 30-54 mm behind it, i.e. just ahead of mid-track.
+
 The cliff sensors work at 13-15 mm (edge-tested 10-26); the nose bracket holds
 them at a level 13 mm on both sides with a little adjustment, rather than chasing
-the TCRT5000's nominal 2-10 mm and re-proving the guard. Needed: axle-to-axle distance (to centre the battery on the tracks);
+the TCRT5000's nominal 2-10 mm and re-proving the guard. Needed:
 free holes once the acrylic is off (top-down photo).
 
 ~~**Design direction from this:** bolt the printed base onto the **threaded slots
