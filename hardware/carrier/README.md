@@ -230,7 +230,21 @@ matter much for balance; what caused trouble before was the original kit's pack
 standing *vertical* at the very back. Toward the rear is fine **as long as it lies
 horizontal** - mid-track is a preference, not a rule.
 
-### Decided (Claude, 10-31; Enoch: "reuse preferred, your call")
+### Revised (10-31, after Enoch: "if the battery plate sits flat on the acrylic, there will be no room for the motor controllers")
+
+**Keep the existing stack.** The posts and cradle v3 stay where they are (battery
+horizontal - fine, per Enoch); **the DRV8871s and the buck take the L298N's place
+on the acrylic, under the cradle** (30 mm headroom, next to the motors); the camera
+stays on the cradle's front perch (height and view unchanged); the front end is
+untouched. **The only new part: the hinged electronics plate above the cradle** -
+FNK0101 + breadboard side by side (up to ~160 mm wide, above the tracks), hinged at
+the rear on printed blocks on the cradle behind the battery pocket, stopping short
+of the camera mount; battery access = swing the plate up, lift the pack. Needed:
+the DRV8871 outline/holes/pins (holder under the cradle); the cradle's wall-top and
+battery-top heights and where the rear wall is solid (hinge blocks); how far back
+the camera mount reaches. **This supersedes the "lower the cradle" plan below.**
+
+### Decided (Claude, 10-31; Enoch: "reuse preferred, your call") - superseded above
 
 **Keep the acrylic Base Bracket on the cross beam as the base.** The front stays
 exactly as it is - cliff mounts, pad plates, TFMini plate, bumper bar (proven

@@ -112,7 +112,7 @@ is janky; these make docking work unattended:
    JST-XH connector per peripheral (4 cliff, TFMini, gyro, LED chain, battery
    sense), screw terminals for pack / motors / dock contacts, fuse, charge diode,
    buck, sockets for both DRV8871s, labelled spare GPIO and I2C headers; mounted on
-   the cradle's standoff posts (64 x 96 mm, M4). **Mechanical decided 10-31: keep the acrylic base and front mounts, cradle v3 lowered onto it, hinged plate on printed risers above (hardware/carrier/README.md).** v1 draft 10-26: wirestudio design
+   the cradle's standoff posts (64 x 96 mm, M4). **Mechanical decided 10-31: keep the existing stack (acrylic, front mounts, posts, cradle v3); DRV8871s + buck replace the L298N under the cradle; one new part - a hinged electronics plate above the cradle (hardware/carrier/README.md).** v1 draft 10-26: wirestudio design
    `grover-carrier` + hardware/carrier/README.md (power section, open questions).** Designed in wirestudio ->
    KiCad, Enoch reviews before ordering (JLCPCB ~$5 + $10-20 shipping; perfboard
    from the same schematic as the fallback). Spinal cord stays an ESP32: a Pico 2 W
