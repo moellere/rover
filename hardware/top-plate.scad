@@ -21,8 +21,8 @@
 // right - checked per CLAUDE.md's handedness rule). Origin: centre of the posts.
 //
 // Measured: posts 64 x 96 (battery-cradle.scad); FNK0101 87.6 x 83.2 mm, holes
-// 3.4 mm at 81 x 77 (Freenove diagram, spacing calipered by Enoch 10-26), ~25 mm
-// tall with the devkit; breadboard 82 x 54 x 9 (Enoch); camera grid from cradle v3.
+// 3.4 mm at 81 x 77 (Freenove diagram, spacing calipered by Enoch 10-26), 20 mm
+// tall with the devkit incl. the pins under the board (Enoch, 10-31); breadboard 82 x 54 x 9 (Enoch); camera grid from cradle v3.
 //
 // Render: openscad -o top-plate.stl top-plate.scad          (plate)
 //         openscad -D part=\"riser\" -o top-plate-riser.stl top-plate.scad   (print 4)
