@@ -1,0 +1,973 @@
+# Reference copy - the canonical, live-flashed version of this file lives in a
+# private homelab ESPHome config repo (which is where `!include common/...` and
+# `!secret api_key` actually resolve from). This copy won't compile standalone;
+# it's here for history/documentation of the rover project.
+# Grover's spinal cord on an ESP32 devkit (port of rover.yaml, 2026-10-03).
+# Why: the TFMini shares the ESP8266's only I2C bus with the MCP23008; a stuck
+# TFMini froze the motor direction pins and cliff inputs until a power cycle.
+# The ESP32 has pins to spare: no expander at all, TFMini alone on I2C.
+#
+# Pin map (ESP32 devkit, "esp32dev"):
+#   GPIO25 SDA / GPIO26 SCL  bus_b: TFMini (0x10) - the only I2C device
+#   GPIO17  left EN (PWM)    GPIO16  right EN (PWM)        -> L298N ENB/ENA
+#   GPIO22/23  left fwd/rev   GPIO19/18  right fwd/rev     -> L298N direction
+#   GPIO35 / GPIO32  front-left / front-right cliff (35 is input-only)
+#   GPIO33 / GPIO13  reserved: rear cliff sensors
+#   GPIO34  battery divider (ADC1, input-only; no onboard divider on this
+#           board, so the external 100k/27k alone: ~4.7x, calibrate)
+#   Avoid 0/2/12/15 (strapping), 6-11 (flash). 34-39 are input-only.
+substitutions:
+  devicename: rover32
+
+esp32:
+  board: esp32dev
+  framework:
+    type: esp-idf
+
+esphome:
+  name: $devicename
+  on_boot:
+      - output.set_level:
+          id: left_pwm
+          level: 0%
+      - output.set_level:
+          id: right_pwm
+          level: 0%
+      - output.turn_off: left_forward_pin
+      - output.turn_off: right_forward_pin
+      - output.turn_off: left_reverse_pin
+      - output.turn_off: right_reverse_pin
+
+<<: !include common/base.yaml
+<<: !include common/sensor.yaml
+
+
+time:
+  - platform: homeassistant
+    id: homeassistant_time
+
+globals:
+  - id: last_command_ms
+    type: uint32_t
+    restore_value: no
+    initial_value: '0'
+  - id: cliff_detected
+    type: bool
+    restore_value: no
+    initial_value: 'false'
+  - id: battery_ok
+    type: bool
+    restore_value: no
+    initial_value: 'true'
+  # TFMini forward LiDAR: true while something is inside the "Obstacle stop"
+  # distance. Holds its last state through invalid frames, because the
+  # TFMini goes invalid under 30 cm - an object that crossed the threshold
+  # and kept coming must not clear the guard by getting too close to see.
+  - id: obstacle_ahead
+    type: bool
+    restore_value: no
+    initial_value: 'false'
+  - id: tfmini_errors
+    type: int
+    restore_value: no
+    initial_value: '0'
+  - id: last_good_cm
+    type: float
+    restore_value: no
+    initial_value: '1000'
+  # Motion engine (2026-10-18): every drive command sets a signed target
+  # duty per wheel (-1..1); a 20 ms loop ramps the live duty toward it
+  # (see the "ramp" interval). tgt/cur are the only motor state; the
+  # direction pins and PWM are derived from cur each tick.
+  - id: tgt_l
+    type: float
+    restore_value: no
+    initial_value: '0'
+  - id: tgt_r
+    type: float
+    restore_value: no
+    initial_value: '0'
+  - id: cur_l
+    type: float
+    restore_value: no
+    initial_value: '0'
+  - id: cur_r
+    type: float
+    restore_value: no
+    initial_value: '0'
+  # millis() at which a timed `move` starts its deceleration; 0 = untimed
+  # (runs until stop / watchdog / a guard).
+  - id: move_end_ms
+    type: uint32_t
+    restore_value: no
+    initial_value: '0'
+  # set by a guard (cliff) before motor_stop: brake this stop regardless of
+  # the brake switch - a cliff stop has centimetres to spare, not a choice.
+  - id: hard_stop
+    type: bool
+    restore_value: no
+    initial_value: 'false'
+  # Gyro (L3G4200D on bus_c, 2026-10-19): yaw integrated from the Z rate.
+  - id: gyro_ok          # sensor answered and the boot calibration finished
+    type: bool
+    restore_value: no
+    initial_value: 'false'
+  - id: gyro_bias        # zero-rate offset, deg/s, from the boot calibration
+    type: float
+    restore_value: no
+    initial_value: '0'
+  - id: gyro_cal_n       # samples collected so far for the calibration
+    type: int
+    restore_value: no
+    initial_value: '0'
+  - id: gyro_cal_sum
+    type: float
+    restore_value: no
+    initial_value: '0'
+  - id: yaw_deg          # heading, deg, CCW positive, zeroed at calibration
+    type: float
+    restore_value: no
+    initial_value: '0'
+  - id: gyro_errors
+    type: int
+    restore_value: no
+    initial_value: '0'
+  - id: turn_active      # a `turn` is running: the gyro loop ends it
+    type: bool
+    restore_value: no
+    initial_value: 'false'
+  - id: turn_start_yaw   # yaw when the turn started (runaway guard)
+    type: float
+    restore_value: no
+    initial_value: '0'
+  - id: turn_goal        # yaw at which the turn is done
+    type: float
+    restore_value: no
+    initial_value: '0'
+  - id: turn_sign        # +1 left (CCW), -1 right
+    type: float
+    restore_value: no
+    initial_value: '1'
+
+# Pin map for awning
+#MCP0: Connected to L298N IN1
+#MCP1: Connected to L298N IN2 
+#MCP2: Connected to L298N IN3
+#MCP3: Connected to L298N IN4
+#MCP4:
+#MCP5: 
+#MCP6: 
+#MCP7: 
+
+
+
+# Stop = brief dynamic brake, then coast. Both inputs of each L298N bridge
+# high with EN high shorts the motor winding; ~150 ms is enough to kill the
+# momentum at cruise (coast alone was ~8 cm). Then everything releases so
+# nothing sits in a braked short. Every stop path uses this - watchdog,
+# disconnect, cliff, battery, the stop action. The "Brake on stop" switch
+# gates the brake phase; it boots OFF (a 2026-09-29 A/B showed no measurable
+# effect on short pulses, and the ESP8266 doesn't persist switch state
+# across power cycles anyway). The stop itself always happens.
+# Pins go to brake before EN goes to 100%, so there is never a full-duty
+# instant in the old drive direction.
+# Motion (2026-10-18). Two kinds of stop:
+#  * motor_stop - IMMEDIATE. Zeroes the targets and the live duty, optional
+#    150 ms dynamic brake (both inputs high, EN 100%), then everything off.
+#    Used by every guard: watchdog, disconnect, cliff, obstacle, battery,
+#    and the `halt` action. A guard never ramps.
+#  * a commanded stop (`stop` action, end of a timed `move`) just sets the
+#    targets to 0 and lets the ramp loop decelerate over "Decel time", then
+#    the loop calls motor_stop at zero. The trailing caster is what this is
+#    for: it was the hard start/stop transients, not the cruise, that swung
+#    the rear (overhead-camera runs, 2026-10-05).
+# Pins go to brake before EN goes to 100%, so there is never a full-duty
+# instant in the old drive direction.
+script:
+  - id: motor_stop
+    mode: restart
+    then:
+      - lambda: |-
+          id(tgt_l) = 0; id(tgt_r) = 0; id(cur_l) = 0; id(cur_r) = 0; id(move_end_ms) = 0; id(turn_active) = false;
+      - if:
+          condition:
+            lambda: 'return id(brake_on_stop).state || id(hard_stop);'
+          then:
+            - output.turn_on: left_forward_pin
+            - output.turn_on: left_reverse_pin
+            - output.turn_on: right_forward_pin
+            - output.turn_on: right_reverse_pin
+            - output.set_level:
+                id: left_pwm
+                level: 100%
+            - output.set_level:
+                id: right_pwm
+                level: 100%
+            - delay: 150ms
+      - output.set_level:
+          id: left_pwm
+          level: 0%
+      - output.set_level:
+          id: right_pwm
+          level: 0%
+      - output.turn_off: left_forward_pin
+      - output.turn_off: right_forward_pin
+      - output.turn_off: left_reverse_pin
+      - output.turn_off: right_reverse_pin
+      - lambda: 'id(hard_stop) = false;'
+      - text_sensor.template.publish:
+          id: motion_status
+          state: "Stopped"
+  # The one entry point for motion. l/r: signed wheel duty in percent
+  # (-100..100, left already trimmed by the caller if it wants trim); ms:
+  # cruise time before the decel ramp starts, 0 = untimed. Checks the
+  # guards for the kind of motion asked for: forward-ish (both >= 0) needs
+  # no cliff and no obstacle; a pivot needs no cliff; everything needs
+  # battery_ok. Refused = immediate stop + a log line, as before.
+  - id: set_motion
+    mode: restart
+    parameters:
+      l: float
+      r: float
+      ms: int
+    then:
+      - script.stop: motor_stop
+      - lambda: |-
+          id(last_command_ms) = millis();
+          const bool fwdish = l >= 0 && r >= 0 && (l > 0 || r > 0);
+          const bool backish = l <= 0 && r <= 0;
+          const bool ok = id(battery_ok) && (backish || !id(cliff_detected)) && (!fwdish || !id(obstacle_ahead));
+          if (!ok) {
+            id(motor_stop).execute();
+            ESP_LOGW("guard", "Motion blocked (l=%.0f r=%.0f): battery_ok=%d cliff=%d obstacle=%d range=%.0f last_good=%.0f",
+                     l, r, id(battery_ok), id(cliff_detected), id(obstacle_ahead), id(front_range).state, id(last_good_cm));
+            return;
+          }
+          id(tgt_l) = std::max(-1.0f, std::min(1.0f, l / 100.0f));
+          id(tgt_r) = std::max(-1.0f, std::min(1.0f, r / 100.0f));
+          if (ms > 0) {
+            const uint32_t e = millis() + (uint32_t) std::min((int) ms, 3000);
+            id(move_end_ms) = e == 0 ? 1 : e;   // 0 means untimed, so dodge the millis() wrap
+          } else {
+            id(move_end_ms) = 0;
+          }
+interval:
+  # TFMini (SparkFun Qwiic, I2C 0x10, shares the bus with the MCP23008):
+  # write 01 02 07, read 7 bytes [valid, -, dist cm LE, strength LE, mode].
+  # With the guard enabled, a missing sensor (5 failed reads) counts as an
+  # obstacle - fail safe, forward refused - rather than as a clear lane.
+  - interval: 50ms   # was 100 ms: at kicked speed ~10 cm passed per poll (2026-10-05)
+    then:
+      - lambda: |-
+          const uint8_t cmd[3] = {0x01, 0x02, 0x07};
+          uint8_t buf[7] = {0};
+          const float thr = id(obstacle_stop_cm).state;
+          // SparkFun's sequence: command, then read with a repeated start (no
+          // stop in between). A plain write-then-read was NACKed every time
+          // and left the sensor holding SCL low (2026-10-03).
+          auto ew = id(bus_b).write_readv(0x10, cmd, 3, buf, 7);
+          static uint8_t dbg = 0;
+          if (++dbg >= 40)  // one line per 2 s: result code (0 = ok) and raw frame
+            dbg = 0, ESP_LOGD("tfmini", "wr=%d raw=%02X %02X %02X %02X %02X %02X %02X", (int) ew,
+                              buf[0], buf[1], buf[2], buf[3], buf[4], buf[5], buf[6]);
+          if (ew != i2c::ERROR_OK) {
+            if (++id(tfmini_errors) == 5) {
+              ESP_LOGW("tfmini", "no response at 0x10");
+              id(front_range).publish_state(NAN);
+            }
+            if (id(tfmini_errors) >= 5) id(obstacle_ahead) = thr > 0;
+            return;
+          }
+          id(tfmini_errors) = 0;
+          const float cm = buf[2] | (uint16_t(buf[3]) << 8);
+          if (buf[0] != 0x01 || cm >= 65535) {  // 0xFFFF = no return
+            id(front_range_valid).publish_state(false);
+            // Invalid usually means "too close" (<30 cm) or "nothing out
+            // there". If the last good reading was already close, assume
+            // the former: a wall met at an angle went from "far" to
+            // invalid without tripping the guard (2026-10-04, dining room).
+            if (thr > 0 && id(last_good_cm) < 60) id(obstacle_ahead) = true;
+            return;
+          }
+          const float strength = buf[4] | (uint16_t(buf[5]) << 8);
+          id(front_range_valid).publish_state(true);
+          id(front_range).publish_state(cm);
+          id(last_good_cm) = cm;
+          id(front_range_strength).publish_state(strength);
+          id(obstacle_ahead) = thr > 0 && cm < thr;
+      - if:
+          condition:
+            lambda: 'return id(obstacle_ahead) && id(motion_status).state == "Forward";'
+          then:
+            - script.execute: motor_stop
+            - text_sensor.template.publish:
+                id: motion_status
+                state: "Stopped (obstacle)"
+            - logger.log: "Obstacle ahead inside the stop distance, stopping"
+  # Gyro loop (2026-10-19): L3G4200D OUT_Z at 100 Hz, 500 dps full scale
+  # (17.5 mdps/digit; raised from 250 on 2026-10-24 while chasing a 20 %
+  # shortfall that turned out to be the module's tilt, kept for headroom). First 200 samples after boot, motors stopped, set
+  # the zero-rate bias and zero the heading; then yaw += rate * dt.
+  # Drift is a few deg/min - the overhead marker corrects it; on-board the
+  # gyro only has to be right across one turn. A running `turn` is ended
+  # here with a braked stop when the remaining angle is within `turn_lead`
+  # plus rate x `turn_stop_ms` (the stop latency). Register writes once on first contact: CTRL_REG1 0x20 =
+  # 0x1F (100 Hz ODR, 25 Hz cutoff, all axes on), CTRL_REG4 0x23 = 0x90
+  # (BDU, 500 dps).
+  - interval: 10ms
+    then:
+      - lambda: |-
+          static bool configured = false;
+          static uint32_t last_us = 0;
+          if (!configured) {
+            uint8_t who = 0; const uint8_t r = 0x0F;
+            if (id(bus_c).write_readv(0x69, &r, 1, &who, 1) != i2c::ERROR_OK || who != 0xD3) {
+              if (++id(gyro_errors) == 100) ESP_LOGW("gyro", "no L3G4200D at 0x69 (who=0x%02X)", who);
+              return;
+            }
+            const uint8_t c1[2] = {0x20, 0x1F}; const uint8_t c4[2] = {0x23, 0x90};
+            id(bus_c).write(0x69, c1, 2); id(bus_c).write(0x69, c4, 2);
+            configured = true; id(gyro_errors) = 0; last_us = micros();
+            ESP_LOGI("gyro", "L3G4200D configured, calibrating - keep still");
+            return;
+          }
+          const uint8_t reg = 0x2C | 0x80;   // OUT_Z_L, auto-increment
+          uint8_t b[2] = {0, 0};
+          if (id(bus_c).write_readv(0x69, &reg, 1, b, 2) != i2c::ERROR_OK) {
+            if (++id(gyro_errors) == 50) { ESP_LOGW("gyro", "read errors, heading unreliable"); id(gyro_ok) = false; }
+            return;
+          }
+          id(gyro_errors) = 0;
+          const uint32_t now = micros();
+          const float dt = (now - last_us) * 1e-6f; last_us = now;
+          // Sign: left/CCW from above is +yaw. The module was Z-down on the tank
+          // 10-22..24 (negated then); since 2026-10-24 it is mounted flat face-up.
+          const float dps = (int16_t) (b[0] | (b[1] << 8)) * 0.0175f;
+          if (id(gyro_cal_n) < 200) {
+            // Only calibrate at rest: motors stopped AND the readings quiet.
+            // A window whose samples spread more than 3 dps (someone handling
+            // the rover - 2026-10-19 it captured a 13 dps bias that way)
+            // starts over.
+            static float cal_min = 0, cal_max = 0;
+            if (id(motion_status).state != "Stopped") { id(gyro_cal_n) = 0; id(gyro_cal_sum) = 0; return; }
+            if (id(gyro_cal_n) == 0) { cal_min = dps; cal_max = dps; }
+            cal_min = std::min(cal_min, dps); cal_max = std::max(cal_max, dps);
+            if (cal_max - cal_min > 3.0f) { id(gyro_cal_n) = 0; id(gyro_cal_sum) = 0; return; }
+            id(gyro_cal_sum) += dps;
+            if (++id(gyro_cal_n) == 200) {
+              id(gyro_bias) = id(gyro_cal_sum) / 200.0f; id(yaw_deg) = 0; id(gyro_ok) = true;
+              ESP_LOGI("gyro", "calibrated: bias %.3f dps (spread %.2f)", id(gyro_bias), cal_max - cal_min);
+            }
+            return;
+          }
+          // Gyro scale: calibration against the overhead marker. The 24 % shortfall
+          // of 2026-10-24 was the module sitting ~37 deg off flat (cos 37 = 0.8),
+          // not the chip - mounted flat it reads true (scale 1.0).
+          const float rate = (dps - id(gyro_bias)) * id(gyro_scale).state;
+          if (dt < 0.1f) id(yaw_deg) += rate * dt;
+          static uint8_t pub = 0;
+          if (++pub >= 5) { pub = 0; id(yaw_rate).publish_state(rate); id(yaw).publish_state(id(yaw_deg)); }   // 20 Hz to the API, not 100
+          // Smoothed |rate| for the predictive stop (scrubbing tracks make
+          // the raw rate jump 40..160 dps sample to sample).
+          static float rate_f = 0;
+          rate_f = 0.7f * rate_f + 0.3f * fabsf(rate);
+          if (id(turn_active)) {
+            const float remaining = (id(turn_goal) - id(yaw_deg)) * id(turn_sign);
+            // Runaway guard: yaw moving the wrong way by 20 deg means the gyro,
+            // not the rover, is turning - stop rather than spin to the cap.
+            if ((id(yaw_deg) - id(turn_start_yaw)) * id(turn_sign) < -20.0f) {
+              id(turn_active) = false; id(hard_stop) = true; id(motor_stop).execute();
+              ESP_LOGW("gyro", "turn aborted: yaw ran the wrong way (%.0f)", id(yaw_deg) - id(turn_start_yaw));
+            }
+            const float lead = id(turn_lead).state + rate_f * id(turn_stop_ms).state * 0.001f;
+            if (remaining <= lead) {
+              // Brake, don't ramp: at 90 % the decel ramp alone was ~10 deg
+              // of overshoot (10-22). hard_stop makes motor_stop brake.
+              id(turn_active) = false;
+              id(hard_stop) = true;
+              id(motor_stop).execute();
+              ESP_LOGI("gyro", "turn done: yaw %.1f (goal %.1f, lead %.1f at %.0f dps)", id(yaw_deg), id(turn_goal), lead, rate_f);
+            }
+          }
+  # Ramp loop: moves the live duty toward the target. Leaving rest jumps
+  # straight to "Min duty" (both wheels break stiction together - the old
+  # 100 ms 100% kick did the same job with far more energy), then climbs
+  # at 100% per "Accel time". Toward zero it falls at 100% per "Decel
+  # time"; a reversal passes through zero. At zero with a zero target it
+  # hands over to motor_stop. Direction pins and PWM come from the sign and
+  # magnitude of the live duty - nothing else touches them while moving.
+  - interval: 20ms
+    then:
+      - lambda: |-
+          const float dt = 20.0f;
+          const uint32_t now = millis();
+          if (id(move_end_ms) != 0 && (int32_t) (now - id(move_end_ms)) >= 0) {
+            id(move_end_ms) = 0;
+            id(tgt_l) = 0; id(tgt_r) = 0;
+            id(last_command_ms) = now;          // the decel phase gets its own watchdog window
+          }
+          if (id(cur_l) == 0 && id(cur_r) == 0 && id(tgt_l) == 0 && id(tgt_r) == 0) return;   // idle
+          // belt and braces: a guard that trips mid-move is also caught here
+          // Judge direction by the live duties while moving, by the targets when
+          // starting from rest: at rest both live duties are 0, which counted as
+          // "forward-ish" and killed every pivot from rest with an obstacle
+          // inside the guard distance (2026-10-24, found when the TFMini came
+          // back to life and pivots facing the pegboard stopped working).
+          const bool at_rest = id(cur_l) == 0 && id(cur_r) == 0;
+          const float gl = at_rest ? id(tgt_l) : id(cur_l);
+          const float gr = at_rest ? id(tgt_r) : id(cur_r);
+          const bool fwdish = gl >= 0 && gr >= 0 && (gl > 0 || gr > 0);
+          const bool backish = gl <= 0 && gr <= 0;
+          if (!id(battery_ok) || (!backish && id(cliff_detected)) || (fwdish && id(obstacle_ahead))) {
+            id(motor_stop).execute();
+            return;
+          }
+          const float up = id(accel_ms).state > 0 ? dt / id(accel_ms).state : 1.0f;
+          const float down = id(decel_ms).state > 0 ? dt / id(decel_ms).state : 1.0f;
+          const float minf = id(min_duty).state / 100.0f;
+          auto step = [&](float cur, float tgt) -> float {
+            if (cur == tgt) return cur;
+            const bool away = (cur == 0) || (((cur > 0) == (tgt > 0)) && fabsf(tgt) > fabsf(cur));
+            if (away) {
+              const float sgn = tgt > 0 ? 1.0f : -1.0f;
+              float mag = fabsf(cur);
+              mag = (mag < minf) ? minf : mag + up;
+              if (mag > fabsf(tgt)) mag = fabsf(tgt);
+              return sgn * mag;
+            }
+            const float sgn = cur > 0 ? 1.0f : -1.0f;
+            const float floor_ = (tgt != 0 && ((cur > 0) == (tgt > 0))) ? fabsf(tgt) : 0.0f;
+            float mag = fabsf(cur) - down;
+            if (mag < floor_) mag = floor_;
+            if (mag <= 0.0f) return 0.0f;
+            return sgn * mag;
+          };
+          id(cur_l) = step(id(cur_l), id(tgt_l));
+          id(cur_r) = step(id(cur_r), id(tgt_r));
+          if (id(cur_l) == 0 && id(cur_r) == 0) {
+            if (id(tgt_l) == 0 && id(tgt_r) == 0) id(motor_stop).execute();
+            return;
+          }
+          id(left_forward_pin).set_state(id(cur_l) > 0);
+          id(left_reverse_pin).set_state(id(cur_l) < 0);
+          id(right_forward_pin).set_state(id(cur_r) > 0);
+          id(right_reverse_pin).set_state(id(cur_r) < 0);
+          id(left_pwm).set_level(fabsf(id(cur_l)));
+          id(right_pwm).set_level(fabsf(id(cur_r)));
+          const char *st = fwdish ? "Forward" : backish ? "Backward" : (id(cur_l) < id(cur_r) ? "Left" : "Right");
+          if (id(motion_status).state != st) id(motion_status).publish_state(st);
+  # Command watchdog: an untimed motion (forward/backward/left/right,
+  # set_speeds) must be refreshed within 1.5 s or it stops. A timed `move`
+  # is bounded by the firmware itself, so it is exempt until its time is up
+  # (then the decel phase gets a fresh 1.5 s window, see the ramp loop).
+  - interval: 200ms
+    then:
+      - if:
+          condition:
+            lambda: |-
+              return (id(motion_status).state != "Stopped") && id(move_end_ms) == 0 && (millis() - id(last_command_ms) > 1500);
+          then:
+            - script.execute: motor_stop
+            - text_sensor.template.publish:
+                id: motion_status
+                state: "Stopped"
+            - logger.log: "Watchdog: no command refresh in 1.5s, stopping motors"
+i2c:
+  # Only the TFMini lives on I2C now (the MCP23008 is gone - direction and
+  # cliff pins are direct on the ESP32), so a wedged sensor costs nothing
+  # but the range reading. Repeated-start reads, 100 kHz, generous timeout
+  # (it stretches the clock while it prepares a reply).
+  - id: bus_b
+    sda: GPIO25
+    scl: GPIO26
+    scan: true
+    frequency: 100kHz
+    timeout: 20ms
+  # Gyro bus (2026-10-19): Parallax L3G4200D at 0x69 (SDO pulled high on
+  # the module; CS high = I2C). Its own bus so a wedged gyro never touches
+  # the TFMini. VIN 3V3, GND, SDA GPIO21, SCL GPIO5 (a strapping pin, fine for an I2C line that idles high; Enoch's choice, 2026-10-19).
+  - id: bus_c
+    sda: GPIO21
+    scl: GPIO5
+    scan: true
+    frequency: 400kHz
+
+# Example configuration entry
+output:
+  # Trike build (2026-09-29): the motors sit on the opposite sides, facing the
+  # opposite way, compared with the tank build. Electrically that is a swap of
+  # channels AND polarity, so the "left" outputs below drive L298N channel B
+  # in what the board calls reverse, and vice versa. Pivots were already
+  # correct on the trike; forward/backward were inverted - this fixes that.
+  # As wired 2026-10-03 (bench-verified): the motor on GPIO17 (EN) with
+  # GPIO22 forward / GPIO23 reverse is the LEFT one; GPIO16 with GPIO19
+  # forward / GPIO18 reverse is the RIGHT. Fixed here, not in the wires.
+  - platform: ledc
+    pin: GPIO17
+    frequency: 1000 Hz
+    id: left_pwm
+  - platform: ledc
+    pin: GPIO16
+    frequency: 1000 Hz
+    id: right_pwm
+  - platform: gpio
+    id: left_forward_pin
+    pin: GPIO22
+  - platform: gpio
+    id: left_reverse_pin
+    pin: GPIO23
+  - platform: gpio
+    id: right_forward_pin
+    pin: GPIO19
+  - platform: gpio
+    id: right_reverse_pin
+    pin: GPIO18
+
+# Downward-facing IR reflectance ("cliff") sensors on the free MCP23008 pins.
+# Wiring: VCC/GND + digital OUT of each IR module -> MCP4 (front-left), MCP5 (front-right).
+# `inverted: false` assumes the module drives OUT low when it sees a close reflective
+# surface (floor/bench) and high when there's nothing to reflect off (edge/drop-off) -
+# verify against the actual module datasheet once wired and flip `inverted` if backwards.
+binary_sensor:
+  - platform: template
+    name: "Front range valid"
+    id: front_range_valid
+    filters:
+      # at 10 Hz the odd read comes back not-ready even on a steady target
+      - delayed_off: 400ms
+  - platform: gpio
+    name: "Front Left Cliff"
+    id: front_left_cliff
+    device_class: safety
+    pin:
+      number: GPIO35   # input-only; the sensor module drives it (no pull-up on 34-39)
+      inverted: false
+    filters:
+      # Trip at once (2026-10-18: a 50 ms on-delay cost ~2 cm of the 65 mm
+      # sensor-to-wheel margin and a wheel went over the edge); only the
+      # release is debounced.
+      - delayed_off: 100ms
+    on_press:
+      - lambda: |-
+          id(cliff_detected) = true; id(hard_stop) = true;
+      - script.execute: motor_stop
+      - text_sensor.template.publish:
+          id: motion_status
+          state: "Stopped (cliff)"
+      - logger.log: "Cliff detected (front-left), emergency stop"
+    on_release:
+      - lambda: |-
+          id(cliff_detected) = id(front_left_cliff).state || id(front_right_cliff).state;
+  - platform: gpio
+    name: "Front Right Cliff"
+    id: front_right_cliff
+    device_class: safety
+    pin:
+      number: GPIO32
+      inverted: false
+    filters:
+      # Trip at once (2026-10-18: a 50 ms on-delay cost ~2 cm of the 65 mm
+      # sensor-to-wheel margin and a wheel went over the edge); only the
+      # release is debounced.
+      - delayed_off: 100ms
+    on_press:
+      - lambda: |-
+          id(cliff_detected) = true; id(hard_stop) = true;
+      - script.execute: motor_stop
+      - text_sensor.template.publish:
+          id: motion_status
+          state: "Stopped (cliff)"
+      - logger.log: "Cliff detected (front-right), emergency stop"
+    on_release:
+      - lambda: |-
+          id(cliff_detected) = id(front_left_cliff).state || id(front_right_cliff).state;
+
+# Battery voltage: 3S 18650 pack (~12.6V full, ~9.0V empty) through an external divider
+# into A0. A0 on the D1 mini already has an onboard divider extending it to ~0-3.2V;
+# add your OWN divider from pack+ -> A0 -> GND with R_top=100k, R_bottom=27k (scales
+# 12.6V down to ~2.7V, safely under the board's ~3.2V max). The `multiply: 15.0` below
+# is a starting estimate for the combined ratio of both dividers - calibrate it against
+# a multimeter reading once wired (adjust the constant so the reported voltage matches).
+sensor:
+  # NOTE: this file's top-level `sensor:` replaces (not merges with) the one pulled in
+  # via `<<: !include common/sensor.yaml` above (that's a raw YAML merge-key, not
+  # ESPHome `packages:`, so same-key blocks don't combine) - the uptime/wifi_signal
+  # entries are duplicated here so they aren't lost.
+  - platform: uptime
+    name: ${devicename} Uptime
+  - platform: wifi_signal
+    name: ${devicename} WiFi Signal
+    update_interval: 60s
+  - platform: template
+    name: "Yaw"
+    id: yaw
+    unit_of_measurement: "°"
+    accuracy_decimals: 1
+    state_class: measurement
+    filters:
+      - or:
+          - delta: 1
+          - throttle: 5s
+  - platform: template
+    name: "Yaw rate"
+    id: yaw_rate
+    unit_of_measurement: "°/s"
+    accuracy_decimals: 1
+    state_class: measurement
+    filters:
+      - or:
+          - delta: 5
+          - throttle: 5s
+  - platform: template
+    name: "Front range"
+    id: front_range
+    unit_of_measurement: "cm"
+    device_class: distance
+    state_class: measurement
+    accuracy_decimals: 0
+    filters:
+      - or:
+          - delta: 2
+          - throttle: 10s
+  - platform: template
+    name: "Front range strength"
+    id: front_range_strength
+    state_class: measurement
+    accuracy_decimals: 0
+    filters:
+      - throttle_average: 5s
+  - platform: adc
+    pin: GPIO34
+    attenuation: 12db
+    name: "Battery Voltage"
+    id: battery_voltage
+    update_interval: 5s
+    filters:
+      # External divider only (100k top / 27k bottom): nominal 4.704.
+      # Calibrated 2026-10-03: 4.704 reported 12.002 V with the meter at
+      # 11.90 V across the pack -> 4.704 * 11.90 / 12.002 = 4.664.
+      - multiply: 4.664
+      # Rolling 25 s average, published every sample. (Was send_every 5 at
+      # 30 s: one bad first sample after a reboot latched "low battery"
+      # and nothing could clear it for 2.5 min - 2026-10-05.)
+      - sliding_window_moving_average:
+          window_size: 5
+          send_every: 1
+    on_value:
+      - lambda: |-
+          if (millis() < 20000) return;          // ignore the boot transient
+          if (x < 9.3f && id(battery_ok)) {
+            id(battery_ok) = false;
+            id(motor_stop).execute();
+            id(motion_status).publish_state("Stopped (low battery)");
+            ESP_LOGW("battery", "Battery critical (%.2f V), disabling drive", x);
+          } else if (x > 9.6f && !id(battery_ok)) {
+            id(battery_ok) = true;
+            ESP_LOGI("battery", "Battery recovered (%.2f V), drive enabled", x);
+          }
+number:
+  # 0 = guard off. Boots at 35 cm (verified 2026-10-03: forward refused and
+  # a forward move cut once the range dropped under it). The TFMini goes
+  # invalid under 30 cm, so 35 is about as close as the guard can act; the
+  # brain lowers it for the last part of a homing/docking approach.
+  - platform: template
+    name: "Obstacle stop"
+    id: obstacle_stop_cm
+    unit_of_measurement: "cm"
+    min_value: 0
+    max_value: 200
+    step: 5
+    initial_value: 50   # was 35: a kicked pulse ended 15 cm from a box (2026-10-05)
+    optimistic: true
+    entity_category: config
+  # Per-side balance for straight driving: scales the LEFT motor's duty on
+  # forward/backward (pivots untouched). + = more left. Calibrated
+  # 2026-10-03 on the bench with fishcam: 0 -> ~7 deg/pulse left,
+  # +10 -> ~5 deg/pulse right, +6 -> straight over 3 pulses.
+  - platform: template
+    name: "Left trim"
+    id: left_trim
+    unit_of_measurement: "%"
+    min_value: -30
+    max_value: 30
+    step: 1
+    initial_value: 6
+    optimistic: true
+    entity_category: config
+  - platform: template
+    name: "Drive duty"
+    id: drive_duty
+    unit_of_measurement: "%"
+    min_value: 20
+    max_value: 100
+    step: 5
+    initial_value: 75
+    restore_value: true
+    optimistic: true
+  - platform: template
+    name: "Pivot duty"
+    id: pivot_duty
+    unit_of_measurement: "%"
+    min_value: 20
+    max_value: 100
+    step: 5
+    initial_value: 90     # tank: pivots scrub, 60 % didn't break free (10-22)
+    restore_value: true
+    optimistic: true
+
+  # Ramp profile (2026-10-18). Min duty is applied at once from rest so both
+  # wheels break stiction together; the ramps are the time to sweep the
+  # full 0..100% range (so 75% cruise at 300 ms accel takes ~105 ms on top
+  # of the jump). Guards never ramp - they stop at once.
+  - platform: template
+    name: "Min duty"
+    id: min_duty
+    unit_of_measurement: "%"
+    min_value: 0
+    max_value: 100
+    step: 5
+    initial_value: 75     # tank with the pack: 60 % hums, 100 % moves (10-22)
+    restore_value: true
+    optimistic: true
+    entity_category: config
+  - platform: template
+    name: "Accel time"
+    id: accel_ms
+    unit_of_measurement: "ms"
+    min_value: 0
+    max_value: 1000
+    step: 50
+    initial_value: 300
+    restore_value: true
+    optimistic: true
+    entity_category: config
+  - platform: template
+    name: "Decel time"
+    id: decel_ms
+    unit_of_measurement: "ms"
+    min_value: 0
+    max_value: 1000
+    step: 50
+    initial_value: 300
+    restore_value: true
+    optimistic: true
+    entity_category: config
+  # A `turn` brakes when remaining <= lead + |rate| * stop latency. Lead is
+  # the fixed margin; the latency term covers sensor-to-brake delay at
+  # whatever speed the pivot is actually running. Tune on the bench.
+  - platform: template
+    name: "Turn lead"
+    id: turn_lead
+    unit_of_measurement: "°"
+    min_value: 0
+    max_value: 45
+    step: 1
+    initial_value: 2
+    restore_value: true
+    optimistic: true
+    entity_category: config
+  - platform: template
+    name: "Turn stop latency"
+    id: turn_stop_ms
+    unit_of_measurement: "ms"
+    min_value: 0
+    max_value: 300
+    step: 10
+    initial_value: 60
+    restore_value: true
+    optimistic: true
+    entity_category: config
+  - platform: template
+    name: "Gyro scale"
+    id: gyro_scale
+    min_value: 0.5
+    max_value: 2.0
+    step: 0.01
+    initial_value: 1.0
+    restore_value: true
+    optimistic: true
+    entity_category: config
+switch:
+  - platform: template
+    name: "Brake on stop"
+    id: brake_on_stop
+    optimistic: true
+    restore_mode: ALWAYS_OFF
+    entity_category: config
+  - platform: template
+    name: "Forward"
+    lambda: |-
+      return id(motion_status).state == "Forward";
+    turn_on_action:
+      - script.execute:
+          id: set_motion
+          l: !lambda 'return std::min(100.0f, id(drive_duty).state * (1.0f + id(left_trim).state / 100.0f));'
+          r: !lambda 'return id(drive_duty).state;'
+          ms: 0
+    turn_off_action:
+      - lambda: 'id(tgt_l) = 0; id(tgt_r) = 0; id(move_end_ms) = 0;'
+text_sensor:
+  - platform: template
+    name: "Motion"
+    id: motion_status
+  # Why the last boot happened (2026-10-26): rover32 restarts the moment the
+  # dock contacts touch; this says whether it's a brownout, a watchdog or a panic.
+  - platform: debug
+    reset_reason:
+      name: "Reset Reason"
+
+debug:
+  update_interval: 60s
+
+# WS2812B chain on GPIO4 (Enoch, 2026-10-26: reachable without lifting the
+# board), through 330 ohm: two headlight dots either side of the camera, then
+# a 6-pixel status strip. colour_correct caps the current (~0.3 A at full white).
+light:
+  - platform: esp32_rmt_led_strip
+    id: leds
+    name: "LED chain"
+    pin: GPIO4
+    num_leds: 8
+    chipset: WS2812
+    channel_colors: GRB
+    restore_mode: ALWAYS_OFF
+    default_transition_length: 0s
+    color_correct: [60%, 60%, 60%]
+  - platform: partition
+    id: headlight
+    name: "Headlight"
+    restore_mode: ALWAYS_OFF
+    segments:
+      - id: leds
+        from: 0
+        to: 1
+  - platform: partition
+    id: status_strip
+    name: "Status strip"
+    restore_mode: ALWAYS_OFF
+    segments:
+      - id: leds
+        from: 2
+        to: 7
+    effects:
+      - addressable_scan:
+          name: "Docking"
+      - pulse:
+          name: "Charging"
+          transition_length: 1s
+          update_interval: 1s
+
+api:
+  on_client_disconnected:
+    - script.execute: motor_stop
+    - text_sensor.template.publish:
+        id: motion_status
+        state: "Stopped"
+    - logger.log: "API client disconnected, stopping motors"
+  actions:
+    # Compatibility set, all through set_motion (ramped): untimed, refreshed
+    # by the watchdog. `stop` eases down; `halt` is the immediate stop.
+    - action: forward
+      then:
+        - script.execute:
+            id: set_motion
+            l: !lambda 'return std::min(100.0f, id(drive_duty).state * (1.0f + id(left_trim).state / 100.0f));'
+            r: !lambda 'return id(drive_duty).state;'
+            ms: 0
+    - action: backward
+      then:
+        - script.execute:
+            id: set_motion
+            l: !lambda 'return -std::min(100.0f, id(drive_duty).state * (1.0f + id(left_trim).state / 100.0f));'
+            r: !lambda 'return -id(drive_duty).state;'
+            ms: 0
+    - action: left
+      then:
+        - script.execute:
+            id: set_motion
+            l: !lambda 'return -id(pivot_duty).state;'
+            r: !lambda 'return id(pivot_duty).state;'
+            ms: 0
+    - action: right
+      then:
+        - script.execute:
+            id: set_motion
+            l: !lambda 'return id(pivot_duty).state;'
+            r: !lambda 'return -id(pivot_duty).state;'
+            ms: 0
+    - action: stop
+      then:
+        - lambda: |-
+            id(last_command_ms) = millis();
+            id(tgt_l) = 0; id(tgt_r) = 0; id(move_end_ms) = 0;
+            if (id(cur_l) == 0 && id(cur_r) == 0) id(motor_stop).execute();
+    - action: halt
+      then:
+        - script.execute: motor_stop
+    # Timed move, executed on-board: direction forward/backward/left/right,
+    # ms of cruise (<= 3000) before the decel ramp, duty 0 = the matching
+    # slider. Total motion is about ms + Decel time.
+    - action: move
+      variables:
+        direction: string
+        ms: int
+        duty: int
+      then:
+        - script.execute:
+            id: set_motion
+            l: !lambda |-
+              float d = duty > 0 ? duty : (direction == "left" || direction == "right" ? id(pivot_duty).state : id(drive_duty).state);
+              float dl = std::min(100.0f, d * (1.0f + id(left_trim).state / 100.0f));
+              if (direction == "forward") return dl;
+              if (direction == "backward") return -dl;
+              if (direction == "left") return -d;
+              if (direction == "right") return d;
+              return 0.0f;
+            r: !lambda |-
+              float d = duty > 0 ? duty : (direction == "left" || direction == "right" ? id(pivot_duty).state : id(drive_duty).state);
+              if (direction == "forward") return d;
+              if (direction == "backward") return -d;
+              if (direction == "left") return d;
+              if (direction == "right") return -d;
+              return 0.0f;
+            ms: !lambda 'return std::max(0, (int) ms);'
+    # Gyro turn (2026-10-19): pivot by `deg` (+ = left/CCW, - = right) at
+    # `duty` (0 = pivot slider), ending when the gyro says so. Capped at
+    # 3 s by the move timer in case the gyro stops reading mid-turn.
+    # Refused if the gyro is not calibrated.
+    - action: turn
+      variables:
+        deg: float
+        duty: int
+      then:
+        - lambda: |-
+            if (!id(gyro_ok)) { ESP_LOGW("gyro", "turn refused: gyro not ready"); return; }
+            // A gyro that reports motion while the rover is stopped is a bad wire
+            // (2026-10-24: a loose module read a constant -300 dps and a turn
+            // chased a goal it could never reach until the 3 s cap).
+            if (fabsf(id(yaw_rate).state) > 20.0f) { ESP_LOGW("gyro", "turn refused: %.0f dps at rest", id(yaw_rate).state); return; }
+            id(turn_sign) = deg >= 0 ? 1.0f : -1.0f;
+            id(turn_goal) = id(yaw_deg) + deg;
+            id(turn_start_yaw) = id(yaw_deg);
+            id(turn_active) = true;
+            const float d = duty > 0 ? duty : id(pivot_duty).state;
+            id(set_motion).execute(-id(turn_sign) * d, id(turn_sign) * d, 3000);
+    - action: zero_yaw
+      then:
+        - lambda: 'id(yaw_deg) = 0; id(yaw).publish_state(0);'
+    - action: gyro_calibrate
+      then:
+        - lambda: 'id(gyro_cal_n) = 0; id(gyro_cal_sum) = 0; id(gyro_ok) = false;'
+    # Continuous drive for a steering loop: signed percent per wheel, left
+    # trim applied. Untimed - refresh at least every 1.5 s or the watchdog
+    # stops it. Both >= 0 counts as forward for the cliff/obstacle guards.
+    - action: set_speeds
+      variables:
+        left: int
+        right: int
+      then:
+        - script.execute:
+            id: set_motion
+            l: !lambda 'return std::max(-100.0f, std::min(100.0f, left * (1.0f + id(left_trim).state / 100.0f)));'
+            r: !lambda 'return (float) std::max(-100, std::min(100, (int) right));'
+            ms: 0
