@@ -228,7 +228,20 @@ beam spans 30-54 mm behind the front axle, top at 55 mm.
 **Battery placement relaxed (Enoch, 10-31):** the pack isn't heavy enough to
 matter much for balance; what caused trouble before was the original kit's pack
 standing *vertical* at the very back. Toward the rear is fine **as long as it lies
-horizontal** - mid-track is a preference, not a rule. Needed: axle-to-axle distance (to centre the battery on the tracks);
+horizontal** - mid-track is a preference, not a rule.
+
+**Front parts as they sit today (Enoch, measured 10-31)** - what the nose bracket
+must reproduce:
+
+| Part | Height above bench | Fore-aft |
+|---|---|---|
+| Cliff sensors (TCRT5000 face) | 13-15 mm (sides slightly uneven) | to measure: from the front axle centre |
+| Charge contacts (pad bars, bottom) | 9-10 mm | ~35 mm ahead of the front axle centre |
+| TFMini lens centre | 63 mm | - |
+
+The cliff sensors work at 13-15 mm (edge-tested 10-26); the nose bracket holds
+them at a level 13 mm on both sides with a little adjustment, rather than chasing
+the TCRT5000's nominal 2-10 mm and re-proving the guard. Needed: axle-to-axle distance (to centre the battery on the tracks);
 free holes once the acrylic is off (top-down photo).
 
 ~~**Design direction from this:** bolt the printed base onto the **threaded slots
