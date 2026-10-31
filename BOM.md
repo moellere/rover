@@ -24,7 +24,7 @@ All from Enoch's inventory unless the Source column says otherwise.
 | Component | Qty | Role | Source | Status |
 |---|---|---|---|---|
 | Makeblock Starter Robot Kit, **trike** (two driven wheels + trailing caster; tank until 2026-09-29) | 1 | Chassis and two DC gear motors | Inventory | Installed |
-| Parallax L3G4200D 3-axis gyro module | 1 | Yaw rate for on-board heading control (I2C 0x69 on GPIO21/5, 3V3) | Inventory | Wired and reading 2026-10-19 (SCL GPIO5). (A GY-61 / ADXL335 analog accelerometer is also in inventory, deferred.) |
+| Parallax L3G4200D 3-axis gyro module | 1 | Yaw rate for on-board heading control (I2C 0x69 on GPIO21/5, 3V3) | Inventory | Wired and reading 2026-10-19 (SCL GPIO5). Board 22 x 20 mm, 8 pins in line along a 22 mm edge (breadboard SIP), one M2 hole 1.5 mm in from the centre of the opposite edge (Enoch, 10-31). From the top plate on it stands upright in the half breadboard, so the firmware's yaw axis moves off Z (verify with a test turn). (A GY-61 / ADXL335 analog accelerometer is also in inventory, deferred.) |
 | TTGO T-Camera `redcam` (rover camera) | 1 | Eyes for homing | Inventory | Survived the 2026-10-18 fall (snapshot verified) |
 | Makeblock caster bracket + printed skid | 1 | Rear support (trike) | Inventory / printed | **Bracket snapped, skid lost, 2026-10-18**; superseded by the tank rebuild (no rear support) |
 | ESP32 devkit (WROOM-32D, 38-pin) - `rover32` | 1 | Spinal cord (ESPHome): enables GPIO16/17, direction GPIO18/19/22/23, cliff GPIO35/32, TFMini I2C GPIO25/26, battery GPIO34 | Inventory (was the Eufy IR node's board) | Installed 2026-10-03 |
