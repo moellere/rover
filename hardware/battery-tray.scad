@@ -1,18 +1,18 @@
 // Battery tray: Grover's 3x18650 pack (holder + HW-288 BMS) behind the
-// acrylic deck, ON TOP of the two track rails (Enoch's design, 2026-10-31).
+// acrylic deck, ON TOP of the two tread beams (Enoch's design, 2026-10-31).
 // It replaces battery cradle v3 on the posts, so the posts now carry only the
 // fixed electronics top plate.
 //
-// Shape (v2 - v1 recessed the pocket between the rails, and Enoch: "it
+// Shape (v2 - v1 recessed the pocket between the tread beams, and Enoch: "it
 // definitely won't be able to sit that low - the motor will interfere"):
-// a floor plate that rests on both rail tops (2.5 mm onto each, clear of the
+// a floor plate that rests on both tread beam tops (2.5 mm onto each, clear of the
 // treads), with cradle v3's holder pocket ROTATED 90 deg (holder crosswise) on
 // top of it. Only the BMS (through its floor window, ~6 mm) and the tabs reach
-// below the rail tops. The BMS sits at the LEFT end (the rear motor is on the
-// right). Vertical tabs (12 mm deep) hang down the rails' inside faces, each
-// with a horizontal slot at the rails' top hole row (4 mm below the top edge,
-// Enoch) - an M4 goes through any rail hole the tab covers, whatever the pitch. The right tab stops short of the rear motor plate (it covers the
-// last ~31 mm of the rail). A low rear lip: lift the pack a little and slide it
+// below the tread beam tops. The BMS sits at the LEFT end (the rear motor is on the
+// right). Vertical tabs (12 mm deep) hang down the tread beams' inside faces, each
+// with a horizontal slot at the tread beams' top hole row (4 mm below the top edge,
+// Enoch) - an M4 goes through any tread beam hole the tab covers, whatever the pitch. The right tab stops short of the rear motor plate (it covers the
+// last ~31 mm of the tread beam). A low rear lip: lift the pack a little and slide it
 // out the back. Two slots take a velcro strap over the pack.
 //
 // Frame: y REARWARD from the acrylic's rear edge, z up from the bench - so the
@@ -21,9 +21,9 @@
 // labels assumed +x = right; the final mirror() below fixes that: in the output
 // +x IS Grover's right, the short tab is on the right (clear of the motor
 // plate) and the BMS window on the left.
-// Measured (Enoch, 10-31): rail tops 56 mm; rails 95 mm apart inside; 60 mm
-// from the acrylic's rear edge to the rail ends; motor plate covers the rear
-// ~31 mm of the right rail. Holder + BMS 61 x 79 x ~23 (10-19; body 17 / BMS 6
+// Measured (Enoch, 10-31): tread beam tops 56 mm; tread beams 95 mm apart inside; 60 mm
+// from the acrylic's rear edge to the tread beam ends; motor plate covers the rear
+// ~31 mm of the right tread beam. Holder + BMS 61 x 79 x ~23 (10-19; body 17 / BMS 6
 // are the cradle's assumed split).
 //
 // Render: openscad -o battery-tray.stl battery-tray.scad
@@ -36,9 +36,9 @@ bms_w = 45;     bms_l = 56;     clear_w = 0.6; clear_l = 4.6;
 // chassis
 rail_top    = 56;
 rail_gap    = 95;      // inside faces
-rail_len    = 60;      // acrylic rear edge -> rail ends
-plate_cover = 31;      // right motor plate, from the rail end forward
-lip         = 2.5;     // floor overhang onto each rail top
+rail_len    = 60;      // acrylic rear edge -> tread beam ends
+plate_cover = 31;      // right motor plate, from the tread beam end forward
+lip         = 2.5;     // floor overhang onto each tread beam top
 
 // tray
 floor_t  = 3;
@@ -46,10 +46,10 @@ wall_t   = 2.5;
 wall_h   = 14;         // pocket walls above the floor (holder body ~17)
 rear_lip = 5;
 tab_t    = 3;
-tab_gap  = 0.3;        // tab-to-rail clearance
-tab_drop = 12;         // tabs reach this far below the rail tops: the top row of holes only (Enoch)
+tab_gap  = 0.3;        // tab-to-tread beam clearance
+tab_drop = 12;         // tabs reach this far below the tread beam tops: the top row of holes only (Enoch)
 y0       = 0.5;        // front face, just clear of the acrylic
-hole_down = 4;         // rails' top hole row: centre 4 mm below the top edge (Enoch)
+hole_down = 4;         // tread beams' top hole row: centre 4 mm below the top edge (Enoch)
 slot_h   = 5;          // tab slot height (M4 + 0.5)
 
 inner_x = holder_l + clear_l;     // 83.6 across
@@ -65,19 +65,19 @@ $fn = 32;
 module tray() {
   difference() {
     union() {
-      // floor plate over both rails
+      // floor plate over both tread beams
       translate([-rail_x - lip, y0, rail_top]) cube([rail_gap + 2 * lip, oy1 - y0, floor_t]);
       // pocket walls
       translate([px0 - wall_t, y0, fz]) cube([inner_x + 2 * wall_t, oy1 - y0, wall_h]);
-      // tabs down the rails' inside faces
+      // tabs down the tread beams' inside faces
       translate([-rail_x + tab_gap, y0, rail_top - tab_drop]) cube([tab_t, rail_len - 2, tab_drop + 0.01]);
       translate([rail_x - tab_gap - tab_t, y0, rail_top - tab_drop]) cube([tab_t, rail_len - plate_cover - 4, tab_drop + 0.01]);
     }
     // the pocket, open top; rear wall cut down to a low lip
     translate([px0, py0, fz]) cube([inner_x, inner_y, 50]);
     translate([px0, py1 - 1, fz + rear_lip]) cube([inner_x, wall_t + 2, 50]);
-    // horizontal slots along each tab at the rails' top hole row: an M4 goes
-    // through any rail hole the tab covers, whatever the pitch
+    // horizontal slots along each tab at the tread beams' top hole row: an M4 goes
+    // through any tread beam hole the tab covers, whatever the pitch
     translate([-rail_x - 1, y0 + 3, rail_top - hole_down - slot_h / 2]) cube([tab_t + 2, rail_len - 2 - 6, slot_h]);
     translate([rail_x - tab_gap - tab_t - 1, y0 + 3, rail_top - hole_down - slot_h / 2]) cube([tab_t + 2, rail_len - plate_cover - 4 - 6, slot_h]);
     // BMS window, left end of the floor

@@ -1,15 +1,15 @@
 // Rear cliff bar: two HW-870 / TCRT5000 cliff sensors behind Grover's
 // tracks, so reversing has the same stopping room as driving forward
 // (2026-10-31). One printed part: bolts to the tapped M4 holes in the two
-// track rails' END faces (Enoch), stands 6 mm off them (the right motor
-// plate sticks out ~4 mm past its rail end), steps inboard of the treads,
+// tread beams' END faces (Enoch), stands 6 mm off them (the right motor
+// plate sticks out ~4 mm past its tread beam end), steps inboard of the treads,
 // runs back, and a crossbar carries the sensors behind each track's
 // centreline.
 //
-// Geometry (Enoch, 10-31): rear axle 8 mm in from the rail ends, rearmost
+// Geometry (Enoch, 10-31): rear axle 8 mm in from the tread beam ends, rearmost
 // tread 30 mm behind them. The front pair sits ~75 mm ahead of the front
 // axle, so the rear TCRT5000s sit 75 mm behind the rear axle = 67 mm behind
-// the rail ends, ~37 mm past the tread. Faces 13 mm above the bench, like
+// the tread beam ends, ~37 mm past the tread. Faces 13 mm above the bench, like
 // the front pair (edge-tested there 10-26).
 //
 // Sensor module: HW-870 per cliff-mount.scad (31.5 x 14, M3 hole 7.5 mm from
@@ -21,7 +21,7 @@
 // the frame but the boards, so it prints flat with no supports.
 //
 // Frame: +y FORWARD, +x Grover's RIGHT, z up from the bench (right-handed:
-// forward x up = right). Origin: centreline, at the rail ends' plane. The
+// forward x up = right). Origin: centreline, at the tread beam ends' plane. The
 // part is symmetric, so handedness cannot go wrong; the right side is the
 // one next to the motor plate.
 //
@@ -34,7 +34,7 @@
 //         supports, no brim. Blue PETG (Grover parts).
 
 // chassis
-rail_in_x  = 95 / 2;          // rails' inside faces
+rail_in_x  = 95 / 2;          // tread beams' inside faces
 rail_w     = 8;               // 0824 on its side
 rail_cx    = rail_in_x + rail_w / 2;    // 51.5: end-hole column
 hole_z     = [35, 52];        // measured (Enoch, 10-31)
@@ -52,8 +52,8 @@ face_z  = 13;
 m4_hole  = 4.5;
 slot_z   = 3;     // +/- vertical
 slot_x   = 0.75;  // +/- sideways (keeps a wall outboard of the hole)
-block_x0 = rail_in_x + 0.5;   // end block inboard edge: clear of the motor plate on the rail's inside face
-block_x1 = rail_in_x + rail_w;   // stay inside the rail footprint: the sprocket and tread are outboard of it
+block_x0 = rail_in_x + 0.5;   // end block inboard edge: clear of the motor plate on the tread beam's inside face
+block_x1 = rail_in_x + rail_w;   // stay inside the tread beam footprint: the sprocket and tread are outboard of it
 end_t    = 4;     // end plate behind the standoff
 frame_t  = 4;
 pocket   = 1;     // PCB locating pocket in the frame's underside
@@ -76,7 +76,7 @@ $fn = 32;
 module half() {   // right half (x > 0); the part is mirrored onto the left
   difference() {
     union() {
-      // end block: the standoff plus the end plate, rail-wide, frame to rail top
+      // end block: the standoff plus the end plate, tread beam-wide, frame to tread beam top
       translate([block_x0, -standoff - end_t, frame_z0]) cube([block_x1 - block_x0, standoff + end_t, rail_top - frame_z0]);
       // end plate widened inboard behind the standoff, where the arm joins
       translate([arm_x0, -standoff - end_t, frame_z0]) cube([block_x1 - arm_x0, end_t, rail_top - 6 - frame_z0]);
@@ -105,9 +105,9 @@ module ghosts() {
   for (s = [-1, 1]) {
     // HW-870 boards
     %translate([s > 0 ? pcb_x0 : -pcb_x1, sensor_y - pcb_w / 2, pcb_top - pcb_t]) cube([pcb_l, pcb_w, pcb_t]);
-    // rail ends and the track wrap (rearmost tread 30 mm behind the rail ends)
+    // tread beam ends and the track wrap (rearmost tread 30 mm behind the tread beam ends)
     %translate([s * rail_cx - rail_w / 2, 0, rail_top - 24]) cube([rail_w, 40, 24]);
-    %translate([s * (rail_in_x + rail_w + 1 + 13), 8, 38]) rotate([0, 90, 0]) cylinder(r = 38, h = 26, center = true);   // outboard of the rail
+    %translate([s * (rail_in_x + rail_w + 1 + 13), 8, 38]) rotate([0, 90, 0]) cylinder(r = 38, h = 26, center = true);   // outboard of the tread beam
   }
 }
 
