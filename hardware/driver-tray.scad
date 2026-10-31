@@ -12,8 +12,9 @@
 //           (motor and power leads), header edges facing forward to the buck;
 //           turned this way so the tray is 52 mm wide - the posts leave only
 //           ~57 mm between them (64 mm centres, ~7 mm posts).
-// Every board sits on 3 mm standoffs at its holes (solder joints under the pin
-// rows and corner pads), M3 screws into the standoffs (self-tapping in PETG).
+// Every board sits on 5 mm standoffs at its holes (v2 margin; v1's 3 mm clears
+// the DRV8871's ~2 mm terminal pins by ~1 mm and is fine as printed), with a
+// relief slot under each driver's terminal-pin row, M3 screws into the standoffs (self-tapping in PETG).
 //
 // Measured (Enoch, 10-31): DRV8871 22 x 26 mm, two 3.2 mm holes on the header
 // edge 13 mm apart edge-to-edge (16.2 mm centres) - slotted +/-1 mm along that
@@ -28,7 +29,7 @@ margin    = 2;
 corner_r  = 3;
 m3_clear  = 3.4;   // tray-to-acrylic bolts
 m3_pilot  = 2.6;   // standoff pilot for an M3 screw (self-taps PETG)
-stand_h   = 3;
+stand_h   = 5;     // v2 margin: the DRV8871 terminal pins stick out ~2 mm (Enoch, 10-31) - v1's 3 mm already clears them by ~1 mm
 stand_d   = 6.5;
 
 // DRV8871
@@ -103,6 +104,10 @@ module tray() {
       translate([sx * (tray_x / 2 - 8), tray_y / 2 - front_tab / 2, -1]) cylinder(d = m3_clear, h = plate_t + 2);
       translate([sx * (tray_x / 2 - 8), -tray_y / 2 + rear_tab / 2, -1]) cylinder(d = m3_clear, h = plate_t + 2);
     }
+    // relief under each driver's screw-terminal pin row (at its rear edge), so
+    // the ~3 mm pins can never bottom on the plate
+    for (s = [-1, 1])
+      translate([drv_cx(s) - (drv_w - 4) / 2, drv_y0 + 1, -1]) cube([drv_w - 4, 5, plate_t + 2]);
     // wire gap between the drivers' headers: a slot through the plate for
     // the logic leads to drop / rise without crossing the boards
     translate([-drv_gap / 2 + 0.5, drv_y0 + 3, -1]) cube([drv_gap - 1, drv_l - 6, plate_t + 2]);
