@@ -61,9 +61,9 @@ still hold for everything else.
   contact margin at +/-1 cm untested; motion still jerky (75 % min-duty
   jump); the buck's USB back-feed diode deferred (no USB on `rover32`
   with the pack connected). Next: ROADMAP 2.4, auto-dock on low battery.
-- **LEDs (10-26):** headlight dots on GPIO4 work; the 6-pixel status strip
-  after them stays dark - check direction, Dout->Din joint, 5 V at the
-  strip, and whether it is a 12 V strip.
+- **LEDs:** the whole WS2812B chain works - headlight dots and the 6-pixel
+  status strip (dark on 10-26; lit in the 10-31 test after the rework
+  rewiring, Enoch confirmed).
 - The Eufy is shelved as a chassis (IR hold stands); the spare C3
   SuperMini left the project for a Wyola fish feeder (10-26).
 
@@ -271,6 +271,10 @@ DRV8871 drivers arrived; he asked for Grover's parts in blue PETG from now on.*
   read the post tops as level with the tracks; Enoch's side photo showed
   them well clear, so v2 sits straight on the posts at 3.5 mm thick
   (cradle v3 was 11 mm, too thick for his bolts).
+- **LEDs (late 10-31):** with rover32 on the bench, a test over the ESPHome
+  API (headlight white, strip red/green/blue, whole chain white) lit
+  everything - including the status strip, dark since 10-26. Home
+  Assistant had banned the VM again (403), so the test went direct.
 - **Gyro:** Enoch had screwed it upright to the old cradle's front
   face, where the Z axis the firmware reads lies horizontal - `turn()`
   would not see the rotation. It goes upright into the breadboard
