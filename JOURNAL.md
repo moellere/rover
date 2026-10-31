@@ -278,6 +278,18 @@ DRV8871 drivers arrived; he asked for Grover's parts in blue PETG from now on.*
   axis moves off Z, checked with a test turn against the overhead.
 - **Spoolman:** blue PETG added as spool #5 and made active.
 
+Photos:
+
+![Before: the old deck, breadboard and L298N wiring](images/37-electronics-before-rework-2026-10-31.jpg)
+![The bare tank chassis with the deck off](images/38-bare-tank-chassis-2026-10-31.jpg)
+![Enoch's mock-up of the five power-deck parts](images/39-power-deck-mockup-2026-10-31.jpg)
+![Driver tray v3 fitted on the acrylic: buck, Wagos, DRV8871s](images/40-driver-tray-v3-fitted-2026-10-31.jpg)
+![The Freenove FNK0101 breakout with the devkit fitted](images/41-freenove-fnk0101-2026-10-31.jpg)
+![Side view, cradle v3 on the posts: the post tops clear the tracks, so no risers](images/42-post-clearance-side-2026-10-31.jpg)
+![The gyro screwed upright to the old cradle - its Z axis horizontal, so it moves to the breadboard](images/43-gyro-upright-on-old-cradle-2026-10-31.jpg)
+![Top view: blue battery tray on the rails, power deck ahead of it](images/44-battery-tray-and-power-deck-top-2026-10-31.jpg)
+![Rear view: battery tray on the rails, the rear motor below, rail end faces (rear cliff bar bolts here)](images/45-rear-view-battery-tray-motor-2026-10-31.jpg)
+
 **Claude-driven:** the DRV8871 firmware and decay mode; all four part
 designs and their revisions; the risers (wrong); keeping the gyro in the
 breadboard with an axis change rather than a bracket.
@@ -474,7 +486,11 @@ firmware are fine; the fault is at or after the right dot's Dout.
 To check on return, in order: the strip's arrows point away from the
 dots (Din at the dot end); the Dout -> Din joint; 5 V and GND reach the
 strip (meter at its pads); the strip's voltage and chip (a 12 mm strip
-can be a 12 V WS2815 / WS2811, which stays dark on 5 V). Enoch then unplugged the dock and left Grover off the
+can be a 12 V WS2815 / WS2811, which stays dark on 5 V).
+
+![The WS2812B dot chain before the headlight clip: pads on the back](images/36-led-dot-chain-2026-10-26.jpg)
+
+Enoch then unplugged the dock and left Grover off the
 charger: he is travelling ~5 days, and the dock is not trusted
 unattended yet.
 
