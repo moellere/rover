@@ -54,7 +54,7 @@ chain.
 |---|---|---|
 | Raspberry Pi Pico 2 W (RP2350, WiFi) | a couple | Smart-dock controller (ROADMAP 6b) |
 | 28BYJ-48 stepper + ULN2003 driver boards (several spares) | several | slow, precise positioning if ever needed |
-| Mini servos (Enoch, 10-31) | several | **`redcam` pan mount** for Phase 3 dock search - better fit than the stepper: one PWM pin, absolute position, no homing |
+| SG90 9 g micro servos (Enoch, 10-31) | 10 | **`redcam` pan mount** for Phase 3 dock search - better fit than the stepper: one PWM pin, absolute position, no homing |
 | DRV8871 (one spare from the 3-pack) | 1 | spare motor driver |
 | AI-Thinker ESP32-CAM | a couple | Spare cameras (too few free GPIOs to be the spinal cord) |
 | WS2812B dots / strips, TCRT5000 (10-pack spares) | many | Lights; rear cliff sensors |
