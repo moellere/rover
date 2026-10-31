@@ -51,10 +51,11 @@ buck_slot = 1;
 
 gap_y     = 5;     // between the buck and the drivers
 rear_tab  = 7;     // strip behind the drivers for the rear mounting bolts
-front_tab = 7;     // strip ahead of the buck for the front mounting bolts
+wago_d    = 22;    // v2: the Wago bus section ahead of the buck (wago-tray.scad's pockets)
+wago_x    = 87.8;  // its width - wider than the posts' gap, it sits ahead of them
 
 tray_x = 2 * drv_w + drv_gap + 2 * margin;                 // 52
-tray_y = rear_tab + margin + drv_l + gap_y + buck_w + margin + front_tab;   // 70
+tray_y = rear_tab + margin + drv_l + gap_y + buck_w + margin;   // 63, plus the Wago section ahead
 
 $fn = 32;
 
@@ -77,10 +78,12 @@ function drv_holes(side) = [ for (dx = [-drv_hole_c / 2, drv_hole_c / 2])
   [drv_cx(side) + dx, drv_y0 + drv_l - drv_hole_in] ];
 
 // buck hole centres: board rotated so its 44 mm runs along X
+// v2: v1 had the diagonal mirrored (Enoch, 10-31) - the board's 21 mm axis
+// runs the other way along +Y here
 function buck_holes() = [ for (h = [buck_h1, buck_h2])
-  [buck_x0 + h[1], buck_y0 + h[0]] ];
+  [buck_x0 + h[1], buck_y0 + buck_w - h[0]] ];
 
-module tray() {
+module driver_tray() {
   difference() {
     union() {
       rounded(tray_x, tray_y, plate_t);
@@ -98,12 +101,10 @@ module tray() {
     for (p = buck_holes())
       translate([p[0], p[1], -1]) hull() for (dx = [-buck_slot, buck_slot])
         translate([dx, 0, 0]) cylinder(d = m3_pilot, h = plate_t + stand_h + 2);
-    // tray-to-acrylic holes (the drill template): the front pair beside the
-    // buck's ends, the rear pair in the tab behind the drivers - none under a board
-    for (sx = [-1, 1]) {
-      translate([sx * (tray_x / 2 - 8), tray_y / 2 - front_tab / 2, -1]) cylinder(d = m3_clear, h = plate_t + 2);
+    // tray-to-acrylic holes (the drill template): the rear pair in the tab
+    // behind the drivers; the front pair is in the Wago section's bridge
+    for (sx = [-1, 1])
       translate([sx * (tray_x / 2 - 8), -tray_y / 2 + rear_tab / 2, -1]) cylinder(d = m3_clear, h = plate_t + 2);
-    }
     // relief under each driver's screw-terminal pin row (at its rear edge), so
     // the ~3 mm pins can never bottom on the plate
     for (s = [-1, 1])
@@ -120,5 +121,13 @@ module ghosts() {   // board outlines for checking, not printed
   %translate([buck_x0, buck_y0, plate_t + stand_h]) cube([buck_l, buck_w, 1.6]);
 }
 
-tray();
+// v2: the Wago bus pockets (wago-tray.scad) joined to the front edge
+use <wago-tray.scad>
+module whole() {
+  driver_tray();
+  translate([0, tray_y / 2 + wago_d / 2 - 0.01, plate_t - 2]) tray();   // wago floor is 2 mm; flush underside
+  // fill the step where the 3 mm plate meets the 2 mm Wago floor
+  translate([-tray_x / 2 + corner_r, tray_y / 2 - corner_r, 0]) cube([tray_x - 2 * corner_r, corner_r + 1, plate_t]);
+}
+whole();
 ghosts();
