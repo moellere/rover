@@ -249,7 +249,7 @@ standoffs at its holes with relief under both rows. MOTOR = OUT1/OUT2,
 POWER + = VM, POWER - = GND. **Driver tray:** one printed plate with both DRV8871s and
 the LM2596, bolted through the L298N's existing holes (no new acrylic holes);
 terminals out toward each side's motor, headers to the middle. Needed: the L298N's
-hole spacing/diameter (often 37 x 37, M3 - measure), the LM2596's holes; the cradle's wall-top and
+hole spacing/diameter (often 37 x 37, M3 - measure), the LM2596 (module 21 x 44 mm, Enoch) holes; the cradle's wall-top and
 battery-top heights and where the rear wall is solid (hinge blocks); how far back
 the camera mount reaches. **This supersedes the "lower the cradle" plan below.**
 
