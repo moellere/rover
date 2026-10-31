@@ -44,7 +44,7 @@ wall_h   = 14;         // pocket walls above the floor (holder body ~17)
 rear_lip = 5;
 tab_t    = 3;
 tab_gap  = 0.3;        // tab-to-rail clearance
-tab_drop = 20;         // tabs reach this far below the rail tops (rail is 24 tall)
+tab_drop = 12;         // tabs reach this far below the rail tops: the top row of holes only (Enoch)
 y0       = 0.5;        // front face, just clear of the acrylic
 
 inner_x = holder_l + clear_l;     // 83.6 across
