@@ -222,7 +222,9 @@ rocking and the 128 beam isn't needed. **Cross-beam top: 55 mm above the bench**
 (Enoch, measured). **No 0824-128 beam** (Enoch) - the acrylic sits directly on the
 cross beam, top ~58 mm. So cliff-mount.scad's 51 mm "beam top" is from the trike
 (10-03), not the tank: the nose bracket uses direct measurements of where the
-cliff sensors, pad bars and TFMini sit today, not the old scad numbers. Needed: cross-beam position (from the front axle);
+cliff sensors, pad bars and TFMini sit today, not the old scad numbers.
+**Cross-beam front edge: 30 mm behind the front axle centre** (Enoch) - so the
+beam spans 30-54 mm behind the front axle, top at 55 mm. Needed: axle-to-axle distance (to centre the battery on the tracks);
 free holes once the acrylic is off (top-down photo).
 
 ~~**Design direction from this:** bolt the printed base onto the **threaded slots
