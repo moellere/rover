@@ -239,9 +239,14 @@ stays on the cradle's front perch (height and view unchanged); the front end is
 untouched. **The only new part: the hinged electronics plate above the cradle** -
 FNK0101 + breadboard side by side (up to ~160 mm wide, above the tracks), hinged at
 the rear on printed blocks on the cradle behind the battery pocket, stopping short
-of the camera mount; battery access = swing the plate up, lift the pack. **DRV8871 module: 22 x 26 mm** (Enoch, 10-31). Needed:
-DRV8871 mounting holes (if any), height with its terminal block, and a pin-label
-photo (holder under the cradle); the cradle's wall-top and
+of the camera mount; battery access = swing the plate up, lift the pack. **DRV8871 module: 22 x 26 mm** (Enoch, 10-31): header IN2 / IN1 / VM / GND on
+one edge, screw terminals MOTOR (2) and POWER +/- (2) on the opposite edge; two
+4 mm holes on the header edge, 13 mm apart edge-to-edge (~17 mm centres) - holder
+slots +/-1 mm along that line (Enoch: leave slop), M3 screws; ~12 mm tall
+(terminals, 47 uF cap). **Driver tray:** one printed plate with both DRV8871s and
+the LM2596, bolted through the L298N's existing holes (no new acrylic holes);
+terminals out toward each side's motor, headers to the middle. Needed: the L298N's
+hole spacing/diameter (often 37 x 37, M3 - measure), the LM2596's holes; the cradle's wall-top and
 battery-top heights and where the rear wall is solid (hinge blocks); how far back
 the camera mount reaches. **This supersedes the "lower the cradle" plan below.**
 
