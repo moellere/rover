@@ -18,7 +18,13 @@ breakdown of the notable decisions. Newest entry on top.
 
 ## Current status (as of the latest entry below)
 
-**Where things stand, 2026-10-26:**
+**Where things stand, 2026-10-31:** mid carrier rework (entry below) -
+DRV8871 drivers flashed but not yet run on the motors, Wago power deck
+and battery tray printed, top plate v2 printing; Grover is apart and
+cannot drive until the deck is reassembled. The 10-26 notes below
+still hold for everything else.
+
+**Where things stood, 2026-10-26:**
 
 - **Grover is a Makeblock tank** (since 10-19/22), ESP32 spinal cord
   `rover32` (ESPHome: watchdog, disconnect-stop, cliff, low-battery and
@@ -226,6 +232,58 @@ week-in-review entry right below summarises 09-29 .. 10-05; the dated
 notes after it carry the detail (a few were appended out of order).
 
 ---
+
+## 2026-10-27 .. 10-31 - The carrier rework: DRV8871s, Wago power deck, battery on the rails, a fixed top plate
+
+*Model: Opus 5.5. Guidance: Enoch said the electronics had become "almost
+unmanageable" and offered layout ideas, measurements and photos throughout;
+DRV8871 drivers arrived; he asked for Grover's parts in blue PETG from now on.*
+
+- **Motor drivers:** the L298N is out, two DRV8871 boards in (3-pack,
+  $14.26, Enoch's pick of listing). Firmware flashed: four LEDC outputs
+  (left GPIO22/23, right GPIO19/18, 1 kHz), slow decay (one input held
+  high, the other PWM'd at 1 - duty), brake = both high, coast = both
+  low. Current limit ~2.1 A per board (the boards' 30 k ILIM). **Not yet
+  run on the motors** - first test with the tracks lifted, buck at 5.2 V.
+- **Driver tray v3 (printed white, `260931d442`):** a power deck on the
+  acrylic - buck lengthwise, OUT forward; two Wago 221-415s press-fit (+
+  bus left, GND right); both DRV8871s at the rear on slotted standoffs
+  clear of their 2 mm through-hole pins; a BMS opening and drill-template
+  holes. v1 had the buck's diagonal holes mirrored (Enoch caught it); v2
+  bridged a separate Wago tray in; v3 follows Enoch's mock-up of the five
+  parts.
+- **Battery tray (printed blue, `cfde5f9b89`):** Enoch's idea - the pack
+  rides on top of the two track rails behind the acrylic, not on the
+  posts. v1 recessed it between the rails and the rear motor was in the
+  way; v2 sits on the rail tops with 12 mm tabs bolting to the top hole
+  row through slots. **It printed mirrored**: the file's frame had y
+  pointing rearward, which makes +x Grover's LEFT, and the labels assumed
+  right. Enoch is fitting the print as is (short tab now left, BMS window
+  over the motor); the file is fixed with a final `mirror()`, and
+  CLAUDE.md now says to check handedness on a top view before slicing.
+- **Top plate (v2 printing blue, `4e53ea4a93`, 10-31):** with the pack
+  gone from the posts, nothing under the deck needs access, so the
+  hinged-plate plan was dropped (Enoch's suggestion) for a plate fixed
+  on the four posts: Freenove FNK0101 (devkit fitted) on the left on
+  5 mm standoffs, the half breadboard on the right in a locating pocket,
+  cradle v3's camera perch grid on a front tab, cable slots, post holes
+  slotted +/-1.5 mm. v1/v1b stood on 15 mm risers because Claude had
+  read the post tops as level with the tracks; Enoch's side photo showed
+  them well clear, so v2 sits straight on the posts at 3.5 mm thick
+  (cradle v3 was 11 mm, too thick for his bolts).
+- **Gyro:** Enoch had screwed it upright to the old cradle's front
+  face, where the Z axis the firmware reads lies horizontal - `turn()`
+  would not see the rotation. It goes upright into the breadboard
+  instead (the Parallax module is a breadboard SIP); the firmware's yaw
+  axis moves off Z, checked with a test turn against the overhead.
+- **Spoolman:** blue PETG added as spool #5 and made active.
+
+**Claude-driven:** the DRV8871 firmware and decay mode; all four part
+designs and their revisions; the risers (wrong); keeping the gyro in the
+breadboard with an axis change rather than a bracket.
+**Enoch-decided:** the driver purchase; the Wagos and the deck layout;
+the battery on the rails; dropping the hinge for a fixed plate; no
+risers; blue for Grover parts.
 
 ## 2026-10-26 - Grover charges on its dock
 
