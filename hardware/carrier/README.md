@@ -243,7 +243,10 @@ of the camera mount; battery access = swing the plate up, lift the pack. **DRV88
 one edge, screw terminals MOTOR (2) and POWER +/- (2) on the opposite edge; two
 4 mm holes on the header edge, 13 mm apart edge-to-edge (~17 mm centres) - holder
 slots +/-1 mm along that line (Enoch: leave slop), M3 screws; ~12 mm tall
-(terminals, 47 uF cap). **Driver tray:** one printed plate with both DRV8871s and
+(terminals, 47 uF cap). Back: solder joints under both pin rows (terminals
+GND / VM / OUT1 / OUT2; header GND / VM / IN1 / IN2) - the board sits on 3 mm
+standoffs at its holes with relief under both rows. MOTOR = OUT1/OUT2,
+POWER + = VM, POWER - = GND. **Driver tray:** one printed plate with both DRV8871s and
 the LM2596, bolted through the L298N's existing holes (no new acrylic holes);
 terminals out toward each side's motor, headers to the middle. Needed: the L298N's
 hole spacing/diameter (often 37 x 37, M3 - measure), the LM2596's holes; the cradle's wall-top and
