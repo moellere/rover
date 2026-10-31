@@ -230,6 +230,23 @@ matter much for balance; what caused trouble before was the original kit's pack
 standing *vertical* at the very back. Toward the rear is fine **as long as it lies
 horizontal** - mid-track is a preference, not a rule.
 
+### Decided (Claude, 10-31; Enoch: "reuse preferred, your call")
+
+**Keep the acrylic Base Bracket on the cross beam as the base.** The front stays
+exactly as it is - cliff mounts, pad plates, TFMini plate, bumper bar (proven
+positions) - so **the nose bracket is deferred** to an optional later tidy-up.
+**Battery cradle v3 moves down onto the acrylic** on ~8-10 mm spacers (room for the
+downward-facing BMS and its lead run; pocket unchanged). New prints only: (1) the
+**hinged electronics plate** on four printed risers on the acrylic, clear of the
+battery pocket, underside above the tracks (>= ~100 mm) so it can be ~160 mm wide
+with the FNK0101 and the breadboard side by side; (2) a **camera perch** at the
+plate's front edge (same +/-24 mm slots) - lowering the cradle would drop the
+camera ~30 mm, and homing/docking are tuned to its view; (3) small holders for the
+DRV8871s and the buck, beside the battery or under the plate (shortest motor
+leads). Needed: top-down photo of the acrylic with the cradle off (free holes),
+the BMS's protrusion below the holder (v3 assumes 6 mm), the DRV8871 outline/holes.
+The base-on-the-cross-beam and nose-bracket design above is superseded.
+
 **Front parts as they sit today (Enoch, measured 10-31)** - what the nose bracket
 must reproduce:
 
