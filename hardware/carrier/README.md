@@ -200,7 +200,23 @@ rows"; a front photo will settle which surface that is.)
 able to rotate them to hang below, which would let the base lie flat across the
 frame - otherwise cut-outs.
 
-**Still needed:** heights above the bench (track-beam top, cross-beam top, track
+**Photos read (10-31, Enoch's front/side/ruler set; parallax ~+/-5 mm):** acrylic
+deck top ~51 mm - matching cliff-mount.scad's measured 51 mm, so that part's
+"beam top" is the acrylic, and the cliff mount, pad plates and TFMini bracket are
+all defined relative to it in the scad files (the nose bracket reproduces them
+from those numbers); track beams ~48-72 mm (on their sides); track top run
+~85-90 mm, ~95 over the drive sprockets; motor plates top ~80 mm; TFMini lens
+centre ~55 mm; battery cradle underside ~70 mm.
+
+**Design direction from this:** bolt the printed base onto the **threaded slots
+on the track beams' top edges** (~112 mm outside-to-outside, ~72 mm high) - the
+FNK0101 (83 mm) and breadboard fit inside that width, nothing over the tracks.
+The motor plates (top ~80) are the obstacle: rotated to hang below the beam, the
+base lies flat; otherwise pockets. To confirm directly (ruler on the part, not
+from a photo): motor plates rotatable?; outside width across the two beam tops;
+beam-top height.
+
+**Still needed (earlier list, now superseded by the above):** heights above the bench (track-beam top, cross-beam top, track
 top run, motor-plate top); **before anything comes off**, one front-on photo at
 bench level and one side-on with a ruler standing on the bench, showing the
 acrylic with the cliff brackets, pad plates, TFMini plate and bumper in place -
