@@ -235,8 +235,10 @@ horizontal** - mid-track is a preference, not a rule.
 **Keep the acrylic Base Bracket on the cross beam as the base.** The front stays
 exactly as it is - cliff mounts, pad plates, TFMini plate, bumper bar (proven
 positions) - so **the nose bracket is deferred** to an optional later tidy-up.
-**Battery cradle v3 moves down onto the acrylic** on ~8-10 mm spacers (room for the
-downward-facing BMS and its lead run; pocket unchanged). New prints only: (1) the
+**Battery cradle v3 moves down onto the acrylic, flat, unchanged** - the BMS
+doesn't protrude below the cradle floor (Enoch; holder + BMS 61 x 79 x ~23 mm as
+given 10-19), and its leads drop through the cradle's window and on through one of
+the acrylic's holes (or a new one Enoch drills). No spacers. New prints only: (1) the
 **hinged electronics plate** on four printed risers on the acrylic, clear of the
 battery pocket, underside above the tracks (>= ~100 mm) so it can be ~160 mm wide
 with the FNK0101 and the breadboard side by side; (2) a **camera perch** at the
