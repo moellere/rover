@@ -9,8 +9,8 @@
 #
 # Pin map (ESP32 devkit, "esp32dev"):
 #   GPIO25 SDA / GPIO26 SCL  bus_b: TFMini (0x10) - the only I2C device
-#   GPIO17  left EN (PWM)    GPIO16  right EN (PWM)        -> L298N ENB/ENA
-#   GPIO22/23  left fwd/rev   GPIO19/18  right fwd/rev     -> L298N direction
+#   GPIO22/23  left IN1/IN2   GPIO19/18  right IN1/IN2     -> DRV8871 x2 (PWM)
+#   GPIO16/17  free (were the L298N EN pins)
 #   GPIO35 / GPIO32  front-left / front-right cliff (35 is input-only)
 #   GPIO33 / GPIO13  reserved: rear cliff sensors
 #   GPIO34  battery divider (ADC1, input-only; no onboard divider on this
@@ -27,16 +27,7 @@ esp32:
 esphome:
   name: $devicename
   on_boot:
-      - output.set_level:
-          id: left_pwm
-          level: 0%
-      - output.set_level:
-          id: right_pwm
-          level: 0%
-      - output.turn_off: left_forward_pin
-      - output.turn_off: right_forward_pin
-      - output.turn_off: left_reverse_pin
-      - output.turn_off: right_reverse_pin
+      - lambda: 'id(drv_coast_script).execute();'
 
 <<: !include common/base.yaml
 <<: !include common/sensor.yaml
@@ -184,6 +175,11 @@ globals:
 # Pins go to brake before EN goes to 100%, so there is never a full-duty
 # instant in the old drive direction.
 script:
+  - id: drv_coast_script
+    then:
+      - lambda: |-
+          id(left_in1).set_level(0.0f); id(left_in2).set_level(0.0f);
+          id(right_in1).set_level(0.0f); id(right_in2).set_level(0.0f);
   - id: motor_stop
     mode: restart
     then:
@@ -193,27 +189,12 @@ script:
           condition:
             lambda: 'return id(brake_on_stop).state || id(hard_stop);'
           then:
-            - output.turn_on: left_forward_pin
-            - output.turn_on: left_reverse_pin
-            - output.turn_on: right_forward_pin
-            - output.turn_on: right_reverse_pin
-            - output.set_level:
-                id: left_pwm
-                level: 100%
-            - output.set_level:
-                id: right_pwm
-                level: 100%
+            # DRV8871 brake: both inputs high
+            - lambda: |-
+                id(left_in1).set_level(1.0f); id(left_in2).set_level(1.0f);
+                id(right_in1).set_level(1.0f); id(right_in2).set_level(1.0f);
             - delay: 150ms
-      - output.set_level:
-          id: left_pwm
-          level: 0%
-      - output.set_level:
-          id: right_pwm
-          level: 0%
-      - output.turn_off: left_forward_pin
-      - output.turn_off: right_forward_pin
-      - output.turn_off: left_reverse_pin
-      - output.turn_off: right_reverse_pin
+      - lambda: 'id(drv_coast_script).execute();'
       - lambda: 'id(hard_stop) = false;'
       - text_sensor.template.publish:
           id: motion_status
@@ -448,12 +429,17 @@ interval:
             if (id(tgt_l) == 0 && id(tgt_r) == 0) id(motor_stop).execute();
             return;
           }
-          id(left_forward_pin).set_state(id(cur_l) > 0);
-          id(left_reverse_pin).set_state(id(cur_l) < 0);
-          id(right_forward_pin).set_state(id(cur_r) > 0);
-          id(right_reverse_pin).set_state(id(cur_r) < 0);
-          id(left_pwm).set_level(fabsf(id(cur_l)));
-          id(right_pwm).set_level(fabsf(id(cur_r)));
+          // DRV8871, slow decay: the "on" input held high, the other PWM'd at
+          // (1 - duty) - motor speed tracks duty more linearly than coasting
+          // PWM, which should help the low-speed end.
+          auto drive = [](float v, esphome::output::FloatOutput *in1, esphome::output::FloatOutput *in2) {
+            float d = fabsf(v);
+            if (v > 0) { in1->set_level(1.0f); in2->set_level(1.0f - d); }
+            else if (v < 0) { in2->set_level(1.0f); in1->set_level(1.0f - d); }
+            else { in1->set_level(0.0f); in2->set_level(0.0f); }
+          };
+          drive(id(cur_l), id(left_in1), id(left_in2));
+          drive(id(cur_r), id(right_in1), id(right_in2));
           const char *st = fwdish ? "Forward" : backish ? "Backward" : (id(cur_l) < id(cur_r) ? "Left" : "Right");
           if (id(motion_status).state != st) id(motion_status).publish_state(st);
   # Command watchdog: an untimed motion (forward/backward/left/right,
@@ -502,26 +488,26 @@ output:
   # As wired 2026-10-03 (bench-verified): the motor on GPIO17 (EN) with
   # GPIO22 forward / GPIO23 reverse is the LEFT one; GPIO16 with GPIO19
   # forward / GPIO18 reverse is the RIGHT. Fixed here, not in the wires.
+  # DRV8871 x2 (2026-10-31, replacing the L298N): no enable pin - speed is PWM
+  # on IN1 (forward) / IN2 (reverse); both high = brake, both low = coast.
+  # Same GPIOs as the L298N's direction pins, so left = 22/23, right = 19/18;
+  # GPIO16/17 (the old EN pins) are free.
   - platform: ledc
-    pin: GPIO17
-    frequency: 1000 Hz
-    id: left_pwm
-  - platform: ledc
-    pin: GPIO16
-    frequency: 1000 Hz
-    id: right_pwm
-  - platform: gpio
-    id: left_forward_pin
     pin: GPIO22
-  - platform: gpio
-    id: left_reverse_pin
+    frequency: 1000 Hz
+    id: left_in1
+  - platform: ledc
     pin: GPIO23
-  - platform: gpio
-    id: right_forward_pin
+    frequency: 1000 Hz
+    id: left_in2
+  - platform: ledc
     pin: GPIO19
-  - platform: gpio
-    id: right_reverse_pin
+    frequency: 1000 Hz
+    id: right_in1
+  - platform: ledc
     pin: GPIO18
+    frequency: 1000 Hz
+    id: right_in2
 
 # Downward-facing IR reflectance ("cliff") sensors on the free MCP23008 pins.
 # Wiring: VCC/GND + digital OUT of each IR module -> MCP4 (front-left), MCP5 (front-right).
