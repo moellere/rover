@@ -101,6 +101,28 @@ wheels have no contact. Also: a person standing in front of the nose
 inside 30 cm makes the TFMini read invalid and the obstacle guard refuses
 forward (correct) - spotters stand to the side of the line.
 
+## Terms (agreed with Enoch, 2026-10-31)
+
+Use these words, and correct Enoch if he slips; he asked for that.
+
+| Term | Means | Not |
+|---|---|---|
+| **power deck** | lower tier: the acrylic plate with the driver tray (buck, Wago buses, DRV8871s), plus the battery tray behind it | "driver/battery tier" |
+| **spine deck** | upper tier: the top plate with the FNK0101 + ESP32 (`rover32`, the spinal cord), the breadboard, the 5 V bus | "brain level" - the brain is the off-board MCP server (`brain/`) |
+| **tread beams** | the two front-to-back Makeblock beams the tracks run on | rails, track beams |
+| **cross beam** | the side-to-side beam at the front | |
+| **tracks** | the rubber belts | treads |
+| **acrylic plate** | the clear Makeblock plate the power deck sits on | deck plate |
+| **deck posts** | the four 30 mm posts carrying the spine deck | posts, standoffs |
+| **top plate** | the printed part of the spine deck | battery plate, cradle (cradle v3 is retired) |
+| **pack** | the three 18650s + BMS | |
+| **battery holder** / **battery tray** | the black 3-cell holder / the blue printed tray it sits in | battery plate |
+| **12 V bus** / **5 V bus** | the + Wago bus at pack voltage / the buck output (5.29 V) | rails |
+| **dock** | the Eufy charging base and its rollers | charger, base |
+| **pad bars** | Grover's charge contacts on the nose | |
+| **cliff FL / FR / RL / RR** | front-left, front-right, rear-left, rear-right cliff sensors | |
+| **left / right / front / rear** | always from Grover's point of view, facing forward | |
+
 ## Rover orientation on the bench
 
 Since 2026-10-05 the `bench` camera is **benchcam (renamed from fishcam
