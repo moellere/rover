@@ -113,8 +113,9 @@ devkit 6-pack, Amazon B0GX917MNR; G-V-S triple per GPIO, two V rails jumper-
 selected - his convention 3.3 V on the devkit's 3V3 side, 5 V on its 5V side).
 The FNK0101 notes below are research only and don't apply (its buffered LEDs,
 size, holes). Still needed for the plate: the shield's outline and mounting
-holes, its power input (jack voltage range, 5 V input pins), and whether it has
-any per-pin LEDs. Not needed today: the driver swap runs on the breadboard.
+holes, and whether it has any per-pin LEDs. **Power input: a 5 V barrel jack
+or Dupont headers (Enoch)** - so the LM2596's 5 V output feeds the shield
+directly (headers), and the devkit's own regulator makes 3.3 V. Not needed today: the driver swap runs on the breadboard.
 
 ### (superseded) The base board - OPEN (10-31)
 
