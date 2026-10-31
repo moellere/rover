@@ -208,13 +208,21 @@ from those numbers); track beams ~48-72 mm (on their sides); track top run
 ~85-90 mm, ~95 over the drive sprockets; motor plates top ~80 mm; TFMini lens
 centre ~55 mm; battery cradle underside ~70 mm.
 
-**Design direction from this:** bolt the printed base onto the **threaded slots
+**Correction (Enoch, 10-31): the base can only mount to the flat cross beam,
+not the track beams. Clearance between the rubber tracks is 105 mm** - leave
+room for track slop: **base <= ~97 mm wide** up to the track top run. For
+fore-aft stiffness on one cross beam: also bolt to the 0824-128 beam (if it stays,
+lengthwise on the cross beam), or a wide ribbed foot on the cross beam. Needed:
+is the 128 beam staying; cross-beam position (from the front axle) and top height;
+free holes once the acrylic is off (top-down photo).
+
+~~**Design direction from this:** bolt the printed base onto the **threaded slots
 on the track beams' top edges** (~112 mm outside-to-outside, ~72 mm high) - the
 FNK0101 (83 mm) and breadboard fit inside that width, nothing over the tracks.
 The motor plates were the obstacle - **Enoch rotated them, now flush with the
 beam tops (10-31)**, so the base lies flat on the beams. To confirm directly
 (ruler on the part, not from a photo): outside width across the two beam tops;
-beam-top height.
+beam-top height.~~ (superseded by the correction above)
 
 **Still needed (earlier list, now superseded by the above):** heights above the bench (track-beam top, cross-beam top, track
 top run, motor-plate top); **before anything comes off**, one front-on photo at
