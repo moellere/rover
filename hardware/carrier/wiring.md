@@ -40,7 +40,17 @@ not be treated as fact.
 | Dock - | right pad | P- | certain (10-26) |
 | Large capacitor | ? | ? | **TODO** |
 
-## After the swap (planned, see README)
+## After the swap (Enoch's layout, 10-31)
+
+Driver tray bolted between the posts, drivers at the rear with terminals facing
+back; the two Wago 221-415 at the FRONT between the front posts (next to the BMS
+lead drop and the buck's IN; the acrylic's centre cut-out between them passes the
+BMS leads); LM2596 on the tray's front standoffs, IN toward the Wagos. Mark the
+Wagos +12 V / GND (identical parts); fuse holder inline on pack + before the +
+Wago; 20-22 AWG from the Wagos back to the drivers' POWER terminals; make the
+Wago connections before the cradle goes on (lever clearance under the 30 mm gap).
+
+### Bus wiring (planned, see README)
 
 12 V bus = two Wago 221-415 (+12 V, GND) fed from pack + through a 5 A blade
 fuse and P-; feeds both DRV8871 POWER terminals, LM2596 IN, the divider; the
