@@ -106,7 +106,14 @@ and speed on a PWM EN pin; the DRV8871 takes PWM on IN1 (forward) or IN2
   no pins); an expander, if it comes, carries only non-critical inputs (bumpers,
   buttons).
 
-### The base board - the ESP32 expansion shield (Enoch, 10-31)
+### The base board - the Freenove FNK0101 after all (Enoch's photo, 10-31)
+
+His 10-31 photo shows the FNK0101 with the 38-pin devkit fitted - the "expansion
+shield" and the Freenove are the same board. So the FNK0101 notes below apply
+(buffered LEDs, 81 x 77 mm holes, VC1/VC2 rail jumpers, barrel jack), and the
+devkit fit is confirmed. Mounted by `hardware/top-plate.scad`.
+
+### (superseded) The base board - the ESP32 expansion shield (Enoch, 10-31)
 
 **Settled: the base is the 38-pin ESP32 expansion shield Enoch has** (from the
 devkit 6-pack, Amazon B0GX917MNR; G-V-S triple per GPIO, two V rails jumper-
