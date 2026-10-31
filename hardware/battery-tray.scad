@@ -9,10 +9,9 @@
 // treads), with cradle v3's holder pocket ROTATED 90 deg (holder crosswise) on
 // top of it. Only the BMS (through its floor window, ~6 mm) and the tabs reach
 // below the rail tops. The BMS sits at the LEFT end (the rear motor is on the
-// right). Vertical tabs hang down the rails' inside faces; they are SOLID -
-// match-drill through the rail's own hole into the tab and bolt through (M4,
-// nut on the outside face), so nothing has to line up with an unmeasured hole
-// pattern. The right tab stops short of the rear motor plate (it covers the
+// right). Vertical tabs (12 mm deep) hang down the rails' inside faces, each
+// with a horizontal slot at the rails' top hole row (4 mm below the top edge,
+// Enoch) - an M4 goes through any rail hole the tab covers, whatever the pitch. The right tab stops short of the rear motor plate (it covers the
 // last ~31 mm of the rail). A low rear lip: lift the pack a little and slide it
 // out the back. Two slots take a velcro strap over the pack.
 //
@@ -46,6 +45,8 @@ tab_t    = 3;
 tab_gap  = 0.3;        // tab-to-rail clearance
 tab_drop = 12;         // tabs reach this far below the rail tops: the top row of holes only (Enoch)
 y0       = 0.5;        // front face, just clear of the acrylic
+hole_down = 4;         // rails' top hole row: centre 4 mm below the top edge (Enoch)
+slot_h   = 5;          // tab slot height (M4 + 0.5)
 
 inner_x = holder_l + clear_l;     // 83.6 across
 inner_y = holder_w + clear_w;     // 61.6 front-back
@@ -71,6 +72,10 @@ module tray() {
     // the pocket, open top; rear wall cut down to a low lip
     translate([px0, py0, fz]) cube([inner_x, inner_y, 50]);
     translate([px0, py1 - 1, fz + rear_lip]) cube([inner_x, wall_t + 2, 50]);
+    // horizontal slots along each tab at the rails' top hole row: an M4 goes
+    // through any rail hole the tab covers, whatever the pitch
+    translate([-rail_x - 1, y0 + 3, rail_top - hole_down - slot_h / 2]) cube([tab_t + 2, rail_len - 2 - 6, slot_h]);
+    translate([rail_x - tab_gap - tab_t - 1, y0 + 3, rail_top - hole_down - slot_h / 2]) cube([tab_t + 2, rail_len - plate_cover - 4 - 6, slot_h]);
     // BMS window, left end of the floor
     translate([px0 + 2, py0 + (inner_y - bms_w - 6) / 2, rail_top - 1]) cube([bms_l + 3, bms_w + 6, floor_t + 2]);
     // velcro strap slots (right half of the floor, front and rear)
