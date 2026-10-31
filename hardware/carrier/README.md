@@ -106,7 +106,17 @@ and speed on a PWM EN pin; the DRV8871 takes PWM on IN1 (forward) or IN2
   no pins); an expander, if it comes, carries only non-critical inputs (bumpers,
   buttons).
 
-### The base board - OPEN (10-31)
+### The base board - the ESP32 expansion shield (Enoch, 10-31)
+
+**Settled: the base is the 38-pin ESP32 expansion shield Enoch has** (from the
+devkit 6-pack, Amazon B0GX917MNR; G-V-S triple per GPIO, two V rails jumper-
+selected - his convention 3.3 V on the devkit's 3V3 side, 5 V on its 5V side).
+The FNK0101 notes below are research only and don't apply (its buffered LEDs,
+size, holes). Still needed for the plate: the shield's outline and mounting
+holes, its power input (jack voltage range, 5 V input pins), and whether it has
+any per-pin LEDs. Not needed today: the driver swap runs on the breadboard.
+
+### (superseded) The base board - OPEN (10-31)
 
 Enoch (10-31): the Freenove isn't in hand - "not sure where the Freenove board
 came from... just a conversation point" (on 10-26 his "that's the specific board I
