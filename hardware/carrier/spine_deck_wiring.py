@@ -249,7 +249,7 @@ for i, s in enumerate([
         "input above 3.3 V.",
         "Gyro: one pin per breadboard row; wire",
         "VIN/GND/SDA/SCL by its silkscreen;",
-        "yaw axis moves off Z (stands upright).",
+        "yaw is still the chip's +Z (hand test 11-01).",
         "Red pins: avoid - 0/3/45/46 strapping, 19/20",
         "native USB, TX/RX CH343, 35-37 PSRAM, 48 RGB;",
         "GPIO1: its FNK0101 terminal is welded to GND.",

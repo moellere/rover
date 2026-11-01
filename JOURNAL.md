@@ -21,8 +21,8 @@ breakdown of the notable decisions. Newest entry on top.
 **Where things stand, 2026-11-01:** rover32's devkit died (12 V from a DRV8871 header
 VM pin, entry below); replaced by an ESP32-S3 (YD-ESP32-23) on a new pin
 map; running at Enoch's desk, LEDs work. drivers, motors and pin
-map proven (one-track test passed). TFMini, gyro and cliff sensors respond; to do: battery
-calibration, the gyro's axis, the boot twitch. Otherwise mid carrier rework -
+map proven (one-track test passed). TFMini, gyro and cliff sensors respond; battery calibrated,
+gyro axis confirmed (+Z). To do: the boot twitch. Otherwise mid carrier rework -
 DRV8871 drivers never run on the motors, Wago power deck
 and battery tray printed, top plate v2 printing; Grover is apart and
 cannot drive until the deck is reassembled. The 10-26 notes below
@@ -331,7 +331,14 @@ DRV8871 drivers arrived; he asked for Grover's parts in blue PETG from now on.*
   (bus_c 42/2), cliff FL/FR read floor. Battery reads 1.06 V, so the
   divider isn't reaching GPIO1 yet. The firmware still integrates the
   gyro's Z axis, which lies horizontal now the module stands upright -
-  axis to find with a hand turn.
+  axis to find with a hand turn. **Found (11-01):** firmware now reads all
+  three axes with a "Gyro axis" selector (+-1 X, +-2 Y, +-3 Z) and an
+  axis-finder log. Enoch's hand turn left showed only Z moving, positive
+  (~+100 deg integrated for a ~90 deg turn), so yaw is still +Z - the
+  default needed no change. (A ~-55 deg Z swing just before it was
+  Grover being set down.)
+- **Battery calibrated:** with the real 27k the node reads 2.522 V at
+  12.15 V; factor 4.864 (was 4.664), firmware now reads 12.12 V.
 - **Battery sense moved to GPIO8:** GPIO1's FNK0101 terminal was welded to
   GND by the 10-31 short (Enoch). On GPIO8 it reads 14.6 V with the
   WROOM-32 factor. Not an over-read: Enoch metered the node at 3.897 V

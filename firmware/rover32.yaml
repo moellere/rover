@@ -320,9 +320,12 @@ interval:
             ESP_LOGI("gyro", "L3G4200D configured, calibrating - keep still");
             return;
           }
-          const uint8_t reg = 0x2C | 0x80;   // OUT_Z_L, auto-increment
-          uint8_t b[2] = {0, 0};
-          if (id(bus_c).write_readv(0x69, &reg, 1, b, 2) != i2c::ERROR_OK) {
+          // All three axes (OUT_X_L.., auto-increment); "Gyro axis" picks the
+          // yaw axis and its sign (+-1 X, +-2 Y, +-3 Z). Since 2026-11-01 the
+          // module stands upright in the breadboard, so yaw is no longer Z.
+          const uint8_t reg = 0x28 | 0x80;
+          uint8_t b6[6] = {0};
+          if (id(bus_c).write_readv(0x69, &reg, 1, b6, 6) != i2c::ERROR_OK) {
             if (++id(gyro_errors) == 50) { ESP_LOGW("gyro", "read errors, heading unreliable"); id(gyro_ok) = false; }
             return;
           }
@@ -331,7 +334,17 @@ interval:
           const float dt = (now - last_us) * 1e-6f; last_us = now;
           // Sign: left/CCW from above is +yaw. The module was Z-down on the tank
           // 10-22..24 (negated then); since 2026-10-24 it is mounted flat face-up.
-          const float dps = (int16_t) (b[0] | (b[1] << 8)) * 0.0175f;
+          float xyz[3];
+          for (int i = 0; i < 3; i++) xyz[i] = (int16_t) (b6[2 * i] | (b6[2 * i + 1] << 8)) * 0.0175f;
+          static uint8_t axdbg = 0;   // axis finder: logs all three while something turns
+          if (++axdbg >= 25) {
+            axdbg = 0;
+            if (fabsf(xyz[0]) > 8 || fabsf(xyz[1]) > 8 || fabsf(xyz[2]) > 8)
+              ESP_LOGD("gyro", "rate x=%.0f y=%.0f z=%.0f dps", xyz[0], xyz[1], xyz[2]);
+          }
+          const int ax = (int) id(gyro_axis).state;
+          const int ai = std::min(2, std::max(0, abs(ax) - 1));
+          const float dps = (ax < 0 ? -1.0f : 1.0f) * xyz[ai];
           if (id(gyro_cal_n) < 200) {
             // Only calibrate at rest: motors stopped AND the readings quiet.
             // A window whose samples spread more than 3 dps (someone handling
@@ -642,10 +655,11 @@ sensor:
     update_interval: 5s
     filters:
       # External divider only (100k top / 27k bottom): nominal 4.704.
-      # S3 ADC (2026-11-01): recalibrate against the meter. WROOM-32 value,
-      # calibrated 2026-10-03: 4.704 reported 12.002 V with the meter at
-      # 11.90 V across the pack -> 4.704 * 11.90 / 12.002 = 4.664.
-      - multiply: 4.664
+      # S3 on GPIO8 (2026-11-01, divider fixed to 100k/27k): 4.664 read
+      # 11.65 V with the meter at 12.15 V -> 4.664 * 12.15 / 11.65 = 4.864.
+      # (Old WROOM-32 note: calibrated 2026-10-03: 4.704 reported 12.002 V with the meter at
+      # 11.90 V across the pack -> 4.704 * 11.90 / 12.002 = 4.664.)
+      - multiply: 4.864
       # Rolling 25 s average, published every sample. (Was send_every 5 at
       # 30 s: one bad first sample after a reboot latched "low battery"
       # and nothing could clear it for 2.5 min - 2026-10-05.)
@@ -776,6 +790,18 @@ number:
     restore_value: true
     optimistic: true
     entity_category: config
+  - platform: template
+    name: "Gyro axis"
+    id: gyro_axis
+    min_value: -3
+    max_value: 3
+    step: 1
+    initial_value: 3
+    restore_value: true
+    optimistic: true
+    entity_category: config
+    on_value:
+      - lambda: 'id(gyro_cal_n) = 0; id(gyro_cal_sum) = 0; id(gyro_ok) = false;'
   - platform: template
     name: "Gyro scale"
     id: gyro_scale
