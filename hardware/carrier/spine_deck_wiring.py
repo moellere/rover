@@ -89,10 +89,10 @@ left_pins = ["3V3", "3V3", "RST", "4", "5", "6", "7", "15", "16", "17", "18", "8
              "9", "10", "11", "12", "13", "14", "5V", "GND"]
 right_pins = ["GND", "TX", "RX", "1", "2", "42", "41", "40", "39", "38", "37", "36", "35",
               "0", "45", "48", "47", "21", "20", "19", "GND", "GND"]
-avoid = {"3", "46", "0", "45", "48", "TX", "RX", "20", "19", "35", "36", "37"}
+avoid = {"1", "3", "46", "0", "45", "48", "TX", "RX", "20", "19", "35", "36", "37"}
 lx, rx_ = dcx - 12.7 * S, dcx + 12.7 * S
 P = {}
-used = {"3V3", "4", "5", "6", "7", "15", "16", "17", "5V", "1", "2", "42", "41", "40", "39", "38"}
+used = {"3V3", "4", "5", "6", "7", "15", "16", "17", "8", "5V", "2", "42", "41", "40", "39", "38"}
 def pin(x, y, n, side, i):
     on = n in used or n == "GND"
     fill = "#ffd54f" if on else "#c0392b" if n in avoid else "#8a8a8a"
@@ -186,8 +186,9 @@ line([P["L3V3"], (474, P["L3V3"][1]), (474, 404), (rail["3V3"], 404), (rail["3V3
 line([P["L4"], (462, P["L4"][1]), (462, 394), (bx0 + 60, 394), (bx0 + 60, lry)], C["led"])
 # right header: GND to the gap-side GND rail
 line([P["RGND"], (rail["GNDa"], P["RGND"][1])], C["gnd"])
-# battery sense GPIO1 -> divider node, right of the gyro
-line([P["R1"], (bx0 + 40, P["R1"][1]), (bx0 + 40, dvy), (rx1, dvy)], C["bat"])
+# battery sense GPIO8 (left header) -> over the top -> divider node.
+# GPIO1's FNK0101 terminal is welded to GND (10-31 short): never use it.
+line([P["L8"], (450, P["L8"][1]), (450, 384), (bx0 + 40, 384), (bx0 + 40, dvy), (rx1, dvy)], C["bat"])
 # gyro I2C (bus_c): GPIO2 / GPIO42, straight across to the gyro rows
 line([P["R2"], (cx(5) - 9, P["R2"][1]), (cx(5) - 9, ry(6)), (cx(5), ry(6))], C["i2c"])
 line([P["R42"], (cx(5), P["R42"][1]), (cx(5), ry(7))], C["i2c"])
@@ -222,7 +223,7 @@ text(pdx + 12, PDy + 44, "Left DRV8871 (left track):  IN1 <- GPIO38   IN2 <- GPI
 text(pdx + 12, PDy + 63, "Right DRV8871 (right track): IN1 <- GPIO40   IN2 <- GPIO41   GND <- ESP GND", 12)
 text(pdx + 12, PDy + 186, "DANGER: header VM = 12 V (tied to the POWER terminals). Leave it UNCONNECTED.", 12, weight="bold", col="#d62828")
 text(pdx + 12, PDy + 82, "Buck OUT (5.29 V) + GND -> breadboard 5V / GND rails", 12)
-text(pdx + 12, PDy + 101, "12 V bus (+ Wago) -> 100k -> sense node -> 27k -> GND;  node -> GPIO1", 12)
+text(pdx + 12, PDy + 101, "12 V bus (+ Wago) -> 100k -> sense node -> 27k -> GND;  node -> GPIO8", 12)
 text(pdx + 12, PDy + 124, "Forward = IN1 high, IN2 PWM (both sides). A track running backward is fixed by", 11, col="#555")
 text(pdx + 12, PDy + 140, "swapping its IN1/IN2 pins in firmware, not the wires.", 11, col="#555")
 text(pdx + 12, PDy + 162, "Wires reach it down the centre slot (signals) and past the breadboard's rear end (power).", 11, col="#555")
@@ -240,7 +241,7 @@ for i, (k, s) in enumerate([("sig", "cliff sensor signal"), ("i2c", "I2C (TFMini
     text(lgx + 60, y, s, 12)
 
 nx, ny = 1120, 650
-rect(nx, ny, 350, 240, "#fffbe6", "#c9a227", rx=8)
+rect(nx, ny, 350, 258, "#fffbe6", "#c9a227", rx=8)
 text(nx + 12, ny + 24, "Notes", 14, weight="bold")
 for i, s in enumerate([
         "Cliff VCC on 3V3: the HW-870's output pulls up",
@@ -250,8 +251,9 @@ for i, s in enumerate([
         "VIN/GND/SDA/SCL by its silkscreen;",
         "yaw axis moves off Z (stands upright).",
         "Red pins: avoid - 0/3/45/46 strapping, 19/20",
-        "native USB, TX/RX CH343, 35-37 PSRAM, 48 RGB.",
-        "Free: 8-14, 18, 21, 47.",
+        "native USB, TX/RX CH343, 35-37 PSRAM, 48 RGB;",
+        "GPIO1: its FNK0101 terminal is welded to GND.",
+        "Free: 9-14, 18, 21, 47.",
         "USB (either port): never with the pack connected."]):
     text(nx + 12, ny + 48 + i * 19, s, 12)
 

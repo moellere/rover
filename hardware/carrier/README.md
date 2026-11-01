@@ -33,10 +33,10 @@ the old positions. S3 header J1 from the antenna end: 3V3, 3V3, RST, 4, 5, 6,
 | Cliff rear-left / rear-right | **7 / 15** | 33 / 13 | J_CLIFF_RL / RR | |
 | TFMini I2C (bus_b) | **SDA 16 / SCL 17** | 25 / 26 | J_TFMINI (5V, GND, SDA, SCL) | alone on its bus |
 | Gyro L3G4200D (bus_c) | **SDA 42 / SCL 2** | 21 / 5 | J_GYRO (3V3, GND, SDA, SCL) | |
-| Battery divider | **1** | 34 | 100k / 27k + 100 nF | ADC1_CH0; recalibrate (S3 ADC) |
+| Battery divider | **8** | 34 | 100k / 27k + 100 nF | ADC1_CH7; recalibrate (S3 ADC). GPIO1 was the first choice, but its FNK0101 terminal is welded to GND (10-31 short) - never use it |
 | Left motor DRV8871 | **IN1 38 / IN2 39** | 22 / 23 | header IN1, IN2, GND only | **header VM stays unconnected (12 V)** |
 | Right motor DRV8871 | **IN1 40 / IN2 41** | 19 / 18 | as above | |
-| Free | 8-14, 18, 21, 47 | | | |
+| Free | 9-14, 18, 21, 47 | | | |
 | Avoid | 0/3/45/46 strapping, 19/20 native USB, 43/44 CH343 UART, 26-32 flash, 35-37 octal PSRAM, 48 RGB LED | | | |
 
 The DRV8871 swap needs a firmware change: the L298N drove direction on two pins

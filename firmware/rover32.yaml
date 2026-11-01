@@ -17,8 +17,9 @@
 #   GPIO16 SDA / GPIO17 SCL  bus_b: TFMini (0x10) - the only device on it
 #   GPIO42 SDA / GPIO2 SCL   bus_c: gyro L3G4200D (0x69) (right header, beside the breadboard)
 #   GPIO38/39  left IN1/IN2   GPIO40/41  right IN1/IN2   -> DRV8871 x2 (PWM)
-#   GPIO1      battery divider (ADC1_CH0; external 100k/27k, ~4.7x, recalibrate)
-#   Free: 8-14, 18, 21, 47.
+#   GPIO8      battery divider (ADC1_CH7; external 100k/27k, ~4.7x, recalibrate)
+#   GPIO1      DO NOT USE: its FNK0101 terminal is welded to GND (the 10-31 short)
+#   Free: 9-14, 18, 21, 47.
 #   Avoid 0/3/45/46 (strapping), 19/20 (native USB), 43/44 (CH343 UART),
 #   26-32 (flash), 35-37 (octal PSRAM on R8 parts; PSRAM here unconfirmed), 48 (onboard RGB LED).
 substitutions:
@@ -634,7 +635,7 @@ sensor:
     filters:
       - throttle_average: 5s
   - platform: adc
-    pin: GPIO1
+    pin: GPIO8
     attenuation: 12db
     name: "Battery Voltage"
     id: battery_voltage

@@ -20,10 +20,9 @@ breakdown of the notable decisions. Newest entry on top.
 
 **Where things stand, 2026-11-01:** rover32's devkit died (12 V from a DRV8871 header
 VM pin, entry below); replaced by an ESP32-S3 (YD-ESP32-23) on a new pin
-map; running at Enoch's desk, LEDs work. drivers and motors
-proven; left reverse to re-test with the obstacle guard off, then
-reassembly. TFMini, gyro and cliff sensors respond; battery sense and the
-gyro's axis still to sort. Otherwise mid carrier rework -
+map; running at Enoch's desk, LEDs work. drivers, motors and pin
+map proven (one-track test passed). TFMini, gyro and cliff sensors respond; to do: battery
+calibration, the gyro's axis, the boot twitch. Otherwise mid carrier rework -
 DRV8871 drivers never run on the motors, Wago power deck
 and battery tray printed, top plate v2 printing; Grover is apart and
 cannot drive until the deck is reassembled. The 10-26 notes below
@@ -333,6 +332,21 @@ DRV8871 drivers arrived; he asked for Grover's parts in blue PETG from now on.*
   divider isn't reaching GPIO1 yet. The firmware still integrates the
   gyro's Z axis, which lies horizontal now the module stands upright -
   axis to find with a hand turn.
+- **Battery sense moved to GPIO8:** GPIO1's FNK0101 terminal was welded to
+  GND by the 10-31 short (Enoch). On GPIO8 it reads 14.6 V with the
+  WROOM-32 factor - the S3 ADC over-reads; recalibrate against the meter.
+- **One-track test passed (11-01, 20:03 UTC):** with a healthy battery
+  reading (no 20 s boot window) and something under the cliff sensors,
+  L+80, L-80, R+80, R-80 for 1 s each - all four moved, the right way
+  (Enoch: "all good"). The two earlier runs moved nothing: the first was
+  sent at 0.9 s of uptime with Grover in the air (cliff guard blocks
+  forward; why the reverse steps did nothing too was not pinned down -
+  probably too early in boot), the second never fired.
+- **Boot twitch:** at power-on the left track jerks briefly - forward
+  once, backward-then-forward another time - before the firmware's
+  first act (coast). So a driver pin moves during reset/bootloader, when
+  ESPHome isn't in control yet. Next: a 10k pull-down on the left IN
+  terminal (stops it if it's a weak pull-up) or a logic-analyzer capture.
 
 - **Gyro:** Enoch had screwed it upright to the old cradle's front
   face, where the Z axis the firmware reads lies horizontal - `turn()`
