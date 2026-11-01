@@ -366,6 +366,21 @@ DRV8871 drivers arrived; he asked for Grover's parts in blue PETG from now on.*
   edge (photo), so a bracket can't stack on it - three bolts at most.
 
 ![Rear-left post bolt against the FNK0101's edge, battery tray behind](images/46-rear-left-post-bolt-by-fnk0101-2026-11-01.jpg)
+
+- **Marker bracket (Enoch's design):** Claude first drafted a cap on the
+  camera cradle; Enoch proposed a C-bracket off the two rear post bolts,
+  loops reaching forward under the FNK0101, carrying the old marker cap
+  v1 screwed to a small pad. `hardware/marker-bracket.scad`: pad at 58 mm
+  (cap v1's skirts clear the 45 mm wiring), marker centre 20 mm behind
+  the post centre. Enoch confirmed the 5 mm gap under the FNK0101, the
+  existing bolts and the room to the battery holder. Staged blue PETG,
+  job `e032076ad6`, 51 min, 11 g - waits on the bed being cleared and
+  Enoch's go.
+- **Charging lights:** they don't come on by themselves - the status
+  strip's "Charging" effect exists but nothing triggers it, and the
+  pack voltage alone can't tell "on the dock" from "freshly charged".
+  Proposed: a dock-sense divider from the pad + lead (before the dock
+  diode) into GPIO9.
 - **Battery sense moved to GPIO8:** GPIO1's FNK0101 terminal was welded to
   GND by the 10-31 short (Enoch). On GPIO8 it reads 14.6 V with the
   WROOM-32 factor. Not an over-read: Enoch metered the node at 3.897 V
