@@ -57,7 +57,8 @@ _last_drive_end = 0.0
 async def status() -> dict:
     """Current rover state: motion, battery voltage, cliff sensors, uptime, WiFi,
     whether stops brake, and the TFMini forward range (cm; valid=False under
-    30 cm or with no return) plus the firmware obstacle-stop threshold."""
+    30 cm or with no return) plus the firmware obstacle-stop threshold, and
+    dock sense (on_dock, dock_voltage: pad voltage present = on the dock)."""
     st = await RoverClient().state()
     return {
         "motion": st.motion,
@@ -73,6 +74,8 @@ async def status() -> dict:
         "ramp": {"min_duty_pct": st.min_duty, "accel_ms": st.accel_ms, "decel_ms": st.decel_ms},
         "yaw_deg": st.yaw_deg,
         "yaw_rate_dps": st.yaw_rate_dps,
+        "on_dock": st.on_dock,
+        "dock_voltage": st.dock_voltage,
     }
 
 

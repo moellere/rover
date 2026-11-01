@@ -248,6 +248,9 @@ DOCK_CHARGE_STEP_V = 0.15   # resting ~11.8 V -> ~12.0-12.2 V on the dock
 DOCK_GUARD_OFF_MM = 250.0  # waypoints this close relax the obstacle guard (the tower is in range)
 DOCK_LATERAL_MM = 8.0       # creep steers back onto the axis beyond this (the rollers allow ~+/-5)
 DOCK_LOOKAHEAD_MM = 100.0   # ... aiming at the axis this far ahead of Grover
+DOCK_CLIMB_MM = 50.0        # this close and on the axis: climb pulses, not creeps - the ramp
+DOCK_CLIMB_PCT = 80         #   lip needs a firmer push (2026-11-01, Enoch); 80 % for 0.25 s
+DOCK_CLIMB_S = 0.25
 
 
 def load_dock_pose() -> dict:
@@ -273,8 +276,17 @@ async def dock(camera: str = "bench", max_steps: int = 8) -> dict:
     v_before = st.battery_voltage
     try:
         r = await _dock_legs(client, pose, camera, max_steps, log, guard)
-        if r.get("ok"):
-            # on the pose (or stalled against the bumper): confirm by the voltage step.
+        if r.get("ok") or r.get("contact"):
+            st = await client.state(timeout=3.0)
+            if st.on_dock is not None:
+                # dock sense (2026-11-01): pad voltage present = contact, no waiting
+                r["charging"] = bool(st.on_dock)
+                r["ok"] = bool(st.on_dock)
+                r["volts"] = {"before": v_before, "dock": st.dock_voltage}
+                r["reason"] += ("; on the dock, charging (dock %.2f V)" % st.dock_voltage if st.on_dock
+                                else "; NOT on the dock (no pad voltage) - contacts missed")
+                return r
+            # older firmware: confirm by the voltage step.
             # battery_voltage is a 25 s rolling average, so wait it out.
             await asyncio.sleep(DOCK_CHARGE_WAIT_S)
             st = await client.state(timeout=3.0)
@@ -353,6 +365,11 @@ async def _dock_legs(client: RoverClient, pose: dict, camera: str, max_steps: in
             continue
         steer_fails = 0
         st = await client.state(timeout=3.0)
+        if st.on_dock:
+            # dock sense: the pads touch the rollers - done, whatever the overhead says
+            log.append({**entry, "action": "contact (dock sense)"})
+            return {"ok": True, "contact": True, "reason": f"contact {along:.0f} mm short of the taught pose",
+                    "log": log, "pose": _pose_dict(rover)}
         if st.front_left_cliff or st.front_right_cliff:
             # The base is black plastic: the cliff sensors read it as no
             # floor and the firmware refuses forward (run 1, 2026-10-24).
@@ -372,8 +389,13 @@ async def _dock_legs(client: RoverClient, pose: dict, camera: str, max_steps: in
         else:
             stalls = 0
         prev = (rover.x_px, rover.y_px)
-        creep = DOCK_CREEP_S * (1 + stalls)      # a stalled creep gets longer: the ramp lip needs more than a nudge
-        log.append({**entry, "action": f"creep {creep:.2f}s"})
-        await client.drive("forward", creep)
+        if along <= DOCK_CLIMB_MM and abs(lateral) <= DOCK_LATERAL_MM:
+            # at the ramp lip: one firm pulse (guard already relaxed), then look again
+            log.append({**entry, "action": f"climb {DOCK_CLIMB_PCT}% {DOCK_CLIMB_S:.2f}s"})
+            await client.set_speeds(DOCK_CLIMB_PCT, DOCK_CLIMB_PCT, DOCK_CLIMB_S)
+        else:
+            creep = DOCK_CREEP_S * (1 + stalls)      # a stalled creep gets longer: the ramp lip needs more than a nudge
+            log.append({**entry, "action": f"creep {creep:.2f}s"})
+            await client.drive("forward", creep)
         await asyncio.sleep(POST_MOVE_S)
     return {"ok": False, "reason": "creep cap reached", "log": log}

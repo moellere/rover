@@ -38,6 +38,8 @@ class RoverState:
     decel_ms: Optional[float] = None
     yaw_deg: Optional[float] = None            # gyro heading (firmware 2026-10-19), CCW +, zeroed at calibration
     yaw_rate_dps: Optional[float] = None
+    on_dock: Optional[bool] = None             # dock sense (firmware 2026-11-01): pad voltage present
+    dock_voltage: Optional[float] = None
     raw: dict = field(default_factory=dict)
 
 
@@ -110,6 +112,10 @@ class RoverClient:
                     out.yaw_deg = float(val)
                 elif oid == "yaw_rate":
                     out.yaw_rate_dps = float(val)
+                elif oid == "on_dock":
+                    out.on_dock = bool(val)
+                elif oid == "dock_voltage":
+                    out.dock_voltage = None if val is None or val != val else float(val)
             return out
         finally:
             await client.disconnect()
