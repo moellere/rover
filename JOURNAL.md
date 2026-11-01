@@ -413,6 +413,10 @@ DRV8871 drivers arrived; he asked for Grover's parts in blue PETG from now on.*
   dock-sense contact, uses an 80 % / 0.25 s climb pulse within 50 mm
   on-axis, and confirms charging by On dock instead of the 30 s
   voltage wait (`39a7d8f`).
+  Then Enoch moved the dock (pose re-taught: 608.5 / 452.5 / 182.5);
+  the painted base still read "cliff" on the right, and the cause was
+  the **front-right sensor itself** - Enoch swapped it (TCRT5000 spare)
+  and both now read floor on the dock, On dock True at 12.57 V.
 - **Battery sense moved to GPIO8:** GPIO1's FNK0101 terminal was welded to
   GND by the 10-31 short (Enoch). On GPIO8 it reads 14.6 V with the
   WROOM-32 factor. Not an over-read: Enoch metered the node at 3.897 V
