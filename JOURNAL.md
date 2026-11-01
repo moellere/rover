@@ -455,6 +455,16 @@ DRV8871 drivers arrived; he asked for Grover's parts in blue PETG from now on.*
   Still to watch: each climb yaws Grover ~4-6 deg left (one track grips
   the lip first). Overhead-assisted, but the whole drive-on is
   autonomous - the Phase 2 bench milestone on the new spinal cord.
+- **Rethinking the climb (Enoch: "a little rough, didn't land quite
+  right"):** options were sprung/hinged pads, servo drop-down pads (both
+  noted 10-24 as Phase 3 needs), or a gentler ramp. Ramp first - one
+  print, nothing else changes: `hardware/dock-ramp.scad`, 165 x 80 mm,
+  0.6 -> 6 mm, from Enoch's numbers (base front edge ~6 mm, 165 wide,
+  rounded; cliff sensors 12 mm up and 65 mm ahead of the track contact,
+  so <= 14 % keeps 3 mm under them). The servo drop-down stays the
+  fallback, and the likely house answer.
+
+![The dock's front edge, painted white, ruler along it](images/47-dock-front-edge-ruler-2026-11-01.jpg)
 - **Battery sense moved to GPIO8:** GPIO1's FNK0101 terminal was welded to
   GND by the 10-31 short (Enoch). On GPIO8 it reads 14.6 V with the
   WROOM-32 factor. Not an over-read: Enoch metered the node at 3.897 V
