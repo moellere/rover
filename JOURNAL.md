@@ -390,6 +390,13 @@ DRV8871 drivers arrived; he asked for Grover's parts in blue PETG from now on.*
   **Built and flashed (11-01):** Enoch metered 1.625 V at the node on
   the dock; the ADC read 1.608 V, so the factor is 7.748 (was 7.667).
   "On dock" = True, dock voltage 12.53 V, battery 12.13 V.
+- **Marker bracket on, docked pose re-taught (11-01 ~4:35 PM):** the
+  bracket printed (`648a584ab7`), cap v1 screwed on; the overhead reads
+  id 2 at the right heading. The 10-26 docked pose was taken with the
+  marker on cradle v3, so Enoch pushed Grover fully on again: x 613.8,
+  y 455.3, heading 185.6 (was 606.3 / 441.8 / 183.4). The first read
+  showed "On dock" False, 0 V - the dock PSU was off; on again it read
+  True, 12.58 V. Dock sense already caught a real fault.
 - **Battery sense moved to GPIO8:** GPIO1's FNK0101 terminal was welded to
   GND by the 10-31 short (Enoch). On GPIO8 it reads 14.6 V with the
   WROOM-32 factor. Not an over-read: Enoch metered the node at 3.897 V
