@@ -289,8 +289,11 @@ DRV8871 drivers arrived; he asked for Grover's parts in blue PETG from now on.*
   specified unconnected, I missed it"); the lesson either way is that a
   pin that can kill a board gets a warning, not a terse note. The diagram and the
   carrier docs now carry a red "VM = 12 V, leave unconnected" warning.
-  VM landed on the devkit's 5V pin only; the FNK0101 still works, the
-  TFMini and LEDs are untested.
+  VM landed on the devkit's 5V pin, which was tied to the 5 V bus - so
+  everything on that bus saw 12 V: the TFMini (rated 5 V), the LED chain
+  (works since), and the buck's output. The FNK0101 still works; the
+  TFMini, the buck's output setting and the 3V3 parts (cliff sensors,
+  gyro, fed through the dead devkit's regulator) are still to check.
 - **Replacement (11-01):** a YD-ESP32-23 from Enoch's inventory (ESP32-S3
   N16R8, several on hand). It fits the FNK0101, but S3 GPIO numbers differ
   (no 22-25, flash on 26-32, PSRAM on 35-37), so `rover32` was ported to a
