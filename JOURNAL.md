@@ -465,6 +465,12 @@ DRV8871 drivers arrived; he asked for Grover's parts in blue PETG from now on.*
   fallback, and the likely house answer.
 
 ![The dock's front edge, painted white, ruler along it](images/47-dock-front-edge-ruler-2026-11-01.jpg)
+
+Side view: the base's top is itself a ramp - ~6 mm at the rounded tip,
+rising to ~19-20 mm by the tower, contact domes standing above it - so
+the lurch is the 6 mm step at the tip, which the wedge removes.
+
+![The dock from the side, ruler at the base: thin rounded tip, top rising toward the tower](images/48-dock-side-profile-ruler-2026-11-01.jpg)
 - **Battery sense moved to GPIO8:** GPIO1's FNK0101 terminal was welded to
   GND by the 10-31 short (Enoch). On GPIO8 it reads 14.6 V with the
   WROOM-32 factor. Not an over-read: Enoch metered the node at 3.897 V
