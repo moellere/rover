@@ -397,6 +397,14 @@ DRV8871 drivers arrived; he asked for Grover's parts in blue PETG from now on.*
   y 455.3, heading 185.6 (was 606.3 / 441.8 / 183.4). The first read
   showed "On dock" False, 0 V - the dock PSU was off; on again it read
   True, 12.58 V. Dock sense already caught a real fault.
+- **First `dock` on the new spinal cord (11-01 ~4:38 PM):** from ~85 cm
+  out: waypoint 450 mm (31 mm off), face, waypoint 200 mm (30 mm off),
+  creep 233 -> 95 -> 34 mm with the lateral error -10 -> 0 -> 2 mm and
+  heading 185.7 vs 185.6 - then the cliff guard stopped it 34 mm short
+  on the dock's dark base. Not charging. The base must read as floor
+  (white tape where the cliff sensors cross); to check against where
+  the tank's sensors sit now. Note for Phase 3: `dock` is 100 % overhead
+  camera - in the house the onboard camera has to do the whole approach.
 - **Battery sense moved to GPIO8:** GPIO1's FNK0101 terminal was welded to
   GND by the 10-31 short (Enoch). On GPIO8 it reads 14.6 V with the
   WROOM-32 factor. Not an over-read: Enoch metered the node at 3.897 V
