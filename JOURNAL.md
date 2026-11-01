@@ -362,6 +362,10 @@ DRV8871 drivers arrived; he asked for Grover's parts in blue PETG from now on.*
   Re-commissioning passed - guards, straight drives and a closed-loop
   turn all work on the new spinal cord. Grover's top marker (id 2) has
   no holder on the new top plate yet, so `locate` can't run.
+  For a holder: the rear-left post bolt sits hard against the FNK0101's
+  edge (photo), so a bracket can't stack on it - three bolts at most.
+
+![Rear-left post bolt against the FNK0101's edge, battery tray behind](images/46-rear-left-post-bolt-by-fnk0101-2026-11-01.jpg)
 - **Battery sense moved to GPIO8:** GPIO1's FNK0101 terminal was welded to
   GND by the 10-31 short (Enoch). On GPIO8 it reads 14.6 V with the
   WROOM-32 factor. Not an over-read: Enoch metered the node at 3.897 V
