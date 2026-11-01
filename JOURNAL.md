@@ -373,9 +373,10 @@ DRV8871 drivers arrived; he asked for Grover's parts in blue PETG from now on.*
   v1 screwed to a small pad. `hardware/marker-bracket.scad`: pad at 58 mm
   (cap v1's skirts clear the 45 mm wiring), marker centre 20 mm behind
   the post centre. Enoch confirmed the 5 mm gap under the FNK0101, the
-  existing bolts and the room to the battery holder. Staged blue PETG,
-  job `e032076ad6`, 51 min, 11 g - waits on the bed being cleared and
-  Enoch's go.
+  existing bolts and the room to the battery holder. Enoch then added a
+  lip under each leg that drops over the plate's rear edge, so it can't
+  rock. Staged blue PETG, job `648a584ab7` (52 min, 11 g; the lipless
+  `e032076ad6` skipped) - waits on the bed being cleared and Enoch's go.
 - **Charging lights:** they don't come on by themselves - the status
   strip's "Charging" effect exists but nothing triggers it, and the
   pack voltage alone can't tell "on the dock" from "freshly charged".
