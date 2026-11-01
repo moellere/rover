@@ -247,11 +247,14 @@ DOCK_CHARGE_WAIT_S = 30.0   # battery_voltage is a 25 s rolling average
 DOCK_CHARGE_STEP_V = 0.15   # resting ~11.8 V -> ~12.0-12.2 V on the dock
 DOCK_GUARD_OFF_MM = 250.0  # waypoints this close relax the obstacle guard (the tower is in range)
 DOCK_LATERAL_MM = 8.0       # creep steers back onto the axis beyond this (the rollers allow ~+/-5)
-DOCK_LOOKAHEAD_MM = 100.0   # ... aiming at the axis this far ahead of Grover
+DOCK_LOOKAHEAD_MM = 150.0   # ... aiming at the axis this far ahead of Grover (was 100: too sharp, 11-01)
 DOCK_CLIMB_MM = 50.0        # this close and on the axis: climb pulses, not creeps - the ramp
 DOCK_CLIMB_PCT = 80         #   lip needs a firmer push (2026-11-01, Enoch); 80 % for 0.25 s
 DOCK_CLIMB_S = 0.25
 DOCK_CLIMB_LATERAL_MM = 10.0  # climb even this far off-axis: at 50 mm two micro-steers just fail (11-01)
+DOCK_SQUARE_DEG = 4.0       # square to the dock heading before climbing: 14 deg skew at the lip
+                            #   put both pad bars left of the rollers (11-01)
+DOCK_MAX_CORR_DEG = 8.0     # cap the creep's steering correction off the dock heading (it built 14 deg)
 DOCK_MAX_CLIMBS = 2         # climbs in dock mode (firmware ignores the cliff guard for forward, 3 s max)
 
 
@@ -332,6 +335,7 @@ async def _dock_legs(client: RoverClient, pose: dict, camera: str, max_steps: in
     stalls = 0
     steer_fails = 0
     climbs = 0
+    squares = 0
     for i in range(DOCK_MAX_CREEPS):
         rover, _ = _rover(camera)
         if rover is None:
@@ -355,11 +359,19 @@ async def _dock_legs(client: RoverClient, pose: dict, camera: str, max_steps: in
         if abs(lateral) > DOCK_LATERAL_MM and along > 15.0 and not at_lip:
             ax, ay = _axis_point(pose, max(along - DOCK_LOOKAHEAD_MM, 0.0))
             aim = math.degrees(math.atan2(-(ay - rover.y_px), ax - rover.x_px)) % 360
+            corr = max(-DOCK_MAX_CORR_DEG, min(DOCK_MAX_CORR_DEG, heading_change(pose["heading_deg"], aim)))
+            aim = (pose["heading_deg"] + corr) % 360
         else:
             # back on the axis (or too close to steer): square up again, or the
             # correction angle carries Grover across the axis (10-26: 12 mm one
             # way became 21 mm the other)
             aim = pose["heading_deg"]
+        if at_lip and abs(heading_change(rover.heading_deg, pose["heading_deg"])) > DOCK_SQUARE_DEG and squares < 2:
+            # square up before the climb (a pivot this size does move the tracks)
+            squares += 1
+            f = await face(pose["heading_deg"], camera, 2.0)
+            log.append({**entry, "action": f"square up to {pose['heading_deg']:.1f} before the climb", "ok": f.ok})
+            continue
         if along > 15.0 and not at_lip and abs(heading_change(rover.heading_deg, aim)) > 3.0 and steer_fails < 2:
             f = await face(aim, camera, 2.0)
             log.append({**entry, "action": f"steer to {aim:.1f}", "ok": f.ok})

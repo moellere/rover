@@ -441,6 +441,11 @@ DRV8871 drivers arrived; he asked for Grover's parts in blue PETG from now on.*
   heading 191.6 - and no contact (dock 0 V). Next: square up to the dock
   heading (within ~4 deg) before climbing, and steer more gently on the
   approach.
+  Enoch: both pad bars sat left of their rollers - the skew swings the
+  nose left (~19 mm at the bars for 9 deg) on top of ~10 mm lateral at
+  the marker. Brain: square up within 4 deg before a climb (up to two
+  pivots), creep steering capped at 8 deg off the dock heading,
+  lookahead 100 -> 150 mm.
 - **Battery sense moved to GPIO8:** GPIO1's FNK0101 terminal was welded to
   GND by the 10-31 short (Enoch). On GPIO8 it reads 14.6 V with the
   WROOM-32 factor. Not an over-read: Enoch metered the node at 3.897 V
