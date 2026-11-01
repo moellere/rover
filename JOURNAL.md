@@ -433,6 +433,14 @@ DRV8871 drivers arrived; he asked for Grover's parts in blue PETG from now on.*
   contact (On dock) stops a forward push and ends it; reverse, pivots,
   the watchdog, disconnect and battery guards are untouched. What it
   can't catch: a wrong overhead reading inside that window.
+- **Third `dock`, first with dock mode (11-01 ~5:16 PM):** waypoints 70 /
+  72 mm off; the creep steered out a 22-29 mm lateral error but left
+  Grover 14 deg across the axis (196.7 vs 182.5) when it reached the lip
+  40 mm out at -2 mm lateral. The climb (dock mode, left cliff True and
+  ignored as designed) put it ON the base, 4 mm past the taught pose,
+  heading 191.6 - and no contact (dock 0 V). Next: square up to the dock
+  heading (within ~4 deg) before climbing, and steer more gently on the
+  approach.
 - **Battery sense moved to GPIO8:** GPIO1's FNK0101 terminal was welded to
   GND by the 10-31 short (Enoch). On GPIO8 it reads 14.6 V with the
   WROOM-32 factor. Not an over-read: Enoch metered the node at 3.897 V
