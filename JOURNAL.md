@@ -21,8 +21,8 @@ breakdown of the notable decisions. Newest entry on top.
 **Where things stand, 2026-11-01:** rover32's devkit died (12 V from a DRV8871 header
 VM pin, entry below); replaced by an ESP32-S3 (YD-ESP32-23) on a new pin
 map; running at Enoch's desk, LEDs work. drivers, motors and pin
-map proven (one-track test passed). TFMini, gyro and cliff sensors respond; battery calibrated,
-gyro axis confirmed (+Z). To do: the boot twitch. Otherwise mid carrier rework -
+map proven (one-track test passed). bench re-commissioning passed (guards, straight drives, turn(90)).
+To do: a top-marker holder for the new top plate, the boot twitch. Otherwise mid carrier rework -
 DRV8871 drivers never run on the motors, Wago power deck
 and battery tray printed, top plate v2 printing; Grover is apart and
 cannot drive until the deck is reassembled. The 10-26 notes below
@@ -355,6 +355,13 @@ DRV8871 drivers arrived; he asked for Grover's parts in blue PETG from now on.*
   straight, ~25-30 cm, yaw unchanged; backward 0.15 s: straight, ~20 cm.
   Fast for such short pulses - the 75 % min duty dates from the L298N,
   which lost 2-4 V; the DRV8871 doesn't.
+  Min duty: 50 % did not break the tracks free, **60 % does** (set via
+  set_ramp, persisted on the rover); the pulse length barely changed,
+  since the cruise duty sets most of it. `turn(+90)` on the gyro: 93.4 deg
+  by the gyro, ~90 deg and the right way (CCW) in the overhead frame.
+  Re-commissioning passed - guards, straight drives and a closed-loop
+  turn all work on the new spinal cord. Grover's top marker (id 2) has
+  no holder on the new top plate yet, so `locate` can't run.
 - **Battery sense moved to GPIO8:** GPIO1's FNK0101 terminal was welded to
   GND by the 10-31 short (Enoch). On GPIO8 it reads 14.6 V with the
   WROOM-32 factor. Not an over-read: Enoch metered the node at 3.897 V
