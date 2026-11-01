@@ -677,7 +677,8 @@ sensor:
       - throttle_average: 5s
   # Dock sense (2026-11-01): the dock pad's + lead before the dock diode, so
   # 0 V off the dock and the charger's ~12.6 V on it. 100k/15k (Enoch's build)
-  # -> x7.667 nominal; recalibrate against the meter. Feeds "On dock".
+  # -> x7.667 nominal; the ADC read the node at 1.608 V with the meter at
+  # 1.625 V (11-01) -> 7.667 * 1.625 / 1.608 = 7.748. Feeds "On dock".
   - platform: adc
     pin: GPIO9
     attenuation: 12db
@@ -686,7 +687,7 @@ sensor:
     update_interval: 250ms
     accuracy_decimals: 1
     filters:
-      - multiply: 7.667
+      - multiply: 7.748
       - sliding_window_moving_average:
           window_size: 4
           send_every: 1

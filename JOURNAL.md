@@ -387,6 +387,9 @@ DRV8871 drivers arrived; he asked for Grover's parts in blue PETG from now on.*
   "On dock" sensor (9 V on / 6 V off) that runs the Charging effect;
   compiled, held until the divider is wired (a floating GPIO9 could fake
   "on dock"). The brain gets an instant contact signal for docking too.
+  **Built and flashed (11-01):** Enoch metered 1.625 V at the node on
+  the dock; the ADC read 1.608 V, so the factor is 7.748 (was 7.667).
+  "On dock" = True, dock voltage 12.53 V, battery 12.13 V.
 - **Battery sense moved to GPIO8:** GPIO1's FNK0101 terminal was welded to
   GND by the 10-31 short (Enoch). On GPIO8 it reads 14.6 V with the
   WROOM-32 factor. Not an over-read: Enoch metered the node at 3.897 V
