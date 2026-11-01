@@ -184,6 +184,11 @@ globals:
 # Pins go to brake before EN goes to 100%, so there is never a full-duty
 # instant in the old drive direction.
 script:
+  - id: dock_mode_timer
+    mode: restart
+    then:
+      - delay: 3s
+      - switch.turn_off: dock_mode
   - id: drv_coast_script
     then:
       - lambda: |-
@@ -226,7 +231,7 @@ script:
           id(last_command_ms) = millis();
           const bool fwdish = l >= 0 && r >= 0 && (l > 0 || r > 0);
           const bool backish = l <= 0 && r <= 0;
-          const bool ok = id(battery_ok) && (backish || !id(cliff_detected)) && (!fwdish || !id(obstacle_ahead));
+          const bool ok = id(battery_ok) && (backish || !id(cliff_detected) || (id(dock_mode).state && fwdish)) && (!fwdish || !id(obstacle_ahead));
           if (!ok) {
             id(motor_stop).execute();
             ESP_LOGW("guard", "Motion blocked (l=%.0f r=%.0f): battery_ok=%d cliff=%d obstacle=%d range=%.0f last_good=%.0f",
@@ -421,7 +426,7 @@ interval:
           const float gr = at_rest ? id(tgt_r) : id(cur_r);
           const bool fwdish = gl >= 0 && gr >= 0 && (gl > 0 || gr > 0);
           const bool backish = gl <= 0 && gr <= 0;
-          if (!id(battery_ok) || (!backish && id(cliff_detected)) || (fwdish && id(obstacle_ahead))) {
+          if (!id(battery_ok) || (!backish && id(cliff_detected) && !(id(dock_mode).state && fwdish)) || (fwdish && id(obstacle_ahead))) {
             id(motor_stop).execute();
             return;
           }
@@ -559,6 +564,13 @@ binary_sensor:
     filters:
       - delayed_off: 500ms
     on_press:
+      # contact made: stop a forward push and end dock mode
+      - if:
+          condition:
+            lambda: 'return id(motion_status).state == "Forward";'
+          then:
+            - script.execute: motor_stop
+      - switch.turn_off: dock_mode
       - light.turn_on:
           id: status_strip
           effect: "Charging"
@@ -587,13 +599,23 @@ binary_sensor:
       # release is debounced.
       - delayed_off: 100ms
     on_press:
-      - lambda: |-
-          id(cliff_detected) = true; id(hard_stop) = true;
-      - script.execute: motor_stop
-      - text_sensor.template.publish:
-          id: motion_status
-          state: "Stopped (cliff)"
-      - logger.log: "Cliff detected (front-left), emergency stop"
+      - lambda: 'id(cliff_detected) = true;'
+      - if:
+          # Dock mode (2026-11-01, Enoch agreed): the last few cm onto the dock
+          # drag the left sensor over the ramp, which reads as a cliff. While
+          # the brain holds dock mode (3 s max, self-cancelling) forward-ish
+          # motion ignores the cliff; reverse and pivots never do.
+          condition:
+            lambda: 'return !(id(dock_mode).state && id(tgt_l) >= 0 && id(tgt_r) >= 0);'
+          then:
+            - lambda: 'id(hard_stop) = true;'
+            - script.execute: motor_stop
+            - text_sensor.template.publish:
+                id: motion_status
+                state: "Stopped (cliff)"
+            - logger.log: "Cliff detected (front-left), emergency stop"
+          else:
+            - logger.log: "Cliff (front-left) ignored: dock mode, forward"
     on_release:
       - lambda: |-
           id(cliff_detected) = id(front_left_cliff).state || id(front_right_cliff).state;
@@ -610,13 +632,23 @@ binary_sensor:
       # release is debounced.
       - delayed_off: 100ms
     on_press:
-      - lambda: |-
-          id(cliff_detected) = true; id(hard_stop) = true;
-      - script.execute: motor_stop
-      - text_sensor.template.publish:
-          id: motion_status
-          state: "Stopped (cliff)"
-      - logger.log: "Cliff detected (front-right), emergency stop"
+      - lambda: 'id(cliff_detected) = true;'
+      - if:
+          # Dock mode (2026-11-01, Enoch agreed): the last few cm onto the dock
+          # drag the left sensor over the ramp, which reads as a cliff. While
+          # the brain holds dock mode (3 s max, self-cancelling) forward-ish
+          # motion ignores the cliff; reverse and pivots never do.
+          condition:
+            lambda: 'return !(id(dock_mode).state && id(tgt_l) >= 0 && id(tgt_r) >= 0);'
+          then:
+            - lambda: 'id(hard_stop) = true;'
+            - script.execute: motor_stop
+            - text_sensor.template.publish:
+                id: motion_status
+                state: "Stopped (cliff)"
+            - logger.log: "Cliff detected (front-right), emergency stop"
+          else:
+            - logger.log: "Cliff (front-right) ignored: dock mode, forward"
     on_release:
       - lambda: |-
           id(cliff_detected) = id(front_left_cliff).state || id(front_right_cliff).state;
@@ -868,6 +900,21 @@ button:
     name: "Restart"
     id: restart_button
 switch:
+  # Dock mode: forward motion ignores the cliff sensors (the dock ramp reads as
+  # a cliff under the left one). The brain turns it on only within 50 mm of the
+  # taught docked pose and 10 mm of the dock axis; it switches itself off after
+  # 3 s, and contact (On dock) ends it at once.
+  - platform: template
+    name: "Dock mode"
+    id: dock_mode
+    optimistic: true
+    restore_mode: ALWAYS_OFF
+    on_turn_on:
+      - logger.log: "Dock mode ON (3 s)"
+      - script.execute: dock_mode_timer
+    on_turn_off:
+      - script.stop: dock_mode_timer
+      - logger.log: "Dock mode off"
   - platform: template
     name: "Brake on stop"
     id: brake_on_stop

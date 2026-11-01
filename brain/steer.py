@@ -187,7 +187,7 @@ async def go_to(x_px: float | None = None, y_px: float | None = None, marker_id:
         pulse = max(MIN_PULSE_S, min(MAX_PULSE_S, (dist_mm - stop_mm * 0.5) * PULSE_FRACTION / speed))
         log.append({**entry, "action": f"forward {pulse:.2f}s", "speed_mm_s": round(speed)})
         st = await client.state(timeout=3.0)
-        if st.front_left_cliff or st.front_right_cliff:
+        if (st.front_left_cliff or st.front_right_cliff) and not at_lip:
             return SteerResult(False, "cliff sensor active", step, _pose_dict(rover), log)
         await client.drive("forward", pulse)
         prev = (rover, pulse, scale)
@@ -252,6 +252,7 @@ DOCK_CLIMB_MM = 50.0        # this close and on the axis: climb pulses, not cree
 DOCK_CLIMB_PCT = 80         #   lip needs a firmer push (2026-11-01, Enoch); 80 % for 0.25 s
 DOCK_CLIMB_S = 0.25
 DOCK_CLIMB_LATERAL_MM = 10.0  # climb even this far off-axis: at 50 mm two micro-steers just fail (11-01)
+DOCK_MAX_CLIMBS = 2         # climbs in dock mode (firmware ignores the cliff guard for forward, 3 s max)
 
 
 def load_dock_pose() -> dict:
@@ -330,6 +331,7 @@ async def _dock_legs(client: RoverClient, pose: dict, camera: str, max_steps: in
     prev = None
     stalls = 0
     steer_fails = 0
+    climbs = 0
     for i in range(DOCK_MAX_CREEPS):
         rover, _ = _rover(camera)
         if rover is None:
@@ -372,7 +374,7 @@ async def _dock_legs(client: RoverClient, pose: dict, camera: str, max_steps: in
             log.append({**entry, "action": "contact (dock sense)"})
             return {"ok": True, "contact": True, "reason": f"contact {along:.0f} mm short of the taught pose",
                     "log": log, "pose": _pose_dict(rover)}
-        if st.front_left_cliff or st.front_right_cliff:
+        if (st.front_left_cliff or st.front_right_cliff) and not at_lip:
             # The base is black plastic: the cliff sensors read it as no
             # floor and the firmware refuses forward (run 1, 2026-10-24).
             # White tape on the base under the sensor paths is the fix;
@@ -392,9 +394,21 @@ async def _dock_legs(client: RoverClient, pose: dict, camera: str, max_steps: in
             stalls = 0
         prev = (rover.x_px, rover.y_px)
         if at_lip:
-            # at the ramp lip: one firm pulse (guard already relaxed), then look again
-            log.append({**entry, "action": f"climb {DOCK_CLIMB_PCT}% {DOCK_CLIMB_S:.2f}s"})
-            await client.set_speeds(DOCK_CLIMB_PCT, DOCK_CLIMB_PCT, DOCK_CLIMB_S)
+            # at the ramp lip: a firm pulse in dock mode - the firmware lets forward
+            # motion past the cliff guard (the ramp reads as a cliff under the left
+            # sensor, 11-01) for 3 s at most; contact (On dock) stops it
+            if climbs >= DOCK_MAX_CLIMBS:
+                log.append({**entry, "action": "climbs used up"})
+                return {"ok": False, "reason": f"{climbs} climbs, no contact, {along:.0f} mm short",
+                        "log": log, "pose": _pose_dict(rover)}
+            climbs += 1
+            log.append({**entry, "action": f"climb {climbs} (dock mode) {DOCK_CLIMB_PCT}% {DOCK_CLIMB_S:.2f}s",
+                        "cliff": [st.front_left_cliff, st.front_right_cliff]})
+            await client.set_switch("dock_mode", True)
+            try:
+                await client.set_speeds(DOCK_CLIMB_PCT, DOCK_CLIMB_PCT, DOCK_CLIMB_S)
+            finally:
+                await client.set_switch("dock_mode", False)
         else:
             creep = DOCK_CREEP_S * (1 + stalls)      # a stalled creep gets longer: the ramp lip needs more than a nudge
             log.append({**entry, "action": f"creep {creep:.2f}s"})

@@ -425,6 +425,14 @@ DRV8871 drivers arrived; he asked for Grover's parts in blue PETG from now on.*
   cliff. Fix: raise it 2-3 mm (they read best a few mm up). Brain: the
   climb pulse now fires up to 10 mm off-axis within 50 mm, no steering
   there.
+- **Dock mode (11-01, Claude's proposal, Enoch: "agreed"):** no room to
+  raise the cliff sensors, so a firmware switch lets *forward* motion
+  ignore the cliff guard for the last few cm. Bounds: the brain enables
+  it only within 50 mm of the taught pose and 10 mm of the axis, at
+  most two climbs (80 %, 0.25 s); it switches itself off after 3 s;
+  contact (On dock) stops a forward push and ends it; reverse, pivots,
+  the watchdog, disconnect and battery guards are untouched. What it
+  can't catch: a wrong overhead reading inside that window.
 - **Battery sense moved to GPIO8:** GPIO1's FNK0101 terminal was welded to
   GND by the 10-31 short (Enoch). On GPIO8 it reads 14.6 V with the
   WROOM-32 factor. Not an over-read: Enoch metered the node at 3.897 V
