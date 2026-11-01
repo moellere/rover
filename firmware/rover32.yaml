@@ -16,7 +16,7 @@
 #   GPIO7 / GPIO15   reserved: rear cliff sensors (RL / RR)
 #   GPIO16 SDA / GPIO17 SCL  bus_b: TFMini (0x10) - the only device on it
 #   GPIO42 SDA / GPIO2 SCL   bus_c: gyro L3G4200D (0x69) (right header, beside the breadboard)
-#   GPIO38/39  left IN1/IN2   GPIO40/41  right IN1/IN2   -> DRV8871 x2 (PWM)
+#   GPIO39/38  left IN1/IN2 (swapped in firmware, 11-01)   GPIO40/41  right IN1/IN2   -> DRV8871 x2 (PWM)
 #   GPIO8      battery divider (ADC1_CH7; external 100k/27k, ~4.7x, recalibrate)
 #   GPIO1      DO NOT USE: its FNK0101 terminal is welded to GND (the 10-31 short)
 #   Free: 9-14, 18, 21, 47.
@@ -517,12 +517,15 @@ output:
   # commands are refused while the TFMini reads invalid/close, as it does with
   # the rover in hand. GPIO40 verified OK 2026-11-01 (steady 3.3 V with the
   # guard off); GPIO21 is free again.
+  # Left IN1/IN2 swapped in firmware (2026-11-01): the first bench pulse
+  # "forward" pivoted Grover left - the left motor's leads are the other way
+  # round. So left_in1 = GPIO39, left_in2 = GPIO38; the wires stay put.
   - platform: ledc
-    pin: GPIO38
+    pin: GPIO39
     frequency: 1000 Hz
     id: left_in1
   - platform: ledc
-    pin: GPIO39
+    pin: GPIO38
     frequency: 1000 Hz
     id: left_in2
   - platform: ledc

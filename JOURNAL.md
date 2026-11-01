@@ -345,6 +345,16 @@ DRV8871 drivers arrived; he asked for Grover's parts in blue PETG from now on.*
 - **Dock works (11-01, Enoch):** the Eufy base, fed from the bench PSU,
   charges Grover through the pad bars: the 12 V bus voltage rose and the
   PSU showed ~0.32 A. The first Phase 2 hardware proven.
+- **Bench re-commissioning (11-01 afternoon):** static guard checks
+  passed - both cliffs trip and clear (left/right confirmed by Enoch on
+  the web UI), the TFMini reads a hand at 30-42 cm against ~106 cm of
+  open bench. First drive: a 0.2 s "forward" pivoted Grover ~40 deg
+  left - the left motor's leads are reversed relative to the firmware
+  (the lifted one-track test hadn't shown it), so left IN1/IN2 are
+  swapped in firmware (GPIO39/38, wires unchanged). Then forward 0.2 s:
+  straight, ~25-30 cm, yaw unchanged; backward 0.15 s: straight, ~20 cm.
+  Fast for such short pulses - the 75 % min duty dates from the L298N,
+  which lost 2-4 V; the DRV8871 doesn't.
 - **Battery sense moved to GPIO8:** GPIO1's FNK0101 terminal was welded to
   GND by the 10-31 short (Enoch). On GPIO8 it reads 14.6 V with the
   WROOM-32 factor. Not an over-read: Enoch metered the node at 3.897 V
