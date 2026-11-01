@@ -655,11 +655,14 @@ sensor:
     update_interval: 5s
     filters:
       # External divider only (100k top / 27k bottom): nominal 4.704.
-      # S3 on GPIO8 (2026-11-01, divider fixed to 100k/27k): 4.664 read
-      # 11.65 V with the meter at 12.15 V -> 4.664 * 12.15 / 11.65 = 4.864.
+      # S3 on GPIO8 (2026-11-01, divider fixed to 100k/27k): 4.864 read a
+      # steady 12.12 V with the meter at 11.83 V, off the dock -> 4.748.
+      # (The first try, 4.864, was taken while the dock touched on and off,
+      # so the meter caught charger voltage the 25 s average didn't. Calibrate
+      # off the dock.)
       # (Old WROOM-32 note: calibrated 2026-10-03: 4.704 reported 12.002 V with the meter at
       # 11.90 V across the pack -> 4.704 * 11.90 / 12.002 = 4.664.)
-      - multiply: 4.864
+      - multiply: 4.748
       # Rolling 25 s average, published every sample. (Was send_every 5 at
       # 30 s: one bad first sample after a reboot latched "low battery"
       # and nothing could clear it for 2.5 min - 2026-10-05.)

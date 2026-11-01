@@ -338,7 +338,12 @@ DRV8871 drivers arrived; he asked for Grover's parts in blue PETG from now on.*
   default needed no change. (A ~-55 deg Z swing just before it was
   Grover being set down.)
 - **Battery calibrated:** with the real 27k the node reads 2.522 V at
-  12.15 V; factor 4.864 (was 4.664), firmware now reads 12.12 V.
+  12.15 V. First factor 4.864 was wrong: Grover was touching the dock on
+  and off, so the meter caught charger voltage that the 25 s average
+  didn't (later the meter said 11.83 V while the rover held 12.12 V).
+  Recalibrated off the dock: **4.748**. Calibrate off the dock.
+- **Dock works (11-01, Enoch):** the Eufy base, fed from the brick,
+  charges Grover - the first Phase 2 hardware proven.
 - **Battery sense moved to GPIO8:** GPIO1's FNK0101 terminal was welded to
   GND by the 10-31 short (Enoch). On GPIO8 it reads 14.6 V with the
   WROOM-32 factor. Not an over-read: Enoch metered the node at 3.897 V
