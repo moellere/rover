@@ -18,9 +18,9 @@ breakdown of the notable decisions. Newest entry on top.
 
 ## Current status (as of the latest entry below)
 
-**Where things stand, 2026-11-01:** rover32 (the spinal cord) is dead -
-12 V from a DRV8871 header VM pin (entry below); replacement board and a
-damage check of the 5 V bus pending. Otherwise mid carrier rework -
+**Where things stand, 2026-11-01:** rover32's devkit died (12 V from a DRV8871 header
+VM pin, entry below); replaced by an ESP32-S3 (YD-ESP32-23) on a new pin
+map, firmware compiled, first flash and LED test pending. Otherwise mid carrier rework -
 DRV8871 drivers never run on the motors, Wago power deck
 and battery tray printed, top plate v2 printing; Grover is apart and
 cannot drive until the deck is reassembled. The 10-26 notes below
@@ -288,7 +288,14 @@ DRV8871 drivers arrived; he asked for Grover's parts in blue PETG from now on.*
   specified unconnected, I missed it"); the lesson either way is that a
   pin that can kill a board gets a warning, not a terse note. The diagram and the
   carrier docs now carry a red "VM = 12 V, leave unconnected" warning.
-  Damage to the rest of the 5 V bus not yet assessed.
+  VM landed on the devkit's 5V pin only; the FNK0101 still works, the
+  TFMini and LEDs are untested.
+- **Replacement (11-01):** a YD-ESP32-23 from Enoch's inventory (ESP32-S3
+  N16R8, several on hand). It fits the FNK0101, but S3 GPIO numbers differ
+  (no 22-25, flash on 26-32, PSRAM on 35-37), so `rover32` was ported to a
+  new pin map (carrier README) and compiles; LEDs stay on GPIO4. First
+  flash by USB at Enoch's desk with the LED chain on. The spine deck
+  diagram still shows the old devkit - to redo for the S3.
 - **Gyro:** Enoch had screwed it upright to the old cradle's front
   face, where the Z axis the firmware reads lies horizontal - `turn()`
   would not see the rotation. It goes upright into the breadboard

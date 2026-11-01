@@ -17,19 +17,27 @@ doesn't fit wirestudio's board-rail model and is added in KiCad.
   for now (ROADMAP 6a').
 - **Keep `rover32`'s proven pin map**, except the motor driver change below.
 
-## Pin map (unchanged unless noted)
+## Pin map (ESP32-S3, YD-ESP32-23, since 2026-11-01)
 
-| Function | GPIO | Connector | Notes |
-|---|---|---|---|
-| Cliff front-left / front-right | 35 / 32 | J_CLIFF_FL / FR (3-pin: 3V3, GND, OUT) | 35 is input-only, no pull-up |
-| Cliff rear-left / rear-right | 33 / 13 | J_CLIFF_RL / RR | reserved since 10-03, now populated |
-| TFMini I2C (bus_b) | SDA 25 / SCL 26 | J_TFMINI (5V, GND, SDA, SCL) | TFMini alone on its bus, as decided 10-03 |
-| Gyro L3G4200D (bus_c) | SDA 21 / SCL 5 | J_GYRO (3V3, GND, SDA, SCL) | GPIO5 is strapping; fine for an idle-high SCL |
-| Battery divider | 34 | on board, 100k / 27k + 100 nF | sense from the pack + after the fuse |
-| WS2812 chain | 4 | J_LED (5V, GND, DATA) | 330 ohm series, 10k pull-down, 470 uF at the connector |
-| **Left motor DRV8871** | **IN1 22 / IN2 23** | socket + J_MOT_L (screw, 2) | **change:** PWM on IN1/IN2, no EN pin |
-| **Right motor DRV8871** | **IN1 19 / IN2 18** | socket + J_MOT_R (screw, 2) | as above |
-| Spare | 16, 17, 27, 14 | J_SPARE (3V3, GND, 16, 17, 27, 14) | 16/17 freed by the DRV8871 (were the L298N EN pins); 14 pulses at boot |
+The WROOM-32 devkit died 10-31 (12 V on its 5V pin from a DRV8871 header VM
+pin). Its replacement is an ESP32-S3 board that fits the same FNK0101, but the
+GPIO numbers are the chip's, so every wire follows the new numbers below, not
+the old positions. S3 header J1 from the antenna end: 3V3, 3V3, RST, 4, 5, 6,
+7, 15, 16, 17, 18, 8, 3, 46, 9, 10, 11, 12, 13, 14, 5V, GND; J3: GND, 43, 44,
+1, 2, 42, 41, 40, 39, 38, 37, 36, 35, 0, 45, 48, 47, 21, 20, 19, GND, GND.
+
+| Function | GPIO (S3) | was (WROOM-32) | Connector | Notes |
+|---|---|---|---|---|
+| WS2812 chain | **4** | 4 | J_LED (5V, GND, DATA) | 330 ohm series; same number, different header position |
+| Cliff front-left / front-right | **5 / 6** | 35 / 32 | J_CLIFF_FL / FR (3V3, GND, OUT) | |
+| Cliff rear-left / rear-right | **7 / 15** | 33 / 13 | J_CLIFF_RL / RR | |
+| TFMini I2C (bus_b) | **SDA 16 / SCL 17** | 25 / 26 | J_TFMINI (5V, GND, SDA, SCL) | alone on its bus |
+| Gyro L3G4200D (bus_c) | **SDA 9 / SCL 10** | 21 / 5 | J_GYRO (3V3, GND, SDA, SCL) | |
+| Battery divider | **1** | 34 | 100k / 27k + 100 nF | ADC1_CH0; recalibrate (S3 ADC) |
+| Left motor DRV8871 | **IN1 38 / IN2 39** | 22 / 23 | header IN1, IN2, GND only | **header VM stays unconnected (12 V)** |
+| Right motor DRV8871 | **IN1 40 / IN2 41** | 19 / 18 | as above | |
+| Free | 2, 11-14, 21, 42, 47 | | | |
+| Avoid | 0/3/45/46 strapping, 19/20 native USB, 43/44 CH343 UART, 26-32 flash, 35-37 octal PSRAM, 48 RGB LED | | | |
 
 The DRV8871 swap needs a firmware change: the L298N drove direction on two pins
 and speed on a PWM EN pin; the DRV8871 takes PWM on IN1 (forward) or IN2

@@ -7,20 +7,27 @@
 # TFMini froze the motor direction pins and cliff inputs until a power cycle.
 # The ESP32 has pins to spare: no expander at all, TFMini alone on I2C.
 #
-# Pin map (ESP32 devkit, "esp32dev"):
-#   GPIO25 SDA / GPIO26 SCL  bus_b: TFMini (0x10) - the only I2C device
-#   GPIO22/23  left IN1/IN2   GPIO19/18  right IN1/IN2     -> DRV8871 x2 (PWM)
-#   GPIO16/17  free (were the L298N EN pins)
-#   GPIO35 / GPIO32  front-left / front-right cliff (35 is input-only)
-#   GPIO33 / GPIO13  reserved: rear cliff sensors
-#   GPIO34  battery divider (ADC1, input-only; no onboard divider on this
-#           board, so the external 100k/27k alone: ~4.7x, calibrate)
-#   Avoid 0/2/12/15 (strapping), 6-11 (flash). 34-39 are input-only.
+# Board: YD-ESP32-23 (ESP32-S3 N16R8, DevKitC-1 clone) since 2026-11-01; the
+# WROOM-32 devkit died when a DRV8871 header VM pin (= 12 V) went to its 5V.
+# Pin map (ESP32-S3; header J1 runs 3V3,3V3,RST,4,5,6,7,15,16,17,18,8,3,46,
+# 9..14,5V,GND from the antenna end; J3 GND,43,44,1,2,42..35,0,45,48,47,21,20,19):
+#   GPIO4      WS2812B chain (unchanged)
+#   GPIO5 / GPIO6    front-left / front-right cliff
+#   GPIO7 / GPIO15   reserved: rear cliff sensors (RL / RR)
+#   GPIO16 SDA / GPIO17 SCL  bus_b: TFMini (0x10) - the only device on it
+#   GPIO9 SDA / GPIO10 SCL   bus_c: gyro L3G4200D (0x69)
+#   GPIO38/39  left IN1/IN2   GPIO40/41  right IN1/IN2   -> DRV8871 x2 (PWM)
+#   GPIO1      battery divider (ADC1_CH0; external 100k/27k, ~4.7x, recalibrate)
+#   Free: 2, 11-14, 21, 42, 47.
+#   Avoid 0/3/45/46 (strapping), 19/20 (native USB), 43/44 (CH343 UART),
+#   26-32 (flash), 35-37 (octal PSRAM), 48 (onboard RGB LED).
 substitutions:
   devicename: rover32
 
 esp32:
-  board: esp32dev
+  board: esp32-s3-devkitc-1
+  variant: esp32s3
+  flash_size: 16MB
   framework:
     type: esp-idf
 
@@ -464,17 +471,17 @@ i2c:
   # but the range reading. Repeated-start reads, 100 kHz, generous timeout
   # (it stretches the clock while it prepares a reply).
   - id: bus_b
-    sda: GPIO25
-    scl: GPIO26
+    sda: GPIO16
+    scl: GPIO17
     scan: true
     frequency: 100kHz
     timeout: 20ms
   # Gyro bus (2026-10-19): Parallax L3G4200D at 0x69 (SDO pulled high on
   # the module; CS high = I2C). Its own bus so a wedged gyro never touches
-  # the TFMini. VIN 3V3, GND, SDA GPIO21, SCL GPIO5 (a strapping pin, fine for an I2C line that idles high; Enoch's choice, 2026-10-19).
+  # the TFMini. VIN 3V3, GND. SDA GPIO9, SCL GPIO10 on the S3 (were 21/5 on the WROOM-32).
   - id: bus_c
-    sda: GPIO21
-    scl: GPIO5
+    sda: GPIO9
+    scl: GPIO10
     scan: true
     frequency: 400kHz
 
@@ -490,22 +497,21 @@ output:
   # forward / GPIO18 reverse is the RIGHT. Fixed here, not in the wires.
   # DRV8871 x2 (2026-10-31, replacing the L298N): no enable pin - speed is PWM
   # on IN1 (forward) / IN2 (reverse); both high = brake, both low = coast.
-  # Same GPIOs as the L298N's direction pins, so left = 22/23, right = 19/18;
-  # GPIO16/17 (the old EN pins) are free.
+  # S3 (2026-11-01): left = GPIO38/39, right = GPIO40/41 (were 22/23, 19/18).
   - platform: ledc
-    pin: GPIO22
+    pin: GPIO38
     frequency: 1000 Hz
     id: left_in1
   - platform: ledc
-    pin: GPIO23
+    pin: GPIO39
     frequency: 1000 Hz
     id: left_in2
   - platform: ledc
-    pin: GPIO19
+    pin: GPIO40
     frequency: 1000 Hz
     id: right_in1
   - platform: ledc
-    pin: GPIO18
+    pin: GPIO41
     frequency: 1000 Hz
     id: right_in2
 
@@ -526,7 +532,7 @@ binary_sensor:
     id: front_left_cliff
     device_class: safety
     pin:
-      number: GPIO35   # input-only; the sensor module drives it (no pull-up on 34-39)
+      number: GPIO5    # the sensor module drives it
       inverted: false
     filters:
       # Trip at once (2026-10-18: a 50 ms on-delay cost ~2 cm of the 65 mm
@@ -549,7 +555,7 @@ binary_sensor:
     id: front_right_cliff
     device_class: safety
     pin:
-      number: GPIO32
+      number: GPIO6
       inverted: false
     filters:
       # Trip at once (2026-10-18: a 50 ms on-delay cost ~2 cm of the 65 mm
@@ -623,14 +629,15 @@ sensor:
     filters:
       - throttle_average: 5s
   - platform: adc
-    pin: GPIO34
+    pin: GPIO1
     attenuation: 12db
     name: "Battery Voltage"
     id: battery_voltage
     update_interval: 5s
     filters:
       # External divider only (100k top / 27k bottom): nominal 4.704.
-      # Calibrated 2026-10-03: 4.704 reported 12.002 V with the meter at
+      # S3 ADC (2026-11-01): recalibrate against the meter. WROOM-32 value,
+      # calibrated 2026-10-03: 4.704 reported 12.002 V with the meter at
       # 11.90 V across the pack -> 4.704 * 11.90 / 12.002 = 4.664.
       - multiply: 4.664
       # Rolling 25 s average, published every sample. (Was send_every 5 at
