@@ -405,6 +405,14 @@ DRV8871 drivers arrived; he asked for Grover's parts in blue PETG from now on.*
   (white tape where the cliff sensors cross); to check against where
   the tank's sensors sit now. Note for Phase 3: `dock` is 100 % overhead
   camera - in the house the onboard camera has to do the whole approach.
+  Enoch pushed it on by hand: it needs "a little extra push" over the
+  ramp lip; on the base the **front-right** cliff reads dark (left
+  reads floor), and contact came at once (On dock True, 12.57 V) at
+  x 612.0 / y 455.5 - within 2 px of the taught pose. Fixes: Enoch
+  painted the right sensor's path white (drying); `dock()` now stops on
+  dock-sense contact, uses an 80 % / 0.25 s climb pulse within 50 mm
+  on-axis, and confirms charging by On dock instead of the 30 s
+  voltage wait (`39a7d8f`).
 - **Battery sense moved to GPIO8:** GPIO1's FNK0101 terminal was welded to
   GND by the 10-31 short (Enoch). On GPIO8 it reads 14.6 V with the
   WROOM-32 factor. Not an over-read: Enoch metered the node at 3.897 V
