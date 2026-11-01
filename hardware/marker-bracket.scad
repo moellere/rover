@@ -8,7 +8,7 @@
 //   - Spine: two legs just behind the loops, outboard of the posts, joined
 //     at the top - the FNK0101's barrel-jack plug (sticking out rearward at
 //     x ~ -19) passes between them.
-//   - Top arm: a cross beam on the legs and a tongue forward to a 40 mm pad;
+//   - Top arm: a cross beam on the legs and a tongue forward to a 30 mm pad;
 //     marker cap v1's plate rests on the pad and is screwed down (two M3
 //     self-tappers into pilots here, through holes Enoch drills in the cap).
 //     The pad sits high enough that the cap's 13 mm skirts clear the wiring
@@ -44,11 +44,11 @@ skirt_h = 13 + 2.4;             // cap v1: skirt bottoms this far below its top 
 arm_t   = 4;
 pad_top = skirts ? wire_z + skirt_h - 2.4 : wire_z + 3;   // the cap's plate rests here
 clear_z = pad_top - arm_t;      // cross beam / tongue underside
-pad     = 40;                   // square screw pad
+pad     = 30;                   // square screw pad (the cap is light - Enoch)
 pad_y   = -20;                  // pad (and marker) centre: cap v1's skirts (y +/-28 about it)
                                 // then clear the legs and cross beam behind
-tongue_w = 24;
-screw_dx = 24;                  // two M3 self-tappers, across; Enoch drills the cap to match
+tongue_w = 16;
+screw_dx = 20;                  // two M3 self-tappers, across; Enoch drills the cap to match
 m3_pilot = 2.6;
 top_z   = pad_top;
 
