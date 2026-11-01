@@ -29,6 +29,8 @@
 post_x = 32;  post_y = -48;     // rear posts (top-plate.scad)
 plate_rear = -53;               // top plate's rear edge
 m4_hole = 4.5;  slot = 1.5;     // fore-aft slot as in the top plate
+lip_d   = 3;                    // the top plate is 3.5 thick
+lip_gap = 0.3;                  // lip front face behind the plate's rear edge
 
 loop_t  = 2.5;                  // under the FNK0101: 5 mm gap - head (~2.2) leaves ~0.3
 loop_d  = 11;
@@ -71,6 +73,10 @@ module leg(sx) {
     translate([sx * leg_x - 1.5, leg_y1 - 0.01, 0]) cube([3, 0.01, 14]);
     translate([sx * leg_x - 1.5, leg_y1, 0]) cube([3, 5, loop_t]);
   }
+  // lip (Enoch, 11-01): drops over the top plate's rear edge, front face just
+  // behind it, so the bracket can't rock about the two bolts. Runs back flush
+  // with the leg's rear face - it prints on that face, no overhang.
+  translate([sx * leg_x - leg_w / 2, leg_y0, -lip_d]) cube([leg_w, plate_rear - lip_gap - leg_y0, lip_d]);
 }
 
 module arm() {
