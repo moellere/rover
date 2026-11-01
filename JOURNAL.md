@@ -463,6 +463,9 @@ DRV8871 drivers arrived; he asked for Grover's parts in blue PETG from now on.*
   rounded; cliff sensors 12 mm up and 65 mm ahead of the track contact,
   so <= 14 % keeps 3 mm under them). The servo drop-down stays the
   fallback, and the likely house answer.
+  Printing in **white** PETG (Enoch switched - best for the cliff
+  sensors), job `3ffa29cb05`, 1 h 28 m, 39 g, started ~6 PM on "bed is
+  clear, ready to print".
 
 ![The dock's front edge, painted white, ruler along it](images/47-dock-front-edge-ruler-2026-11-01.jpg)
 
