@@ -305,8 +305,7 @@ DRV8871 drivers arrived; he asked for Grover's parts in blue PETG from now on.*
 - **Spine deck diagram redrawn for the S3** (11-01): 2 x 22 header, avoid-pins
   in red, both USB-C ports. The gyro moved to GPIO42/GPIO2 (right header, a
   short hop to the breadboard) instead of 9/10, which would have looped
-  around the board; OTA-flashed. The spine deck
-  diagram still shows the old devkit - to redo for the S3.
+  around the board; OTA-flashed.
 - **Gyro:** Enoch had screwed it upright to the old cradle's front
   face, where the Z axis the firmware reads lies horizontal - `turn()`
   would not see the rotation. It goes upright into the breadboard
