@@ -284,7 +284,9 @@ DRV8871 drivers arrived; he asked for Grover's parts in blue PETG from now on.*
   terminals - 12 V pack voltage, not a logic supply (the chip needs
   none). The plan had one line, "header VM unconnected", with no reason
   given, and Claude's spine deck diagram left the pin off entirely, so
-  nothing warned against it. That is Claude's miss. The diagram and the
+  nothing warned against it. Enoch took it on himself ("if you
+  specified unconnected, I missed it"); the lesson either way is that a
+  pin that can kill a board gets a warning, not a terse note. The diagram and the
   carrier docs now carry a red "VM = 12 V, leave unconnected" warning.
   Damage to the rest of the 5 V bus not yet assessed.
 - **Gyro:** Enoch had screwed it upright to the old cradle's front
