@@ -334,7 +334,12 @@ DRV8871 drivers arrived; he asked for Grover's parts in blue PETG from now on.*
   axis to find with a hand turn.
 - **Battery sense moved to GPIO8:** GPIO1's FNK0101 terminal was welded to
   GND by the 10-31 short (Enoch). On GPIO8 it reads 14.6 V with the
-  WROOM-32 factor - the S3 ADC over-reads; recalibrate against the meter.
+  WROOM-32 factor. Not an over-read: Enoch metered the node at 3.897 V
+  with 12.16 V in (ratio 0.32, not 100k/27k's 0.213 - most likely a 47k
+  in the bottom position), so the ADC was saturated at ~3.13 V, GPIO8 was
+  above its ~3.6 V limit, and the low-battery guard was blind (always
+  "14.6 V"). Node off GPIO8 until the bottom resistor is a real 27k;
+  then recalibrate.
 - **One-track test passed (11-01, 20:03 UTC):** with a healthy battery
   reading (no 20 s boot window) and something under the cliff sensors,
   L+80, L-80, R+80, R-80 for 1 s each - all four moved, the right way
