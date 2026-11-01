@@ -365,6 +365,13 @@ DRV8871 drivers arrived; he asked for Grover's parts in blue PETG from now on.*
   first act (coast). So a driver pin moves during reset/bootloader, when
   ESPHome isn't in control yet. Next: a 10k pull-down on the left IN
   terminal (stops it if it's a weak pull-up) or a logic-analyzer capture.
+  **Narrowed (11-01):** no twitch on either soft reset - the OTA reboot
+  or the new Restart button (esp_restart) - only on power-on and the EN
+  button. So it is the pads' state during a *hardware* reset, which no
+  firmware can reach. Most likely a weak internal pull-up (~45k) beating
+  the DRV8871's ~100k input pull-down; the fix is a 10k pull-down on each
+  driver input (verify with one on left IN1 first). It matters: every
+  pack connect is a power-on.
 
 - **Gyro:** Enoch had screwed it upright to the old cradle's front
   face, where the Z axis the firmware reads lies horizontal - `turn()`
