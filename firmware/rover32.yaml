@@ -19,7 +19,8 @@
 #   GPIO39/38  left IN1/IN2 (swapped in firmware, 11-01)   GPIO40/41  right IN1/IN2   -> DRV8871 x2 (PWM)
 #   GPIO8      battery divider (ADC1_CH7; external 100k/27k, ~4.7x, recalibrate)
 #   GPIO1      DO NOT USE: its FNK0101 terminal is welded to GND (the 10-31 short)
-#   Free: 9-14, 18, 21, 47.
+#   GPIO9      dock sense (ADC1_CH8): dock pad + BEFORE the dock diode -> 100k -> node -> 15k -> GND
+#   Free: 10-14, 18, 21, 47.
 #   Avoid 0/3/45/46 (strapping), 19/20 (native USB), 43/44 (CH343 UART),
 #   26-32 (flash), 35-37 (octal PSRAM on R8 parts; PSRAM here unconfirmed), 48 (onboard RGB LED).
 substitutions:
@@ -543,6 +544,30 @@ output:
 # surface (floor/bench) and high when there's nothing to reflect off (edge/drop-off) -
 # verify against the actual module datasheet once wired and flip `inverted` if backwards.
 binary_sensor:
+  # On the dock: pad voltage present (hysteresis 9 V on / 6 V off). Lights the
+  # status strip's Charging effect; the brain reads it for "contact made".
+  - platform: template
+    name: "On dock"
+    id: on_dock
+    lambda: |-
+      static bool st = false;
+      const float v = id(dock_voltage).state;
+      if (std::isnan(v)) return st;
+      if (!st && v > 9.0f) st = true;
+      else if (st && v < 6.0f) st = false;
+      return st;
+    filters:
+      - delayed_off: 500ms
+    on_press:
+      - light.turn_on:
+          id: status_strip
+          effect: "Charging"
+          red: 0%
+          green: 100%
+          blue: 20%
+          brightness: 60%
+    on_release:
+      - light.turn_off: status_strip
   - platform: template
     name: "Front range valid"
     id: front_range_valid
@@ -650,6 +675,22 @@ sensor:
     accuracy_decimals: 0
     filters:
       - throttle_average: 5s
+  # Dock sense (2026-11-01): the dock pad's + lead before the dock diode, so
+  # 0 V off the dock and the charger's ~12.6 V on it. 100k/15k (Enoch's build)
+  # -> x7.667 nominal; recalibrate against the meter. Feeds "On dock".
+  - platform: adc
+    pin: GPIO9
+    attenuation: 12db
+    name: "Dock voltage"
+    id: dock_voltage
+    update_interval: 250ms
+    accuracy_decimals: 1
+    filters:
+      - multiply: 7.667
+      - sliding_window_moving_average:
+          window_size: 4
+          send_every: 1
+      - delta: 0.2
   - platform: adc
     pin: GPIO8
     attenuation: 12db

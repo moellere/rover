@@ -36,7 +36,8 @@ the old positions. S3 header J1 from the antenna end: 3V3, 3V3, RST, 4, 5, 6,
 | Battery divider | **8** | 34 | 100k / 27k + 100 nF | ADC1_CH7; recalibrate (S3 ADC). GPIO1 was the first choice, but its FNK0101 terminal is welded to GND (10-31 short) - never use it |
 | Left motor DRV8871 | **IN1 38 / IN2 39** | 22 / 23 | header IN1, IN2, GND only | **header VM stays unconnected (12 V)** |
 | Right motor DRV8871 | **IN1 40 / IN2 41** | 19 / 18 | as above | |
-| Free | 9-14, 18, 21, 47 | | | |
+| Dock sense | **9** | - | 100k / 15k on the power deck, next to D1 | ADC1_CH8. Taps the dock pad + lead BEFORE D1 (pad side): ~12.6 V on the dock -> 1.64 V, 0 V off it (the 15k pulls down). Analog, not digital - 1.6 V is below the S3's logic-high threshold. 100k / 10k also works (1.15 V) - say which, the firmware factor differs. Optional 100 nF across the 15k. Drives the status strip's Charging effect and gives the brain an instant contact signal (11-01) |
+| Free | 10-14, 18, 21, 47 | | | |
 | Avoid | 0/3/45/46 strapping, 19/20 native USB, 43/44 CH343 UART, 26-32 flash, 35-37 octal PSRAM, 48 RGB LED | | | |
 
 The DRV8871 swap needs a firmware change: the L298N drove direction on two pins
@@ -55,6 +56,7 @@ and speed on a PWM EN pin; the DRV8871 takes PWM on IN1 (forward) or IN2
    pack + / P-                            ├── LM2596 IN+ (socket) ── OUT+ ──[D2 1N5822, optional]── 5V rail
                                           ├── vbat divider (GPIO34)
  J_DOCK (screw, 2) ──[D1 1N5822]──────────┘   (left pad +, band toward the rail; right pad -> GND/P-)
+                  └── 100k ──┬── 15k ── GND      dock sense (pad side of D1): node -> GPIO9
 ```
 
 - **F1:** 5 A inline-blade fuse holder footprint (Enoch has one), the pack's only

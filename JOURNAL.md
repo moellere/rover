@@ -380,8 +380,13 @@ DRV8871 drivers arrived; he asked for Grover's parts in blue PETG from now on.*
 - **Charging lights:** they don't come on by themselves - the status
   strip's "Charging" effect exists but nothing triggers it, and the
   pack voltage alone can't tell "on the dock" from "freshly charged".
-  Proposed: a dock-sense divider from the pad + lead (before the dock
-  diode) into GPIO9.
+  Fix (Enoch building it): a dock-sense divider, 100k/15k, on the power
+  deck next to D1, tapping the pad + lead *before* the diode - 1.64 V at
+  12.6 V, 0 V off the dock - into GPIO9 as an analog input (1.6 V is
+  under the S3's logic-high threshold). Firmware: "Dock voltage" and an
+  "On dock" sensor (9 V on / 6 V off) that runs the Charging effect;
+  compiled, held until the divider is wired (a floating GPIO9 could fake
+  "on dock"). The brain gets an instant contact signal for docking too.
 - **Battery sense moved to GPIO8:** GPIO1's FNK0101 terminal was welded to
   GND by the 10-31 short (Enoch). On GPIO8 it reads 14.6 V with the
   WROOM-32 factor. Not an over-read: Enoch metered the node at 3.897 V

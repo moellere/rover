@@ -92,7 +92,7 @@ right_pins = ["GND", "TX", "RX", "1", "2", "42", "41", "40", "39", "38", "37", "
 avoid = {"1", "3", "46", "0", "45", "48", "TX", "RX", "20", "19", "35", "36", "37"}
 lx, rx_ = dcx - 12.7 * S, dcx + 12.7 * S
 P = {}
-used = {"3V3", "4", "5", "6", "7", "15", "16", "17", "8", "5V", "2", "42", "41", "40", "39", "38"}
+used = {"3V3", "4", "5", "6", "7", "15", "16", "17", "8", "9", "5V", "2", "42", "41", "40", "39", "38"}
 def pin(x, y, n, side, i):
     on = n in used or n == "GND"
     fill = "#ffd54f" if on else "#c0392b" if n in avoid else "#8a8a8a"
@@ -217,16 +217,19 @@ line([(bx0 + 228, PDy), (bx0 + 228, dvy - 60), (rx1, dvy - 60), (rx1, dvy - 46)]
 
 # ---- power deck box (below) ------------------------------------------------
 pdx, pdw = gx0 - 250, 650
+# dock sense GPIO9 (left header) -> down the left side -> power deck divider
+line([P["L9"], (380, P["L9"][1]), (380, PDy + 114), (gx0 - 250, PDy + 114)], C["bat"], dash=True)
 rect(pdx, PDy, pdw, 195, "#fff5ec", C["drv"], rx=9, sw=2)
 text(pdx + 12, PDy + 22, "POWER DECK (below the top plate)", 14, weight="bold", col=C["drv"])
-text(pdx + 12, PDy + 44, "Left DRV8871 (left track):  IN1 <- GPIO38   IN2 <- GPIO39   GND <- ESP GND", 12)
+text(pdx + 12, PDy + 44, "Left DRV8871 (left track):  IN1 <- GPIO38   IN2 <- GPIO39 (firmware swaps them)   GND <- ESP GND", 12)
 text(pdx + 12, PDy + 63, "Right DRV8871 (right track): IN1 <- GPIO40   IN2 <- GPIO41   GND <- ESP GND", 12)
 text(pdx + 12, PDy + 186, "DANGER: header VM = 12 V (tied to the POWER terminals). Leave it UNCONNECTED.", 12, weight="bold", col="#d62828")
 text(pdx + 12, PDy + 82, "Buck OUT (5.29 V) + GND -> breadboard 5V / GND rails", 12)
 text(pdx + 12, PDy + 101, "12 V bus (+ Wago) -> 100k -> sense node -> 27k -> GND;  node -> GPIO8", 12)
-text(pdx + 12, PDy + 124, "Forward = IN1 high, IN2 PWM (both sides). A track running backward is fixed by", 11, col="#555")
-text(pdx + 12, PDy + 140, "swapping its IN1/IN2 pins in firmware, not the wires.", 11, col="#555")
-text(pdx + 12, PDy + 162, "Wires reach it down the centre slot (signals) and past the breadboard's rear end (power).", 11, col="#555")
+text(pdx + 12, PDy + 119, "Dock sense: dock pad + (BEFORE D1) -> 100k -> node -> 15k -> GND;  node -> GPIO9", 12, col="#8a5a00")
+text(pdx + 12, PDy + 137, "Forward = IN1 high, IN2 PWM (both sides). A track running backward is fixed by", 11, col="#555")
+text(pdx + 12, PDy + 152, "swapping its IN1/IN2 pins in firmware, not the wires.", 11, col="#555")
+text(pdx + 12, PDy + 169, "Wires reach it down the centre slot (signals) and past the breadboard's rear end (power).", 11, col="#555")
 
 # ---- legend / notes ----------------------------------------------------------
 lgx, lgy = 1120, 330
@@ -253,7 +256,7 @@ for i, s in enumerate([
         "Red pins: avoid - 0/3/45/46 strapping, 19/20",
         "native USB, TX/RX CH343, 35-37 PSRAM, 48 RGB;",
         "GPIO1: its FNK0101 terminal is welded to GND.",
-        "Free: 9-14, 18, 21, 47.",
+        "Free: 10-14, 18, 21, 47.",
         "USB (either port): never with the pack connected."]):
     text(nx + 12, ny + 48 + i * 19, s, 12)
 
