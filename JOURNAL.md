@@ -22,7 +22,8 @@ breakdown of the notable decisions. Newest entry on top.
 VM pin, entry below); replaced by an ESP32-S3 (YD-ESP32-23) on a new pin
 map; running at Enoch's desk, LEDs work. drivers and motors
 proven; left reverse to re-test with the obstacle guard off, then
-reassembly. TFMini, buck output, cliff sensors and gyro still to check. Otherwise mid carrier rework -
+reassembly. TFMini, gyro and cliff sensors respond; battery sense and the
+gyro's axis still to sort. Otherwise mid carrier rework -
 DRV8871 drivers never run on the motors, Wago power deck
 and battery tray printed, top plate v2 printing; Grover is apart and
 cannot drive until the deck is reassembled. The 10-26 notes below
@@ -326,6 +327,12 @@ DRV8871 drivers arrived; he asked for Grover's parts in blue PETG from now on.*
   visibly moved (GPIO39 at 3.3 V) and wasn't re-run with the guard off -
   a one-track-at-a-time test (L+, L-, R+, R-) comes before the spine deck
   goes back on. The API was flaky just after boot (Hello timeouts).
+- **Spine deck rewired on the S3 (11-01 evening):** the TFMini survived the
+  12 V - answers at 0x10, 73 cm at strength 395. Gyro answers at 0x69
+  (bus_c 42/2), cliff FL/FR read floor. Battery reads 1.06 V, so the
+  divider isn't reaching GPIO1 yet. The firmware still integrates the
+  gyro's Z axis, which lies horizontal now the module stands upright -
+  axis to find with a hand turn.
 
 - **Gyro:** Enoch had screwed it upright to the old cradle's front
   face, where the Z axis the firmware reads lies horizontal - `turn()`
