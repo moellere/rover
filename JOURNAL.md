@@ -20,7 +20,8 @@ breakdown of the notable decisions. Newest entry on top.
 
 **Where things stand, 2026-11-01:** rover32's devkit died (12 V from a DRV8871 header
 VM pin, entry below); replaced by an ESP32-S3 (YD-ESP32-23) on a new pin
-map, firmware compiled, first flash and LED test pending. Otherwise mid carrier rework -
+map; running at Enoch's desk, LEDs work. TFMini untested; diagram
+redraw and rewiring onto Grover next. Otherwise mid carrier rework -
 DRV8871 drivers never run on the motors, Wago power deck
 and battery tray printed, top plate v2 printing; Grover is apart and
 cannot drive until the deck is reassembled. The 10-26 notes below
@@ -297,7 +298,10 @@ DRV8871 drivers arrived; he asked for Grover's parts in blue PETG from now on.*
   flash by USB at Enoch's desk with the LED chain on. It boot-looped:
   "Detected size(8192k) smaller than the size in the binary image
   header(16384k)" - this board has 8 MB flash, whatever the repo says;
-  rebuilt with flash_size 8MB. The spine deck
+  rebuilt with flash_size 8MB. The second flash booted: on Wi-Fi (-42 dBm),
+  API up, and the LED chain lit from the new board on GPIO4 (Enoch saw it).
+  TFMini still to test (unplugged; an I2C scan on bus_b, GPIO16/17, should
+  find 0x10). The spine deck
   diagram still shows the old devkit - to redo for the S3.
 - **Gyro:** Enoch had screwed it upright to the old cradle's front
   face, where the Z axis the firmware reads lies horizontal - `turn()`
