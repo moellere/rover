@@ -417,6 +417,14 @@ DRV8871 drivers arrived; he asked for Grover's parts in blue PETG from now on.*
   the painted base still read "cliff" on the right, and the cause was
   the **front-right sensor itself** - Enoch swapped it (TCRT5000 spare)
   and both now read floor on the dock, On dock True at 12.57 V.
+- **Second `dock` (11-01 ~5:06 PM, new code):** waypoints 72 / 10 mm
+  off, squared to 1.5 deg, crept 192 -> 64 -> 50 mm short, 8-9 mm off
+  the axis (just over the 8 mm steer limit), two micro-steers that
+  didn't move it, then the cliff guard: the **left cliff sensor drags on
+  the dock ramp** (Enoch) and a TCRT5000 touching a surface reads as a
+  cliff. Fix: raise it 2-3 mm (they read best a few mm up). Brain: the
+  climb pulse now fires up to 10 mm off-axis within 50 mm, no steering
+  there.
 - **Battery sense moved to GPIO8:** GPIO1's FNK0101 terminal was welded to
   GND by the 10-31 short (Enoch). On GPIO8 it reads 14.6 V with the
   WROOM-32 factor. Not an over-read: Enoch metered the node at 3.897 V

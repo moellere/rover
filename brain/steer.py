@@ -251,6 +251,7 @@ DOCK_LOOKAHEAD_MM = 100.0   # ... aiming at the axis this far ahead of Grover
 DOCK_CLIMB_MM = 50.0        # this close and on the axis: climb pulses, not creeps - the ramp
 DOCK_CLIMB_PCT = 80         #   lip needs a firmer push (2026-11-01, Enoch); 80 % for 0.25 s
 DOCK_CLIMB_S = 0.25
+DOCK_CLIMB_LATERAL_MM = 10.0  # climb even this far off-axis: at 50 mm two micro-steers just fail (11-01)
 
 
 def load_dock_pose() -> dict:
@@ -348,7 +349,8 @@ async def _dock_legs(client: RoverClient, pose: dict, camera: str, max_steps: in
         # so steer back onto the axis while creeping (2026-10-26: 35 mm off tripped a cliff sensor)
         lateral = ((rover.x_px - pose["x_px"]) * (-math.sin(h)) + (rover.y_px - pose["y_px"]) * (-math.cos(h))) * pose["mm_per_px"]
         entry["lateral_mm"] = round(lateral)
-        if abs(lateral) > DOCK_LATERAL_MM and along > 15.0:
+        at_lip = along <= DOCK_CLIMB_MM and abs(lateral) <= DOCK_CLIMB_LATERAL_MM
+        if abs(lateral) > DOCK_LATERAL_MM and along > 15.0 and not at_lip:
             ax, ay = _axis_point(pose, max(along - DOCK_LOOKAHEAD_MM, 0.0))
             aim = math.degrees(math.atan2(-(ay - rover.y_px), ax - rover.x_px)) % 360
         else:
@@ -356,7 +358,7 @@ async def _dock_legs(client: RoverClient, pose: dict, camera: str, max_steps: in
             # correction angle carries Grover across the axis (10-26: 12 mm one
             # way became 21 mm the other)
             aim = pose["heading_deg"]
-        if along > 15.0 and abs(heading_change(rover.heading_deg, aim)) > 3.0 and steer_fails < 2:
+        if along > 15.0 and not at_lip and abs(heading_change(rover.heading_deg, aim)) > 3.0 and steer_fails < 2:
             f = await face(aim, camera, 2.0)
             log.append({**entry, "action": f"steer to {aim:.1f}", "ok": f.ok})
             # a pivot this small often doesn't move the tracks at all (10-26: six
@@ -389,7 +391,7 @@ async def _dock_legs(client: RoverClient, pose: dict, camera: str, max_steps: in
         else:
             stalls = 0
         prev = (rover.x_px, rover.y_px)
-        if along <= DOCK_CLIMB_MM and abs(lateral) <= DOCK_LATERAL_MM:
+        if at_lip:
             # at the ramp lip: one firm pulse (guard already relaxed), then look again
             log.append({**entry, "action": f"climb {DOCK_CLIMB_PCT}% {DOCK_CLIMB_S:.2f}s"})
             await client.set_speeds(DOCK_CLIMB_PCT, DOCK_CLIMB_PCT, DOCK_CLIMB_S)
