@@ -508,10 +508,11 @@
 <polyline points="820.0,765.0 764.0,765.0 764.0,794.0 457.0,794.0 457.0,706.3 485.5,706.3" fill="none" stroke="#d62828" stroke-width="2.6" stroke-linejoin="round"/>
 <polyline points="1036.0,880.0 1036.0,605.0 1002.0,605.0 1002.0,619.0" fill="none" stroke="#fff" stroke-width="6.6" stroke-linejoin="round"/>
 <polyline points="1036.0,880.0 1036.0,605.0 1002.0,605.0 1002.0,619.0" fill="none" stroke="#b8860b" stroke-width="2.6" stroke-linejoin="round"/>
-<rect x="518.0" y="880.0" width="650.0" height="175.0" rx="9" fill="#fff5ec" stroke="#c2410c" stroke-width="2"/>
+<rect x="518.0" y="880.0" width="650.0" height="195.0" rx="9" fill="#fff5ec" stroke="#c2410c" stroke-width="2"/>
 <text x="530.0" y="902.0" font-size="14" text-anchor="start" fill="#c2410c" font-family="DejaVu Sans, Arial, sans-serif" font-weight="bold">POWER DECK (below the top plate)</text>
 <text x="530.0" y="924.0" font-size="12" text-anchor="start" fill="#111" font-family="DejaVu Sans, Arial, sans-serif" font-weight="normal">Left DRV8871 (left track):  IN1 &lt;- GPIO22   IN2 &lt;- GPIO23   GND &lt;- ESP GND</text>
 <text x="530.0" y="943.0" font-size="12" text-anchor="start" fill="#111" font-family="DejaVu Sans, Arial, sans-serif" font-weight="normal">Right DRV8871 (right track): IN1 &lt;- GPIO19   IN2 &lt;- GPIO18   GND &lt;- ESP GND</text>
+<text x="530.0" y="1066.0" font-size="12" text-anchor="start" fill="#d62828" font-family="DejaVu Sans, Arial, sans-serif" font-weight="bold">DANGER: header VM = 12 V (tied to the POWER terminals). Leave it UNCONNECTED.</text>
 <text x="530.0" y="962.0" font-size="12" text-anchor="start" fill="#111" font-family="DejaVu Sans, Arial, sans-serif" font-weight="normal">Buck OUT (5.29 V) + GND -> breadboard 5V / GND rails</text>
 <text x="530.0" y="981.0" font-size="12" text-anchor="start" fill="#111" font-family="DejaVu Sans, Arial, sans-serif" font-weight="normal">12 V bus (+ Wago) -> 100k -> sense node -> 27k -> GND;  node -> GPIO34</text>
 <text x="530.0" y="1004.0" font-size="11" text-anchor="start" fill="#555" font-family="DejaVu Sans, Arial, sans-serif" font-weight="normal">Forward = IN1 high, IN2 PWM (both sides). A track running backward is fixed by</text>

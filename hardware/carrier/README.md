@@ -35,6 +35,11 @@ The DRV8871 swap needs a firmware change: the L298N drove direction on two pins
 and speed on a PWM EN pin; the DRV8871 takes PWM on IN1 (forward) or IN2
 (reverse) with the other low, and brakes with both high.
 
+> **DRV8871 header VM pin = pack voltage.** It is tied to the POWER screw
+> terminals and is not a logic supply (the chip needs none). Connect only
+> IN1, IN2 and GND from the header; VM stays unconnected. Wiring it to the
+> ESP32 put 12 V on rover32 and destroyed it (2026-10-31).
+
 ## Power section (added in KiCad)
 
 ```

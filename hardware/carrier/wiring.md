@@ -70,4 +70,6 @@ Wago connections before the cradle goes on (lever clearance under the 30 mm gap)
 12 V bus = two Wago 221-415 (+12 V, GND) fed from pack + through a 5 A blade
 fuse and P-; feeds both DRV8871 POWER terminals, LM2596 IN, the divider; the
 dock diode joins the + bus. DRV8871 left IN1/IN2 = GPIO22/23, right = GPIO19/18,
-header GND to ESP32 GND, header VM unconnected. GPIO16/17 free.
+header GND to ESP32 GND. **Header VM: leave it unconnected - it is the
+12 V from the POWER terminals, not a logic supply** (the board has no logic
+VCC pin; wiring VM to the ESP32 killed rover32 on 2026-10-31). GPIO16/17 free.

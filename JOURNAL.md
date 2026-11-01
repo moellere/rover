@@ -18,8 +18,10 @@ breakdown of the notable decisions. Newest entry on top.
 
 ## Current status (as of the latest entry below)
 
-**Where things stand, 2026-10-31:** mid carrier rework (entry below) -
-DRV8871 drivers flashed but not yet run on the motors, Wago power deck
+**Where things stand, 2026-11-01:** rover32 (the spinal cord) is dead -
+12 V from a DRV8871 header VM pin (entry below); replacement board and a
+damage check of the 5 V bus pending. Otherwise mid carrier rework -
+DRV8871 drivers never run on the motors, Wago power deck
 and battery tray printed, top plate v2 printing; Grover is apart and
 cannot drive until the deck is reassembled. The 10-26 notes below
 still hold for everything else.
@@ -276,6 +278,15 @@ DRV8871 drivers arrived; he asked for Grover's parts in blue PETG from now on.*
   everything - including the status strip, dark since 10-26 because the
   right dot's Dout was shorted to 5 V (Enoch resoldered it). Home
   Assistant had banned the VM again (403), so the test went direct.
+- **rover32 destroyed (night of 10-31):** wiring the drivers, the
+  DRV8871 header's VM pin went to the ESP32 and the devkit let its smoke
+  out. On these boards header VM is tied straight to the POWER screw
+  terminals - 12 V pack voltage, not a logic supply (the chip needs
+  none). The plan had one line, "header VM unconnected", with no reason
+  given, and Claude's spine deck diagram left the pin off entirely, so
+  nothing warned against it. That is Claude's miss. The diagram and the
+  carrier docs now carry a red "VM = 12 V, leave unconnected" warning.
+  Damage to the rest of the 5 V bus not yet assessed.
 - **Gyro:** Enoch had screwed it upright to the old cradle's front
   face, where the Z axis the firmware reads lies horizontal - `turn()`
   would not see the rotation. It goes upright into the breadboard

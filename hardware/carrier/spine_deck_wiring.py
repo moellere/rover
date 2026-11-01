@@ -216,10 +216,11 @@ line([(bx0 + 228, PDy), (bx0 + 228, dvy - 60), (rx1, dvy - 60), (rx1, dvy - 46)]
 
 # ---- power deck box (below) ------------------------------------------------
 pdx, pdw = gx0 - 250, 650
-rect(pdx, PDy, pdw, 175, "#fff5ec", C["drv"], rx=9, sw=2)
+rect(pdx, PDy, pdw, 195, "#fff5ec", C["drv"], rx=9, sw=2)
 text(pdx + 12, PDy + 22, "POWER DECK (below the top plate)", 14, weight="bold", col=C["drv"])
 text(pdx + 12, PDy + 44, "Left DRV8871 (left track):  IN1 <- GPIO22   IN2 <- GPIO23   GND <- ESP GND", 12)
 text(pdx + 12, PDy + 63, "Right DRV8871 (right track): IN1 <- GPIO19   IN2 <- GPIO18   GND <- ESP GND", 12)
+text(pdx + 12, PDy + 186, "DANGER: header VM = 12 V (tied to the POWER terminals). Leave it UNCONNECTED.", 12, weight="bold", col="#d62828")
 text(pdx + 12, PDy + 82, "Buck OUT (5.29 V) + GND -> breadboard 5V / GND rails", 12)
 text(pdx + 12, PDy + 101, "12 V bus (+ Wago) -> 100k -> sense node -> 27k -> GND;  node -> GPIO34", 12)
 text(pdx + 12, PDy + 124, "Forward = IN1 high, IN2 PWM (both sides). A track running backward is fixed by", 11, col="#555")
