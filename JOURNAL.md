@@ -21,7 +21,7 @@ breakdown of the notable decisions. Newest entry on top.
 **Where things stand, 2026-11-01:** rover32's devkit died (12 V from a DRV8871 header
 VM pin, entry below); replaced by an ESP32-S3 (YD-ESP32-23) on a new pin
 map; running at Enoch's desk, LEDs work. drivers, motors and pin
-map proven (one-track test passed). bench re-commissioning passed (guards, straight drives, turn(90)).
+map proven (one-track test passed). bench re-commissioning passed; `dock` drives on and charges (overhead-assisted, dock mode at the lip).
 To do: a top-marker holder for the new top plate, the boot twitch. Otherwise mid carrier rework -
 DRV8871 drivers never run on the motors, Wago power deck
 and battery tray printed, top plate v2 printing; Grover is apart and
@@ -446,6 +446,15 @@ DRV8871 drivers arrived; he asked for Grover's parts in blue PETG from now on.*
   the marker. Brain: square up within 4 deg before a climb (up to two
   pivots), creep steering capped at 8 deg off the dock heading,
   lookahead 100 -> 150 mm.
+- **Fourth `dock` (11-01 ~5:40 PM): docked and charging, hands off.**
+  Straight approach this time (118 mm short, 2 mm lateral, 184 deg),
+  climb 1 in dock mode at 41 mm (right cliff True, ignored), square-up
+  from 187 deg, climb 2, on the pose (-3 mm). The routine's charge read
+  came too early (dock 6.2 V mid-rise, "missed"); seconds later On dock
+  True at 12.43 V and steady. Now it waits up to ~4 s for contact.
+  Still to watch: each climb yaws Grover ~4-6 deg left (one track grips
+  the lip first). Overhead-assisted, but the whole drive-on is
+  autonomous - the Phase 2 bench milestone on the new spinal cord.
 - **Battery sense moved to GPIO8:** GPIO1's FNK0101 terminal was welded to
   GND by the 10-31 short (Enoch). On GPIO8 it reads 14.6 V with the
   WROOM-32 factor. Not an over-read: Enoch metered the node at 3.897 V

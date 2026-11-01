@@ -283,6 +283,13 @@ async def dock(camera: str = "bench", max_steps: int = 8) -> dict:
         r = await _dock_legs(client, pose, camera, max_steps, log, guard)
         if r.get("ok") or r.get("contact"):
             st = await client.state(timeout=3.0)
+            for _ in range(4):
+                # contact settles a moment after the last move (11-01: read 6.2 V
+                # mid-rise, "missed", then 12.4 V and charging seconds later)
+                if not st.on_dock is False:
+                    break
+                await asyncio.sleep(1.0)
+                st = await client.state(timeout=3.0)
             if st.on_dock is not None:
                 # dock sense (2026-11-01): pad voltage present = contact, no waiting
                 r["charging"] = bool(st.on_dock)
