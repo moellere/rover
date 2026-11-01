@@ -498,6 +498,11 @@ output:
   # DRV8871 x2 (2026-10-31, replacing the L298N): no enable pin - speed is PWM
   # on IN1 (forward) / IN2 (reverse); both high = brake, both low = coast.
   # S3 (2026-11-01): left = GPIO38/39, right = GPIO40/41 (were 22/23, 19/18).
+  # GPIO40 looked dead on 2026-11-01 (no output under "right forward"), but
+  # GPIO21 read the same until the obstacle guard was turned off: forward-ish
+  # commands are refused while the TFMini reads invalid/close, as it does with
+  # the rover in hand. GPIO40 verified OK 2026-11-01 (steady 3.3 V with the
+  # guard off); GPIO21 is free again.
   - platform: ledc
     pin: GPIO38
     frequency: 1000 Hz

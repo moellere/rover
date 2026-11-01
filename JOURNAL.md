@@ -20,8 +20,9 @@ breakdown of the notable decisions. Newest entry on top.
 
 **Where things stand, 2026-11-01:** rover32's devkit died (12 V from a DRV8871 header
 VM pin, entry below); replaced by an ESP32-S3 (YD-ESP32-23) on a new pin
-map; running at Enoch's desk, LEDs work. TFMini untested; diagram
-redrawn for the S3, rewiring onto Grover next. Otherwise mid carrier rework -
+map; running at Enoch's desk, LEDs work. drivers and motors
+proven; left reverse to re-test with the obstacle guard off, then
+reassembly. TFMini, buck output, cliff sensors and gyro still to check. Otherwise mid carrier rework -
 DRV8871 drivers never run on the motors, Wago power deck
 and battery tray printed, top plate v2 printing; Grover is apart and
 cannot drive until the deck is reassembled. The 10-26 notes below
@@ -310,6 +311,22 @@ DRV8871 drivers arrived; he asked for Grover's parts in blue PETG from now on.*
   in red, both USB-C ports. The gyro moved to GPIO42/GPIO2 (right header, a
   short hop to the breadboard) instead of 9/10, which would have looped
   around the board; OTA-flashed.
+- **First DRV8871 bench test (11-01 afternoon, run from the WireStudio
+  session by mistake, handed back here):** both drivers, both motors and
+  their power are good - Enoch tied each IN1/IN2 to 3.3 V and got both
+  directions on both. Every "dead pin" reading (GPIO39, GPIO40) was the
+  obstacle guard: with the rover in hand the TFMini reads invalid/close,
+  and forward-ish commands are refused (a missing TFMini counts as an
+  obstacle). With "Obstacle stop" 0 after boot, GPIO40 drove a steady
+  3.3 V. Right IN1 went to GPIO21 and back during the hunt; the map is
+  unchanged. Driving with no battery sense wired: the brain refuses below
+  9.6 V and the firmware latches drive off below 9.3 V after its 20 s boot
+  grace, so the test drove `RoverClient` directly inside that window
+  (watchdog, disconnect and cliff guards on). **Open:** left reverse never
+  visibly moved (GPIO39 at 3.3 V) and wasn't re-run with the guard off -
+  a one-track-at-a-time test (L+, L-, R+, R-) comes before the spine deck
+  goes back on. The API was flaky just after boot (Hello timeouts).
+
 - **Gyro:** Enoch had screwed it upright to the old cradle's front
   face, where the Z axis the firmware reads lies horizontal - `turn()`
   would not see the rotation. It goes upright into the breadboard
