@@ -1,7 +1,7 @@
 """Spine deck wiring diagram (top view, front up) -> spine-deck-wiring.svg / .png.
 
-Pin map from firmware/rover32.yaml; devkit pinout is the standard 38-pin
-ESP32-WROOM-32D devkit, antenna to the front (USB / FNK0101 power jack to the
+Pin map from firmware/rover32.yaml; the board is a YD-ESP32-23 (ESP32-S3,
+DevKitC-1 2 x 22 pinout) in the same FNK0101, antenna to the front (USB / FNK0101 power jack to the
 rear, as the top plate mounts it). Board sizes to scale (5 px/mm): FNK0101
 87.6 x 83.2, half breadboard 54 x 82, 8 mm gap (top-plate.scad).
 
@@ -70,39 +70,39 @@ for x in (fx0 + 8, fx0 + fw - 28):                                     # termina
 text(fx0 + fw / 2, fy0 + fh - 12, "Freenove FNK0101", 13, "middle", col="#ddd", weight="bold")
 rect(fx0 + fw - 70, fy0 + fh - 30, 45, 26, "#111", "#555", rx=3)        # barrel jack, rear
 
-# ESP32 devkit, antenna to the front
+# ESP32-S3 devkit (YD-ESP32-23, DevKitC-1 layout), antenna to the front
 dcx, dcy = fx0 + fw / 2, fy0 + fh / 2
 pitch = 2.54 * S
-py0 = dcy - 9 * pitch + 14          # first pin; the antenna sits ahead of the header
+py0 = dcy - 10.5 * pitch + 10       # first pin; the antenna sits ahead of the header
 dw = 28 * S
 dx0, dy0 = dcx - dw / 2, py0 - 44
-dh = 18 * pitch + 44 + 16
+dh = 21 * pitch + 44 + 16
 rect(dx0, dy0, dw, dh, "#14324f", "#0b1e30", rx=5)
 rect(dx0 + 18, dy0 + 4, dw - 36, 28, "#b0b7bf", "#777", rx=3)          # antenna / shield
-text(dcx, dy0 + 23, "ESP32 rover32", 11, "middle", col="#222", weight="bold")
-rect(dcx - 22, dy0 + dh - 4, 44, 16, "#c0c0c0", "#777", rx=3)          # USB
-text(dcx, dy0 + dh + 26, "USB (rear) - never with the pack connected", 10, "middle", col="#ddd")
+text(dcx, dy0 + 23, "ESP32-S3 rover32", 11, "middle", col="#222", weight="bold")
+for ux in (dcx - 34, dcx + 34):                                        # two USB-C, rear
+    rect(ux - 14, dy0 + dh - 4, 28, 12, "#c0c0c0", "#777", rx=3)
+text(dcx - 34, dy0 + dh + 22, "COM", 9, "middle", col="#ddd")
+text(dcx + 34, dy0 + dh + 22, "USB", 9, "middle", col="#ddd")
 
-left_pins = ["3V3", "EN", "VP", "VN", "34", "35", "32", "33", "25", "26", "27", "14", "12",
-             "GND", "13", "D2", "D3", "CMD", "5V"]
-right_pins = ["GND", "23", "22", "TX", "RX", "21", "GND", "19", "18", "5", "17", "16", "4",
-              "0", "2", "15", "D1", "D0", "CLK"]
+left_pins = ["3V3", "3V3", "RST", "4", "5", "6", "7", "15", "16", "17", "18", "8", "3", "46",
+             "9", "10", "11", "12", "13", "14", "5V", "GND"]
+right_pins = ["GND", "TX", "RX", "1", "2", "42", "41", "40", "39", "38", "37", "36", "35",
+              "0", "45", "48", "47", "21", "20", "19", "GND", "GND"]
+avoid = {"3", "46", "0", "45", "48", "TX", "RX", "20", "19", "35", "36", "37"}
 lx, rx_ = dcx - 12.7 * S, dcx + 12.7 * S
 P = {}
-used = {"3V3", "34", "35", "32", "33", "25", "26", "13", "5V", "23", "22", "21", "19", "18", "5", "4"}
-for i, n in enumerate(left_pins):
-    y = py0 + i * pitch
-    P["L" + n] = (lx, y)
-    add(f'<circle cx="{lx:.1f}" cy="{y:.1f}" r="3.2" fill="{"#ffd54f" if n in used or n == "GND" else "#8a8a8a"}"/>')
-    text(lx + 8, y + 4, n, 10, col="#fff" if n in used or n == "GND" else "#9fb0c0")
-for i, n in enumerate(right_pins):
-    y = py0 + i * pitch
-    P["R" + n] = (rx_, y)
-    add(f'<circle cx="{rx_:.1f}" cy="{y:.1f}" r="3.2" fill="{"#ffd54f" if n in used or n == "GND" else "#8a8a8a"}"/>')
-    text(rx_ - 8, y + 4, n, 10, "end", col="#fff" if n in used or n == "GND" else "#9fb0c0")
-P["LGND"] = (lx, py0 + 13 * pitch)
-P["RGND"] = (rx_, py0 + 0 * pitch)
-P["RGND2"] = (rx_, py0 + 6 * pitch)
+used = {"3V3", "4", "5", "6", "7", "15", "16", "17", "5V", "1", "2", "42", "41", "40", "39", "38"}
+def pin(x, y, n, side, i):
+    on = n in used or n == "GND"
+    fill = "#ffd54f" if on else "#c0392b" if n in avoid else "#8a8a8a"
+    add(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="3.2" fill="{fill}"/>')
+    tc = "#fff" if on else "#e8a39b" if n in avoid else "#9fb0c0"
+    if side == "L": text(x + 8, y + 4, n, 10, col=tc)
+    else: text(x - 8, y + 4, n, 10, "end", col=tc)
+    P.setdefault(side + n, (x, y))
+for i, n in enumerate(left_pins): pin(lx, py0 + i * pitch, n, "L", i)
+for i, n in enumerate(right_pins): pin(rx_, py0 + i * pitch, n, "R", i)
 
 # breadboard: rails along both long edges, 5V/GND on the gap side, 3V3/GND outboard
 rect(bx0, by0, bw, bh, "#f4f1ea", "#9a958a", rx=6)
@@ -123,25 +123,26 @@ for r in range(30):                                                    # hole gr
 bcx = bx0 + bw / 2
 
 # gyro, upright in the breadboard: its 8 in-line pins run ALONG a column, one
-# pin per 5-hole row (each row is one node), right half, column 6
+# pin per 5-hole row (each row is one node), right half, column 6, rows 3-10
 rp = (bh - 44) / 29
 def ry(r): return by0 + 22 + r * rp
 def cx(c): return bx0 + 46 + c * 17 + (12 if c >= 5 else 0)
 gx = cx(6)
-rect(gx - 5, ry(1) - 7, 10, ry(8) - ry(1) + 14, "#1e4fa0", "#0d2f66", rx=2)
-gpins = {1: "GND", 2: "VIN", 4: "SCL", 5: "SDA"}     # row order illustrative - follow the silkscreen
-for r in range(1, 9):
+rect(gx - 5, ry(3) - 7, 10, ry(10) - ry(3) + 14, "#1e4fa0", "#0d2f66", rx=2)
+gpins = {3: "GND", 4: "VIN", 6: "SCL", 7: "SDA"}  # row order illustrative - follow the silkscreen
+for r in range(3, 11):
     dot(gx, ry(r), "#0d2f66", 2.6)
-    text(gx - 10, ry(r) + 4, gpins.get(r, "-"), 9, "end", col="#0d2f66")
-text(gx - 34, ry(6) + 4, "gyro, upright:", 11, "end", col="#0d2f66", weight="bold")
-text(gx - 34, ry(7) + 4, "one pin per row", 10, "end", col="#0d2f66")
-text(gx - 34, ry(8) + 4, "(order per silkscreen)", 9, "end", col="#555")
-line([(cx(7), ry(2)), (rail["3V3"], ry(2))], C["v33"], 2)
-line([(cx(7), ry(1)), (rail["GNDb"], ry(1))], C["gnd"], 2)
-for r in (1, 2): dot(cx(7), ry(r), "#555", 2.4)
+    if r in (6, 7): text(gx + 10, ry(r) + 4, gpins[r], 9, "start", col="#0d2f66", weight="bold")
+    else: text(gx - 10, ry(r) + 4, gpins.get(r, "-"), 9, "end", col="#0d2f66")
+text(gx + 12, ry(8) + 6, "gyro, upright:", 11, "start", col="#0d2f66", weight="bold")
+text(gx + 12, ry(9) + 6, "one pin per row", 10, "start", col="#0d2f66")
+text(gx + 12, ry(10) + 6, "(per silkscreen)", 9, "start", col="#555")
+line([(cx(7), ry(4)), (rail["3V3"], ry(4))], C["v33"], 2)
+line([(cx(7), ry(3)), (rail["GNDb"], ry(3))], C["gnd"], 2)
+for r in (3, 4): dot(cx(7), ry(r), "#555", 2.4)
 
-# battery divider: 12 V bus -> 100k -> node -> 27k -> GND; node -> GPIO34
-dvy = by0 + 280
+# battery divider: 12 V bus -> 100k -> node -> 27k -> GND; node -> GPIO1
+dvy = by0 + 300
 def resistor(x, y, label):
     rect(x - 6, y - 16, 12, 32, "#e9d8a6", "#7a6a3a", rx=4, sw=1.2)
     text(x - 10, y + 4, label, 11, "end", col="#5a4a1a", weight="bold")
@@ -158,48 +159,47 @@ rect(bx0 + 60, lry - 6, 34, 12, "#e9d8a6", "#7a6a3a", rx=4, sw=1.2)
 text(bx0 + 77, lry - 10, "330R", 11, "middle", col="#5a4a1a", weight="bold")
 
 # ---- wires from the devkit ---------------------------------------------------
-# left side: front / rear sensors
+# left header: front / rear sensors, all straight off the pins
 LB = 30   # left boxes x
 bwid = 228
 port = LB + bwid
-yFL, yFR, yRL, yTS, yRR = 425, 482, 528, 572, 646
-h = box(LB, yFL - 22, bwid, [("Cliff FL (front-left)", True), ("OUT -> GPIO35", False)], C["sig"])
-box(LB, yFR - 22, bwid, [("Cliff FR (front-right)", True), ("OUT -> GPIO32", False)], C["sig"])
-box(LB, yRL - 18, bwid, [("Cliff RL - planned", True)], C["plan"], dash=True, h=34)
-box(LB, yTS - 20, bwid, [("TFMini (Qwiic), bus_b", True), ("SDA 25 / SCL 26, 5 V", False)], C["i2c"])
-box(LB, yRR - 18, bwid, [("Cliff RR - planned", True)], C["plan"], dash=True, h=34)
+yFL, yFR, yRL, yRR, yTS = 380, 432, 478, 515, P["L16"][1]
+box(LB, yFL - 22, bwid, [("Cliff FL (front-left)", True), ("OUT -> GPIO5", False)], C["sig"])
+box(LB, yFR - 22, bwid, [("Cliff FR (front-right)", True), ("OUT -> GPIO6", False)], C["sig"])
+box(LB, yRL - 17, bwid, [("Cliff RL - planned, GPIO7", True)], C["plan"], dash=True, h=34)
+box(LB, yRR - 17, bwid, [("Cliff RR - planned, GPIO15", True)], C["plan"], dash=True, h=34)
+box(LB, yTS - 19, bwid, [("TFMini (Qwiic), bus_b", True), ("SDA 16 / SCL 17, 5 V", False)], C["i2c"])
 text(LB, yFL - 40, "SENSORS (front slot; rear cliff bar)", 13, weight="bold", col="#333")
 box(LB, 700, bwid, [("Sensor power", True), ("cliff VCC: 3V3 rail (see note)", False),
                     ("TFMini 5V: 5V rail", False), ("all GND: GND rail", False)], "#444")
 
-line([P["L35"], (440, P["L35"][1]), (440, yFL), (port, yFL)], C["sig"])
-line([P["L32"], (425, P["L32"][1]), (425, yFR), (port, yFR)], C["sig"])
-line([P["L33"], (410, P["L33"][1]), (410, yRL), (port, yRL)], C["plan"], dash=True)
-line([P["L25"], (port, P["L25"][1])], C["i2c"])
-line([P["L26"], (port, P["L26"][1])], C["i2c"])
-line([P["L13"], (395, P["L13"][1]), (395, yRR), (port, yRR)], C["plan"], dash=True)
+line([P["L5"], (440, P["L5"][1]), (440, yFL), (port, yFL)], C["sig"])
+line([P["L6"], (425, P["L6"][1]), (425, yFR), (port, yFR)], C["sig"])
+line([P["L7"], (410, P["L7"][1]), (410, yRL), (port, yRL)], C["plan"], dash=True)
+line([P["L15"], (395, P["L15"][1]), (395, yRR), (port, yRR)], C["plan"], dash=True)
+line([P["L16"], (port, P["L16"][1])], C["i2c"])
+line([P["L17"], (port, P["L17"][1])], C["i2c"])
 
-# battery sense GPIO34 -> divider node (up and over the devkit)
-line([P["L34"], (460, P["L34"][1]), (460, 392), (bx0 + 40, 392), (bx0 + 40, dvy), (rx1, dvy)], C["bat"])
-# 3V3 out -> breadboard 3V3 rail
+# 3V3 out -> breadboard 3V3 rail (over the top of the devkit)
 line([P["L3V3"], (474, P["L3V3"][1]), (474, 404), (rail["3V3"], 404), (rail["3V3"], by0 + 12)], C["v33"])
-# right side: GND to the gap-side GND rail
+# LED data GPIO4 (left header) -> over the top -> 330R on the breadboard
+line([P["L4"], (462, P["L4"][1]), (462, 394), (bx0 + 60, 394), (bx0 + 60, lry)], C["led"])
+# right header: GND to the gap-side GND rail
 line([P["RGND"], (rail["GNDa"], P["RGND"][1])], C["gnd"])
+# battery sense GPIO1 -> divider node, right of the gyro
+line([P["R1"], (bx0 + 40, P["R1"][1]), (bx0 + 40, dvy), (rx1, dvy)], C["bat"])
+# gyro I2C (bus_c): GPIO2 / GPIO42, straight across to the gyro rows
+line([P["R2"], (cx(5) - 9, P["R2"][1]), (cx(5) - 9, ry(6)), (cx(5), ry(6))], C["i2c"])
+line([P["R42"], (cx(5), P["R42"][1]), (cx(5), ry(7))], C["i2c"])
+for r in (6, 7): dot(cx(5), ry(r), C["i2c"], 2.6)
 
 # drivers + driver GND: down the centre slot to the power deck
 PDy = 880
-slot = {"23": gx0 + 34, "22": gx0 + 28, "GND2": gx0 + 22, "19": gx0 + 16, "18": gx0 + 10}
-line([P["R23"], (slot["23"], P["R23"][1]), (slot["23"], PDy)], C["drv"])
-line([P["R22"], (slot["22"], P["R22"][1]), (slot["22"], PDy)], C["drv"])
-line([P["RGND2"], (slot["GND2"], P["RGND2"][1]), (slot["GND2"], PDy)], C["gnd"])
-line([P["R19"], (slot["19"], P["R19"][1]), (slot["19"], PDy)], C["drv"])
-line([P["R18"], (slot["18"], P["R18"][1]), (slot["18"], PDy)], C["drv"])
-# gyro I2C (bus_c) and LED data cross over the slot wires
-line([P["R21"], (cx(8), P["R21"][1]), (cx(8), ry(5)), (cx(7), ry(5))], C["i2c"])
-dot(cx(7), ry(5), C["i2c"], 2.6)
-line([P["R5"], (cx(9), P["R5"][1]), (cx(9), ry(4)), (cx(7), ry(4))], C["i2c"])
-dot(cx(7), ry(4), C["i2c"], 2.6)
-line([P["R4"], (bx0 + 60, P["R4"][1]), (bx0 + 60, lry)], C["led"])
+gnd_low = (rx_, py0 + 20 * pitch)
+slot = {"41": gx0 + 34, "40": gx0 + 28, "39": gx0 + 22, "38": gx0 + 16, "GNDd": gx0 + 10}
+for n in ("41", "40", "39", "38"):
+    line([P["R" + n], (slot[n], P["R" + n][1]), (slot[n], PDy)], C["drv"])
+line([gnd_low, (slot["GNDd"], gnd_low[1]), (slot["GNDd"], PDy)], C["gnd"])
 # LED chain box (top right) <- 330R
 LEDx, LEDy = 1120, 150
 box(LEDx, LEDy, 350, [("LED chain (front)", True), ("Din <- GPIO4 via 330R (breadboard)", False),
@@ -218,11 +218,11 @@ line([(bx0 + 228, PDy), (bx0 + 228, dvy - 60), (rx1, dvy - 60), (rx1, dvy - 46)]
 pdx, pdw = gx0 - 250, 650
 rect(pdx, PDy, pdw, 195, "#fff5ec", C["drv"], rx=9, sw=2)
 text(pdx + 12, PDy + 22, "POWER DECK (below the top plate)", 14, weight="bold", col=C["drv"])
-text(pdx + 12, PDy + 44, "Left DRV8871 (left track):  IN1 <- GPIO22   IN2 <- GPIO23   GND <- ESP GND", 12)
-text(pdx + 12, PDy + 63, "Right DRV8871 (right track): IN1 <- GPIO19   IN2 <- GPIO18   GND <- ESP GND", 12)
+text(pdx + 12, PDy + 44, "Left DRV8871 (left track):  IN1 <- GPIO38   IN2 <- GPIO39   GND <- ESP GND", 12)
+text(pdx + 12, PDy + 63, "Right DRV8871 (right track): IN1 <- GPIO40   IN2 <- GPIO41   GND <- ESP GND", 12)
 text(pdx + 12, PDy + 186, "DANGER: header VM = 12 V (tied to the POWER terminals). Leave it UNCONNECTED.", 12, weight="bold", col="#d62828")
 text(pdx + 12, PDy + 82, "Buck OUT (5.29 V) + GND -> breadboard 5V / GND rails", 12)
-text(pdx + 12, PDy + 101, "12 V bus (+ Wago) -> 100k -> sense node -> 27k -> GND;  node -> GPIO34", 12)
+text(pdx + 12, PDy + 101, "12 V bus (+ Wago) -> 100k -> sense node -> 27k -> GND;  node -> GPIO1", 12)
 text(pdx + 12, PDy + 124, "Forward = IN1 high, IN2 PWM (both sides). A track running backward is fixed by", 11, col="#555")
 text(pdx + 12, PDy + 140, "swapping its IN1/IN2 pins in firmware, not the wires.", 11, col="#555")
 text(pdx + 12, PDy + 162, "Wires reach it down the centre slot (signals) and past the breadboard's rear end (power).", 11, col="#555")
@@ -240,7 +240,7 @@ for i, (k, s) in enumerate([("sig", "cliff sensor signal"), ("i2c", "I2C (TFMini
     text(lgx + 60, y, s, 12)
 
 nx, ny = 1120, 650
-rect(nx, ny, 350, 225, "#fffbe6", "#c9a227", rx=8)
+rect(nx, ny, 350, 240, "#fffbe6", "#c9a227", rx=8)
 text(nx + 12, ny + 24, "Notes", 14, weight="bold")
 for i, s in enumerate([
         "Cliff VCC on 3V3: the HW-870's output pulls up",
@@ -249,9 +249,10 @@ for i, s in enumerate([
         "Gyro: one pin per breadboard row; wire",
         "VIN/GND/SDA/SCL by its silkscreen;",
         "yaw axis moves off Z (stands upright).",
-        "Pin side: GPIO 34/35 are input-only (fine here).",
-        "Unused / avoid: 0, 2, 12, 15 (strapping), 6-11.",
-        "Free: 14, 16, 17, 27."]):
+        "Red pins: avoid - 0/3/45/46 strapping, 19/20",
+        "native USB, TX/RX CH343, 35-37 PSRAM, 48 RGB.",
+        "Free: 8-14, 18, 21, 47.",
+        "USB (either port): never with the pack connected."]):
     text(nx + 12, ny + 48 + i * 19, s, 12)
 
 text(30, H - 18, "<- Grover's LEFT", 13, col="#555", weight="bold")

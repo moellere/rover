@@ -15,10 +15,10 @@
 #   GPIO5 / GPIO6    front-left / front-right cliff
 #   GPIO7 / GPIO15   reserved: rear cliff sensors (RL / RR)
 #   GPIO16 SDA / GPIO17 SCL  bus_b: TFMini (0x10) - the only device on it
-#   GPIO9 SDA / GPIO10 SCL   bus_c: gyro L3G4200D (0x69)
+#   GPIO42 SDA / GPIO2 SCL   bus_c: gyro L3G4200D (0x69) (right header, beside the breadboard)
 #   GPIO38/39  left IN1/IN2   GPIO40/41  right IN1/IN2   -> DRV8871 x2 (PWM)
 #   GPIO1      battery divider (ADC1_CH0; external 100k/27k, ~4.7x, recalibrate)
-#   Free: 2, 11-14, 21, 42, 47.
+#   Free: 8-14, 18, 21, 47.
 #   Avoid 0/3/45/46 (strapping), 19/20 (native USB), 43/44 (CH343 UART),
 #   26-32 (flash), 35-37 (octal PSRAM on R8 parts; PSRAM here unconfirmed), 48 (onboard RGB LED).
 substitutions:
@@ -478,10 +478,10 @@ i2c:
     timeout: 20ms
   # Gyro bus (2026-10-19): Parallax L3G4200D at 0x69 (SDO pulled high on
   # the module; CS high = I2C). Its own bus so a wedged gyro never touches
-  # the TFMini. VIN 3V3, GND. SDA GPIO9, SCL GPIO10 on the S3 (were 21/5 on the WROOM-32).
+  # the TFMini. VIN 3V3, GND. SDA GPIO42, SCL GPIO2 on the S3 (were 21/5 on the WROOM-32).
   - id: bus_c
-    sda: GPIO9
-    scl: GPIO10
+    sda: GPIO42
+    scl: GPIO2
     scan: true
     frequency: 400kHz
 
