@@ -7,7 +7,7 @@
 # TFMini froze the motor direction pins and cliff inputs until a power cycle.
 # The ESP32 has pins to spare: no expander at all, TFMini alone on I2C.
 #
-# Board: YD-ESP32-23 (ESP32-S3 N16R8, DevKitC-1 clone) since 2026-11-01; the
+# Board: YD-ESP32-23 (ESP32-S3, 8 MB flash - probe says 8 MB, not the N16R8 the repo names; DevKitC-1 clone) since 2026-11-01; the
 # WROOM-32 devkit died when a DRV8871 header VM pin (= 12 V) went to its 5V.
 # Pin map (ESP32-S3; header J1 runs 3V3,3V3,RST,4,5,6,7,15,16,17,18,8,3,46,
 # 9..14,5V,GND from the antenna end; J3 GND,43,44,1,2,42..35,0,45,48,47,21,20,19):
@@ -20,14 +20,14 @@
 #   GPIO1      battery divider (ADC1_CH0; external 100k/27k, ~4.7x, recalibrate)
 #   Free: 2, 11-14, 21, 42, 47.
 #   Avoid 0/3/45/46 (strapping), 19/20 (native USB), 43/44 (CH343 UART),
-#   26-32 (flash), 35-37 (octal PSRAM), 48 (onboard RGB LED).
+#   26-32 (flash), 35-37 (octal PSRAM on R8 parts; PSRAM here unconfirmed), 48 (onboard RGB LED).
 substitutions:
   devicename: rover32
 
 esp32:
   board: esp32-s3-devkitc-1
   variant: esp32s3
-  flash_size: 16MB
+  flash_size: 8MB
   framework:
     type: esp-idf
 

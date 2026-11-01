@@ -294,7 +294,10 @@ DRV8871 drivers arrived; he asked for Grover's parts in blue PETG from now on.*
   N16R8, several on hand). It fits the FNK0101, but S3 GPIO numbers differ
   (no 22-25, flash on 26-32, PSRAM on 35-37), so `rover32` was ported to a
   new pin map (carrier README) and compiles; LEDs stay on GPIO4. First
-  flash by USB at Enoch's desk with the LED chain on. The spine deck
+  flash by USB at Enoch's desk with the LED chain on. It boot-looped:
+  "Detected size(8192k) smaller than the size in the binary image
+  header(16384k)" - this board has 8 MB flash, whatever the repo says;
+  rebuilt with flash_size 8MB. The spine deck
   diagram still shows the old devkit - to redo for the S3.
 - **Gyro:** Enoch had screwed it upright to the old cradle's front
   face, where the Z axis the firmware reads lies horizontal - `turn()`
