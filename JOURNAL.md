@@ -291,7 +291,8 @@ DRV8871 drivers arrived; he asked for Grover's parts in blue PETG from now on.*
   carrier docs now carry a red "VM = 12 V, leave unconnected" warning.
   VM landed on the devkit's 5V pin, which was tied to the 5 V bus - so
   everything on that bus saw 12 V: the TFMini (rated 5 V), the LED chain
-  (works since), and the buck's output. The FNK0101 still works; the
+  and the T-Camera (both work since - the WS2812Bs' ~6-7 V limit suggests
+  the bus never sat at 12 V for long), and the buck's output. The FNK0101 still works; the
   TFMini, the buck's output setting and the 3V3 parts (cliff sensors,
   gyro, fed through the dead devkit's regulator) are still to check.
 - **Replacement (11-01):** a YD-ESP32-23 from Enoch's inventory (ESP32-S3
