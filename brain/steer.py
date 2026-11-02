@@ -71,6 +71,9 @@ SETTLE_PX = 3.0
 SETTLE_DEG = 1.5
 
 
+from brain import keepout
+
+
 def _rover(camera: str, settle: bool = True) -> tuple[Pose | None, list[Pose]]:
     """Grover's pose from the overhead. With `settle`, keep taking frames until
     two in a row agree (the camera's snapshot runs a couple of seconds behind
@@ -126,6 +129,9 @@ async def face(heading_deg: float, camera: str = "bench", tol: float = FACE_TOL_
         if i == max_turns:
             break
         if abs(err) >= MIN_TURN_DEG:
+            ko = keepout.check(rover)
+            if ko:
+                return SteerResult(False, ko, i, _pose_dict(rover), log)
             await client.turn(err, duty)
             await asyncio.sleep(POST_MOVE_S)
         rover, _ = _rover(camera)
@@ -179,6 +185,10 @@ async def go_to(x_px: float | None = None, y_px: float | None = None, marker_id:
         if dist_mm <= stop_mm:
             log.append({**entry, "action": "arrived"})
             return SteerResult(True, f"arrived: {dist_mm:.0f} mm from target", step, _pose_dict(rover), log)
+        ko = keepout.check(rover)
+        if ko:
+            log.append({**entry, "action": "keep-out"})
+            return SteerResult(False, ko, step, _pose_dict(rover), log)
         if abs(err) > GO_HEADING_TOL:
             log.append({**entry, "action": f"turn {err:+.0f}"})
             await client.turn(err, 0)
@@ -187,7 +197,7 @@ async def go_to(x_px: float | None = None, y_px: float | None = None, marker_id:
         pulse = max(MIN_PULSE_S, min(MAX_PULSE_S, (dist_mm - stop_mm * 0.5) * PULSE_FRACTION / speed))
         log.append({**entry, "action": f"forward {pulse:.2f}s", "speed_mm_s": round(speed)})
         st = await client.state(timeout=3.0)
-        if (st.front_left_cliff or st.front_right_cliff) and not at_lip:
+        if st.front_left_cliff or st.front_right_cliff:
             return SteerResult(False, "cliff sensor active", step, _pose_dict(rover), log)
         await client.drive("forward", pulse)
         prev = (rover, pulse, scale)
@@ -362,6 +372,10 @@ async def _dock_legs(client: RoverClient, pose: dict, camera: str, max_steps: in
         # so steer back onto the axis while creeping (2026-10-26: 35 mm off tripped a cliff sensor)
         lateral = ((rover.x_px - pose["x_px"]) * (-math.sin(h)) + (rover.y_px - pose["y_px"]) * (-math.cos(h))) * pose["mm_per_px"]
         entry["lateral_mm"] = round(lateral)
+        ko = keepout.check(rover)
+        if ko:
+            log.append({**entry, "action": "keep-out"})
+            return {"ok": False, "reason": ko, "log": log, "pose": _pose_dict(rover)}
         at_lip = along <= DOCK_CLIMB_MM and abs(lateral) <= DOCK_CLIMB_LATERAL_MM
         if abs(lateral) > DOCK_LATERAL_MM and along > 15.0 and not at_lip:
             ax, ay = _axis_point(pose, max(along - DOCK_LOOKAHEAD_MM, 0.0))
