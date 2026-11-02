@@ -474,6 +474,16 @@ rising to ~19-20 mm by the tower, contact domes standing above it - so
 the lurch is the 6 mm step at the tip, which the wedge removes.
 
 ![The dock from the side, ruler at the base: thin rounded tip, top rising toward the tower](images/48-dock-side-profile-ruler-2026-11-01.jpg)
+
+- **Ramp fitted, pose re-taught (11-02):** white wedge against the dock
+  (Enoch repositioned the dock: pose 607.5 / 453.0 / 187.6, On dock
+  True, both cliffs read floor). First `dock` with it stopped at the
+  450 mm waypoint: `face` couldn't fix 6 deg in 3 turns, and Enoch saw
+  "pretty aggressive drive moves". Cause: drive duty 75 % / pivot duty
+  90 % were tuned on the L298N (2-4 V lost); on the DRV8871s the same
+  duties are much faster, so go_to's speed model overshoots and the gyro
+  turn's stop prediction cuts small pivots short. Lowered both to 60 %
+  (= min duty) over the API.
 - **Battery sense moved to GPIO8:** GPIO1's FNK0101 terminal was welded to
   GND by the 10-31 short (Enoch). On GPIO8 it reads 14.6 V with the
   WROOM-32 factor. Not an over-read: Enoch metered the node at 3.897 V
