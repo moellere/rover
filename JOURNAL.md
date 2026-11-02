@@ -495,6 +495,16 @@ the lurch is the 6 mm step at the tip, which the wedge removes.
   per-step log wasn't printed, so the cause is unproven. Before any more
   autonomous runs: single-pulse calibration at 60 % on the overhead, a
   keep-out band along the open edge in the brain, and every step logged.
+  **Calibration (11-02):** forward 0.2 s at 60 %: 66 mm, dead straight.
+  Then `turn(+30)` drove Grover ~70 cm mostly forward, yawing only ~20 deg
+  before its 3 s cap, ending beside the dock among the parts trays -
+  stopped by hand command. The firmware turn is set_motion(-d, +d), the
+  same path as drive, so the left track is not running backward when
+  told to: pivots become forward arcs. That explains the failed `face`
+  and the drive to the edge. Prior hints: "left reverse never visibly
+  moved" (WireStudio, pre-swap), the boot twitch on GPIO38/39, both near
+  the 12 V event. All bench driving suspended; next a lifted test of the
+  left track alone in each direction, then a lifted turn.
 - **Battery sense moved to GPIO8:** GPIO1's FNK0101 terminal was welded to
   GND by the 10-31 short (Enoch). On GPIO8 it reads 14.6 V with the
   WROOM-32 factor. Not an over-read: Enoch metered the node at 3.897 V
