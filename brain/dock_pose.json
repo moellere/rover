@@ -1,2 +1,2 @@
-{"camera": "bench", "x_px": 608.5, "y_px": 452.5, "heading_deg": 182.5, "mm_per_px": 1.2489,
- "taught": "2026-11-01 ~5:10 PM, dock moved by Enoch, Grover docked by hand; On dock = True, dock 12.50 V"}
+{"camera": "bench", "x_px": 607.5, "y_px": 453.0, "heading_deg": 187.6, "mm_per_px": 1.2316,
+ "taught": "2026-11-02, dock ramp (white wedge) fitted, Grover pushed on by Enoch; On dock = True, dock 12.43 V, both cliffs read floor"}
