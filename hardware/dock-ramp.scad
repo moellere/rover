@@ -24,7 +24,9 @@ ramp_w   = 165;    // = the base's front edge
 ramp_l   = 80;
 h_butt   = 6.0;    // the base's front edge height
 h_toe    = 0.6;    // printable feather edge
-corner_r = 15;     // butt-end corners rounded to follow the base's plan corners
+corner_r = 15;     // butt-end corners rounded - NOTE (11-01, Enoch spotted it): rounded the same way as the
+                   // base's front corners, not mirrored, so ~15 mm gaps at the two corners; the straight
+                   // middle 135 mm meets the base flush. A v2 could wrap them instead.
 rib_h    = 0.6;    // grip ribs across the slope (smooth PETG slips like paper)
 rib_w    = 1.2;
 rib_p    = 6;
