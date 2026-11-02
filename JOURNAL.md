@@ -505,6 +505,10 @@ the lurch is the 6 mm step at the tip, which the wedge removes.
   moved" (WireStudio, pre-swap), the boot twitch on GPIO38/39, both near
   the 12 V event. All bench driving suspended; next a lifted test of the
   left track alone in each direction, then a lifted turn.
+  Lifted test: the firmware ran "left reverse" (Motion Backward 1.2 s);
+  Enoch found the **left motor loose where it meets its gearbox** - damage
+  from the 10-18 fall in trike mode. A loose coupling can drive one way
+  and slip the other, which fits every symptom. Enoch fixing it.
 - **Battery sense moved to GPIO8:** GPIO1's FNK0101 terminal was welded to
   GND by the 10-31 short (Enoch). On GPIO8 it reads 14.6 V with the
   WROOM-32 factor. Not an over-read: Enoch metered the node at 3.897 V
