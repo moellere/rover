@@ -265,6 +265,9 @@ DOCK_CLIMB_LATERAL_MM = 10.0  # climb even this far off-axis: at 50 mm two micro
 DOCK_SQUARE_DEG = 4.0       # square to the dock heading before climbing: 14 deg skew at the lip
                             #   put both pad bars left of the rollers (11-01)
 DOCK_MAX_CORR_DEG = 8.0     # cap the creep's steering correction off the dock heading (it built 14 deg)
+DOCK_UNDOCK_MM = 430.0      # starting nearer the dock than this (along the axis): back straight out first
+DOCK_UNDOCK_PULSE_S = 0.4   # reverse pulses (CLAUDE.md: <= 0.5 s, overhead checked before each)
+DOCK_UNDOCK_MAX = 6
 DOCK_MAX_CLIMBS = 2         # climbs in dock mode (firmware ignores the cliff guard for forward, 3 s max)
 
 
@@ -330,6 +333,32 @@ async def dock(camera: str = "bench", max_steps: int = 8) -> dict:
 
 async def _dock_legs(client: RoverClient, pose: dict, camera: str, max_steps: int, log: list,
                      guard: float) -> dict:
+    # 0. starting on (or near) the dock: reverse straight out along the axis to the
+    # first waypoint instead of pivoting on the base (11-02: go_to tried to turn
+    # 180 deg on the ramp and ran out of steps)
+    h = math.radians(pose["heading_deg"])
+    prev = None
+    for i in range(DOCK_UNDOCK_MAX + 1):
+        rover, _ = _rover(camera)
+        if rover is None:
+            return {"ok": False, "reason": "rover marker not seen while undocking", "log": log}
+        along = ((rover.x_px - pose["x_px"]) * (-math.cos(h)) + (rover.y_px - pose["y_px"]) * math.sin(h)) * pose["mm_per_px"]
+        if along >= DOCK_UNDOCK_MM:
+            if i:
+                log.append({"undock": i, "short_mm": round(along), "action": "out"})
+            break
+        if i == DOCK_UNDOCK_MAX:
+            return {"ok": False, "reason": f"undock: still {along:.0f} mm out after {i} reverse pulses", "log": log}
+        if prev is not None and math.hypot(rover.x_px - prev[0], rover.y_px - prev[1]) < DOCK_STALL_PX:
+            return {"ok": False, "reason": f"undock: no movement at {along:.0f} mm", "log": log}
+        ko = keepout.check(rover)
+        if ko:
+            return {"ok": False, "reason": ko, "log": log}
+        prev = (rover.x_px, rover.y_px)
+        log.append({"undock": i, "short_mm": round(along), "heading": rover.heading_deg,
+                    "action": f"reverse {DOCK_UNDOCK_PULSE_S:.1f}s"})
+        await client.drive("backward", DOCK_UNDOCK_PULSE_S)
+        await asyncio.sleep(POST_MOVE_S)
     # 1. waypoints on the axis, squaring up at each
     for back in DOCK_WAYPOINTS_MM:
         if back <= DOCK_GUARD_OFF_MM and guard > 0:
