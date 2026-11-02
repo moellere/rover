@@ -484,6 +484,17 @@ the lurch is the 6 mm step at the tip, which the wedge removes.
   duties are much faster, so go_to's speed model overshoots and the gyro
   turn's stop prediction cuts small pivots short. Lowered both to 60 %
   (= min duty) over the API.
+  **Incident:** after that run Grover was not at the 450 mm waypoint but
+  beside the dock, its outer track at the open garage-side edge - Enoch
+  hadn't touched it ("it moved much faster/farther than previous
+  attempts"). go_to logged "arrived: 50 mm from target". Likely: pulses
+  sized from the L298N-era speed model ran much further at 75 %, the
+  overhead's ~2.5 s stale frames hid it, and the three 90 % pivots of the
+  failed `face` scrubbed the chassis sideways. Claude's miss: the dock
+  ran on the new drivers with old duties and no slow test first; the
+  per-step log wasn't printed, so the cause is unproven. Before any more
+  autonomous runs: single-pulse calibration at 60 % on the overhead, a
+  keep-out band along the open edge in the brain, and every step logged.
 - **Battery sense moved to GPIO8:** GPIO1's FNK0101 terminal was welded to
   GND by the 10-31 short (Enoch). On GPIO8 it reads 14.6 V with the
   WROOM-32 factor. Not an over-read: Enoch metered the node at 3.897 V
