@@ -509,6 +509,8 @@ the lurch is the 6 mm step at the tip, which the wedge removes.
   Enoch found the **left motor loose where it meets its gearbox** - damage
   from the 10-18 fall in trike mode. A loose coupling can drive one way
   and slip the other, which fits every symptom. Enoch fixing it.
+  Fixed: left track alone in reverse, 2 s - "all good" (Enoch). Next a
+  lifted turn, then calibration on the bench.
 - **Battery sense moved to GPIO8:** GPIO1's FNK0101 terminal was welded to
   GND by the 10-31 short (Enoch). On GPIO8 it reads 14.6 V with the
   WROOM-32 factor. Not an over-read: Enoch metered the node at 3.897 V
