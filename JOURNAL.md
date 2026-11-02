@@ -541,6 +541,13 @@ the lurch is the 6 mm step at the tip, which the wedge removes.
   `scripts/record_bench.py` (benchcam snapshots, ~1.6 frames/s, encoded
   with imageio-ffmpeg's bundled ffmpeg). Step log:
   `brain/runs/2026-11-02-undock-dock-filmed.json`.
+- **Hosted brain brought current (11-02, homelab session, Enoch's go):**
+  the cluster's rover-brain had run image 0.1.0 since 10-05, with its
+  sealed ROVER_HOST still the dead board's IP. Now
+  `ghcr.io/moellere/rover:sha-ede5bf7` (argocd PR #201), ROVER_HOST the
+  rover32 hostname; its status returns on_dock / dock_voltage and it
+  exposes dock, face, go_to, turn, set_ramp. Anything odd through the
+  hosted MCP before tonight was old code plus a stale address.
 - **Battery sense moved to GPIO8:** GPIO1's FNK0101 terminal was welded to
   GND by the 10-31 short (Enoch). On GPIO8 it reads 14.6 V with the
   WROOM-32 factor. Not an over-read: Enoch metered the node at 3.897 V
