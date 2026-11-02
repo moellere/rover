@@ -21,7 +21,7 @@ breakdown of the notable decisions. Newest entry on top.
 **Where things stand, 2026-11-01:** rover32's devkit died (12 V from a DRV8871 header
 VM pin, entry below); replaced by an ESP32-S3 (YD-ESP32-23) on a new pin
 map; running at Enoch's desk, LEDs work. drivers, motors and pin
-map proven (one-track test passed). bench re-commissioning passed; `dock` drives on and charges (overhead-assisted, dock mode at the lip).
+map proven (one-track test passed). `dock` drives on and charges cleanly (11-02: ramp, fixed left motor, 60 % duties, dock mode, dock sense, edge keep-out).
 To do: a top-marker holder for the new top plate, the boot twitch. Otherwise mid carrier rework -
 DRV8871 drivers never run on the motors, Wago power deck
 and battery tray printed, top plate v2 printing; Grover is apart and
@@ -511,6 +511,20 @@ the lurch is the 6 mm step at the tip, which the wedge removes.
   and slip the other, which fits every symptom. Enoch fixing it.
   Fixed: left track alone in reverse, 2 s - "all good" (Enoch). Next a
   lifted turn, then calibration on the bench.
+  Lifted `turn(30)`: left back, right forward ("all good"). Brain: edge
+  keep-out (`brain/keepout.py`: no move with the marker < 130 mm from the
+  open edge in the overhead frame; dock pose sits at 174 mm, the incident
+  spot was 88 mm) and a fix for go_to's cliff check (it referenced dock's
+  `at_lip`).
+- **Docked and charging, cleanly (11-02, ~2:12 AM UTC):** waypoint 450 mm
+  in 3 pulses + a turn (a 0.42 s pulse ~29 cm, as modelled), `face`
+  165 -> 186 deg in two turns, waypoint 200 mm, `face` 187.0, creep
+  lateral 16 -> 9 -> 3 -> 2 mm, ONE climb in dock mode with both cliffs
+  reading floor on the white wedge, contact (dock sense) 1 mm short of
+  the taught pose, dock 12.51 V. Full step log in
+  `brain/runs/2026-11-02-dock-ramp-contact.json`. The fixes that made it:
+  the left motor's gearbox coupling, the ramp, 60 % duties, the painted
+  base, the swapped cliff sensor, dock mode and dock sense.
 - **Battery sense moved to GPIO8:** GPIO1's FNK0101 terminal was welded to
   GND by the 10-31 short (Enoch). On GPIO8 it reads 14.6 V with the
   WROOM-32 factor. Not an over-read: Enoch metered the node at 3.897 V
