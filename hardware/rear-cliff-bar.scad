@@ -61,6 +61,8 @@ pcb_top  = face_z + tcrt_h + pcb_t;    // 21.6
 frame_z0 = pcb_top - pocket;            // frame underside, 20.6 - nothing below it but the boards
 arm_x0   = 38;    // arms run back inboard of the treads
 arm_x1   = block_x0;
+arm_in   = 15;    // the arm's crossbar end sits this much further inboard (angled, 11-02)
+arm_straight = 8; // straight run off the end plate before the angle
 bar_w    = 24;    // crossbar, fore-aft (the PCB windows take 14 of it)
 rib_t    = 4;
 rib_h    = 12;    // ribs above the frame
@@ -80,9 +82,25 @@ module half() {   // right half (x > 0); the part is mirrored onto the left
       translate([block_x0, -standoff - end_t, frame_z0]) cube([block_x1 - block_x0, standoff + end_t, rail_top - frame_z0]);
       // end plate widened inboard behind the standoff, where the arm joins
       translate([arm_x0, -standoff - end_t, frame_z0]) cube([block_x1 - arm_x0, end_t, rail_top - 6 - frame_z0]);
-      // arm (frame) and its rib
-      translate([arm_x0, sensor_y - bar_w / 2, frame_z0]) cube([arm_x1 - arm_x0, -sensor_y + bar_w / 2 - standoff, frame_t]);
-      translate([arm_x0, sensor_y, frame_z0]) cube([rib_t, -sensor_y - standoff - end_t + 0.01, frame_t + rib_h]);
+      // arm (frame) and its rib: leave the end plate just inboard of the tread
+      // beam, then angle INWARD to meet the crossbar arm_in mm further inboard,
+      // clear of the track where it wraps the rear sprocket (Enoch, 11-02)
+      hull() {
+        translate([arm_x0, -standoff - end_t - 0.01, frame_z0]) cube([arm_x1 - arm_x0, 0.01, frame_t]);
+        translate([arm_x0, -standoff - end_t - arm_straight, frame_z0]) cube([arm_x1 - arm_x0, 0.01, frame_t]);
+      }
+      hull() {
+        translate([arm_x0, -standoff - end_t - arm_straight, frame_z0]) cube([arm_x1 - arm_x0, 0.01, frame_t]);
+        translate([arm_x0 - arm_in, sensor_y + bar_w / 2 - 0.01, frame_z0]) cube([arm_x1 - arm_x0, 0.01, frame_t]);
+      }
+      hull() {
+        translate([arm_x0, -standoff - end_t - 0.01, frame_z0]) cube([rib_t, 0.01, frame_t + rib_h]);
+        translate([arm_x0, -standoff - end_t - arm_straight, frame_z0]) cube([rib_t, 0.01, frame_t + rib_h]);
+      }
+      hull() {
+        translate([arm_x0, -standoff - end_t - arm_straight, frame_z0]) cube([rib_t, 0.01, frame_t + rib_h]);
+        translate([arm_x0 - arm_in, sensor_y, frame_z0]) cube([rib_t, 0.01, frame_t + rib_h]);
+      }
       // crossbar and its rib along the front edge
       translate([0, sensor_y - bar_w / 2, frame_z0]) cube([bar_x, bar_w, frame_t]);
       translate([0, sensor_y + bar_w / 2 - rib_t, frame_z0]) cube([bar_x, rib_t, frame_t + rib_h / 2]);
