@@ -1,0 +1,219 @@
+{
+ "ok": true,
+ "reason": "docked: 0 mm from the taught pose; on the dock, charging (dock 12.54 V)",
+ "log": [
+  {
+   "undock": 0,
+   "short_mm": -1,
+   "heading": 185.8,
+   "action": "reverse 0.4s"
+  },
+  {
+   "undock": 1,
+   "short_mm": 245,
+   "heading": 185.9,
+   "action": "reverse 0.4s"
+  },
+  {
+   "undock": 2,
+   "short_mm": 567,
+   "action": "out"
+  },
+  {
+   "leg": "waypoint 450 mm",
+   "ok": true,
+   "reason": "arrived: 14 mm from target",
+   "steps": 1,
+   "pose": {
+    "x_px": 963.8,
+    "y_px": 417.8,
+    "heading_deg": 184.3,
+    "mm_per_px": 1.0064878325064552
+   },
+   "log": [
+    {
+     "t": 2.9,
+     "x": 1066,
+     "y": 408,
+     "heading": 183.7,
+     "bearing": 177.7,
+     "error": -6.0,
+     "dist_mm": 95,
+     "action": "forward 0.15s",
+     "speed_mm_s": 700
+    },
+    {
+     "t": 13.1,
+     "x": 964,
+     "y": 418,
+     "heading": 184.3,
+     "bearing": 65.6,
+     "error": -118.7,
+     "dist_mm": 14,
+     "action": "arrived"
+    }
+   ]
+  },
+  {
+   "leg": "face at 450 mm",
+   "ok": true,
+   "reason": "facing 187.7 (goal 187.6)",
+   "steps": 1,
+   "pose": {
+    "x_px": 962.5,
+    "y_px": 417.0,
+    "heading_deg": 187.7,
+    "mm_per_px": 1.0096544924201964
+   },
+   "log": [
+    {
+     "heading": 183.4,
+     "error": 4.2
+    },
+    {
+     "heading": 187.7,
+     "error": -0.1
+    }
+   ]
+  },
+  {
+   "leg": "waypoint 200 mm",
+   "ok": true,
+   "reason": "arrived: 29 mm from target",
+   "steps": 2,
+   "pose": {
+    "x_px": 745.8,
+    "y_px": 443.2,
+    "heading_deg": 186.2,
+    "mm_per_px": 1.1393369485237392
+   },
+   "log": [
+    {
+     "t": 2.7,
+     "x": 962,
+     "y": 417,
+     "heading": 187.7,
+     "bearing": 184.3,
+     "error": -3.4,
+     "dist_mm": 196,
+     "action": "forward 0.16s",
+     "speed_mm_s": 700
+    },
+    {
+     "t": 13.5,
+     "x": 850,
+     "y": 431,
+     "heading": 187.8,
+     "bearing": 180.2,
+     "error": -7.6,
+     "dist_mm": 87,
+     "action": "forward 0.15s",
+     "speed_mm_s": 735
+    },
+    {
+     "t": 25.1,
+     "x": 746,
+     "y": 443,
+     "heading": 186.2,
+     "bearing": 27.3,
+     "error": -158.9,
+     "dist_mm": 29,
+     "action": "arrived"
+    }
+   ]
+  },
+  {
+   "leg": "face at 200 mm",
+   "ok": true,
+   "reason": "facing 186.2 (goal 187.6)",
+   "steps": 0,
+   "pose": {
+    "x_px": 745.8,
+    "y_px": 443.2,
+    "heading_deg": 186.2,
+    "mm_per_px": 1.1393369485237392
+   },
+   "log": [
+    {
+     "heading": 186.2,
+     "error": 1.4
+    }
+   ]
+  },
+  {
+   "creep": 0,
+   "x": 746,
+   "y": 443,
+   "heading": 186.2,
+   "dist_mm": 171,
+   "short_mm": 170,
+   "lateral_mm": 11,
+   "action": "creep 0.12s"
+  },
+  {
+   "creep": 1,
+   "x": 678,
+   "y": 452,
+   "heading": 185.5,
+   "dist_mm": 87,
+   "short_mm": 86,
+   "lateral_mm": 10,
+   "action": "steer to 181.0",
+   "ok": true
+  },
+  {
+   "creep": 2,
+   "x": 678,
+   "y": 452,
+   "heading": 181.8,
+   "dist_mm": 86,
+   "short_mm": 86,
+   "lateral_mm": 10,
+   "action": "creep 0.12s"
+  },
+  {
+   "creep": 3,
+   "x": 650,
+   "y": 452,
+   "heading": 183.1,
+   "dist_mm": 52,
+   "short_mm": 52,
+   "lateral_mm": 5,
+   "action": "creep 0.12s"
+  },
+  {
+   "creep": 4,
+   "x": 613,
+   "y": 453,
+   "heading": 185.1,
+   "dist_mm": 7,
+   "short_mm": 7,
+   "lateral_mm": 1,
+   "action": "climb 1 (dock mode) 80% 0.25s",
+   "cliff": [
+    false,
+    false
+   ]
+  },
+  {
+   "creep": 5,
+   "x": 607,
+   "y": 453,
+   "heading": 185.6,
+   "dist_mm": 0,
+   "short_mm": 0,
+   "action": "docked"
+  }
+ ],
+ "pose": {
+  "x_px": 607.2,
+  "y_px": 453.2,
+  "heading_deg": 185.6,
+  "mm_per_px": 1.2339410031058304
+ },
+ "charging": true,
+ "volts": {
+  "before": 11.814923286437988,
+  "dock": 12.536263465881348
+ }
+}

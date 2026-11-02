@@ -21,7 +21,7 @@ breakdown of the notable decisions. Newest entry on top.
 **Where things stand, 2026-11-01:** rover32's devkit died (12 V from a DRV8871 header
 VM pin, entry below); replaced by an ESP32-S3 (YD-ESP32-23) on a new pin
 map; running at Enoch's desk, LEDs work. drivers, motors and pin
-map proven (one-track test passed). `dock` drives on and charges cleanly (11-02: ramp, fixed left motor, 60 % duties, dock mode, dock sense, edge keep-out).
+map proven (one-track test passed). `dock` undocks, returns and charges, filmed (11-02: ramp, fixed left motor, 60 % duties, dock mode, dock sense, edge keep-out, 4 mm centring).
 To do: a top-marker holder for the new top plate, the boot twitch. Otherwise mid carrier rework -
 DRV8871 drivers never run on the motors, Wago power deck
 and battery tray printed, top plate v2 printing; Grover is apart and
@@ -525,6 +525,22 @@ the lurch is the 6 mm step at the tip, which the wedge removes.
   `brain/runs/2026-11-02-dock-ramp-contact.json`. The fixes that made it:
   the left motor's gearbox coupling, the ramp, 60 % duties, the painted
   base, the swapped cliff sensor, dock mode and dock sense.
+- **Undock -> dock -> charge, filmed (11-02, ~2:27 AM UTC).** `dock()` now
+  undocks first when it starts on the dock (straight reverse along the
+  axis, 0.4 s pulses, overhead checked before each). First filmed try
+  (run b) climbed on 6 mm off-axis and ended 11 mm to the side - no
+  contact - so the creep now steers beyond 4 mm and climbs only within
+  4 mm, backing off to re-centre otherwise. Run c, start on the dock:
+  reversed out to 567 mm in two pulses, waypoint 450 mm (14 mm off),
+  face 187.7, waypoint 200 mm (29 mm), face 186.2, creep lateral
+  11 -> 10 -> 5 -> 1 mm, one climb in dock mode (cliffs floor), **docked
+  0 mm from the taught pose, charging, dock 12.54 V**. 207 s real time.
+  **Timelapse (~4x, overhead, elapsed time + battery + dock state burned
+  in): [images/52-autonomous-undock-dock-timelapse-2026-11-02.mp4](images/52-autonomous-undock-dock-timelapse-2026-11-02.mp4)**;
+  full-size originals on the dev VM (`~/grover-videos/`). Recorder:
+  `scripts/record_bench.py` (benchcam snapshots, ~1.6 frames/s, encoded
+  with imageio-ffmpeg's bundled ffmpeg). Step log:
+  `brain/runs/2026-11-02-undock-dock-filmed.json`.
 - **Battery sense moved to GPIO8:** GPIO1's FNK0101 terminal was welded to
   GND by the 10-31 short (Enoch). On GPIO8 it reads 14.6 V with the
   WROOM-32 factor. Not an over-read: Enoch metered the node at 3.897 V
