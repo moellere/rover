@@ -18,56 +18,51 @@ instructions, and readable as plain English by anyone.
 
 ## The mission
 
-1. **Phase 1 (current):** drive around the workbench without falling off.
-2. **Phase 2:** recharge itself.
+1. **Phase 1 (done):** drive around the workbench without falling off.
+2. **Phase 2 (current):** recharge itself - it docks and charges on the bench; next, on its own when the battery runs low.
 3. **Phase 3:** roam the house.
 
-## Where it stands (2026-10-22)
+## Where it stands (2026-11-02)
 
-- **Grover is a tank** (Makeblock tracks, rebuilt 2026-10-19 after the
-  trike went off the bench on 10-18). Balance point mid-track, no rear
-  support, seams don't matter. It drives since 10-22: the pack and the
-  tracks need ~75 % duty to break free, so the ramp engine starts there.
-- **Ramped motion engine** (10-18): every move ramps duty up and down on
-  both sides together, so stops no longer yaw the chassis (0-2 deg per
-  stop, was 20-30). `move(direction, ms, duty)`, `set_speeds(l, r)`.
-- **Gyro heading** (L3G4200D, 10-19/22/24): yaw integrated on the ESP32,
-  `turn(deg)` pivots and brakes when the gyro says so. Mounted flat
-  (10-24; it had been 37 deg off, reading 24 % low) it matches the
-  overhead camera to 0.1 deg on a quarter turn. (10-24 also fixed a
-  10-18 guard bug that silently killed every pivot from rest with an
-  obstacle inside the TFMini guard distance.)
-- **Power:** 3x18650 through a 3S BMS (soldered 10-18) in a printed
-  cradle on the deck posts, shifted rearward for balance; the camera
-  mount (v7, printing 10-25) rides on the cradle's front perch.
-- **Visual homing works** (since 10-05): `home_to_marker` finds a printed
-  ArUco marker with the onboard camera and parks in front of it. Steering
-  from the overhead camera's view of the marker on Grover's top **works
-  (10-24)**: `go_to` / `face` close on the overhead pose, and
-  `dock_approach` chains them with the onboard homing - **far end of the
-  bench to nose-on the upright marker in 66 s, no human input** (run 4,
-  10-24; ends 33 mm from the marker face). That was the goal set after Phase 1. **The dock approach works too
-  (10-24 evening):** `dock` drives the axis of a taught docked pose on
-  the Eufy base and creeps on - on the dock, square, 28 mm from the
-  taught pose, hands off. **And it charges there (10-26):** printed pad
-  bars with 12 AWG Romex staples lie across the base's sprung rollers,
-  a 1N5822 keeps the bare pads dead off the dock, and the pack took
-  charge through them (0.41 A tapering on the bench supply). Grover
-  backs off, drives back on with `dock()` until its bumper bar meets the
-  base's wall, and confirms it is charging - fully autonomous, filmed
-  (10-26): [timelapse](images/35-autonomous-dock-timelapse-2026-10-26.mp4). Next: auto-dock - go
-  home on low battery by itself.
+- **It docks and charges by itself.** `dock()` backs Grover off the Eufy
+  base, drives the dock's axis on the overhead camera, squares up,
+  centres to within 4 mm, climbs a printed ramp onto the base and stops
+  the instant the pads touch - **0 mm from the taught pose, charging, on
+  film (11-02):** [timelapse](images/52-autonomous-undock-dock-timelapse-2026-11-02.mp4).
+  (First done 10-26 on the old board: [timelapse](images/35-autonomous-dock-timelapse-2026-10-26.mp4).)
+- **New spinal cord (11-01):** the ESP32 devkit died when a DRV8871
+  header VM pin (12 V) met its 5V; `rover32` is now an **ESP32-S3**
+  (YD-ESP32-23) on the same Freenove FNK0101, with a new pin map
+  ([wiring](hardware/carrier/spine-deck-wiring.png)). Motor drivers are
+  two **DRV8871s** (the L298N is retired); duties 60 % (min/drive/pivot).
+- **Carrier rework done (10-31..11-02):** power deck (driver tray, buck,
+  Wago buses) on the acrylic, pack in a tray on the tread beams, top
+  plate on the posts carrying the FNK0101 and a breadboard, the overhead
+  marker on a C-bracket off the rear post bolts.
+- **Dock kit:** a white printed approach ramp at the base's tip (the
+  lip made every climb lurch), the base painted white for the cliff
+  sensors, **dock sense** (pad voltage into GPIO9 - instant contact, and
+  the status strip's Charging pulse), **dock mode** (the last few cm
+  ignore the cliff guard, forward only, 3 s self-cancelling), and an
+  **edge keep-out** in the brain (no move within 130 mm of the open edge).
+- **Grover is a tank** (Makeblock tracks since 10-19, after the trike
+  went off the bench on 10-18). Pivots scrub, so steering closes on the
+  overhead marker pose and the gyro (`turn`), not dead reckoning.
+- **Visual homing** (since 10-05): `home_to_marker` parks nose-on to a
+  printed marker on the onboard camera; `dock_approach` chained it with
+  the overhead `go_to` - far end of the bench to the marker in 66 s
+  (10-24), the goal set after Phase 1.
 - **It has been through the house** (2026-10-04, as the trike): dining
   room to kitchen doorway, ~12-14 m, in camera-checked legs.
-- **Sensors:** TFMini forward LiDAR (obstacle stop at 50 cm), two TCRT5000
-  cliff sensors on the deck plate's front edge, the rover camera, the
-  overhead bench camera (PTZ, looking straight down).
-- **The house chassis:** a Eufy RoboVac 12 driven over IR from
-  `blackcam`, a T-Camera on its lid. On hold until the remote's hour
-  encoding is verified (our frames probably shifted its clock and a
-  schedule drove it out of the garage twice).
-- Known hazards: no rear cliff sensors; the cliff guard trips late enough
-  that edge tests need a soft landing or a tether (see `CLAUDE.md`).
+- **Sensors:** TFMini forward LiDAR (obstacle stop 50 cm), two front
+  TCRT5000 cliff sensors on wings ahead of the tracks, L3G4200D gyro,
+  battery and dock voltage, the onboard camera, the overhead bench camera.
+- **The Eufy RoboVac 12** is shelved as a chassis; its charging base is
+  Grover's dock.
+- Known hazards: no rear cliff sensors yet (bar designed, not printed);
+  the cliff guard trips late enough that edge tests need a soft landing
+  or a tether; the left track twitches at power-on until the driver
+  inputs get pull-downs (see `CLAUDE.md` and the journal).
 
 ## Architecture
 
@@ -75,34 +70,38 @@ Three layers, decided early and still standing:
 
 | Layer | Hardware | Role |
 |---|---|---|
-| **Spinal cord** | ESP32 devkit (`rover32`, since 2026-10-03; was a Wemos D1 Mini), ESPHome | reflexes: watchdog, disconnect-stop, cliff, battery and TFMini obstacle guards, kick start, optional brake-on-stop. Authoritative - nothing off-board can override them. |
+| **Spinal cord** | ESP32-S3 (`rover32`, YD-ESP32-23 since 2026-11-01; an ESP32 devkit 10-03..10-31, a Wemos D1 Mini before), ESPHome | reflexes: watchdog, disconnect-stop, cliff, battery and TFMini obstacle guards, ramped motion, gyro turns, dock sense/dock mode. Authoritative - nothing off-board can override them. |
 | **Eyes** | TTGO T-Camera (ESP32-WROVER, OV2640), ESPHome | snapshot and stream endpoints; no decisions |
-| **Brain** | `brain/` - Python + OpenCV, off-board | everything with judgment: marker detection, the homing loop, bounded drive pulses. Exposed as an MCP server (`rover-brain`). |
+| **Brain** | `brain/` - Python + OpenCV, off-board | everything with judgment: marker detection, homing, overhead steering, docking. An MCP server (`rover-brain`), run locally and hosted on the cluster. |
 
 Claude (the model) is *not* in the control loop: it starts a run and reads
-the log. A homing run is a plain Python loop - look, decide one pulse,
-settle, look again - talking to the rover over ESPHome's native API.
+the log. A run is a plain Python loop - look, decide one pulse, settle,
+look again - talking to the rover over ESPHome's native API.
 
 ## Hardware
 
-- Chassis: Makeblock Starter Robot Kit, **trike** configuration; two DC gear
-  motors, trailing swivel caster (to be replaced by a printed fixed skid)
-- Controller: ESP32 devkit (`rover32`) - motor enables on GPIO16/17,
-  direction on GPIO18/19/22/23, cliff inputs GPIO35/32, TFMini I2C on
-  GPIO25/26, battery sense on GPIO34. (Was a Wemos D1 Mini + MCP23008.)
-- Motor driver: L298N dual H-bridge
-- Power: 3x 18650 Li-ion in 3S (12.6 V full); LM2596 buck at 5.2 V for the
-  ESP32, the camera and the TFMini; battery voltage through a 100k/27k
-  divider (calibrated to the meter). A 3S BMS board is in hand, not fitted.
-- Sensing: Benewake TFMini LiDAR on a printed bracket (direct GH1.25 lead,
-  5 V); two TCRT5000 cliff modules at 3.3 V on printed v4 mounts
+- Chassis: Makeblock kit as a **tank** (two tracks on the tread beams, two
+  DC gear motors); power deck on the acrylic plate, spine deck on four
+  30 mm posts (terms in `CLAUDE.md`)
+- Controller: ESP32-S3 (`rover32`) on a Freenove FNK0101 breakout - pin
+  map in [hardware/carrier/README.md](hardware/carrier/README.md), wiring
+  in [spine-deck-wiring.png](hardware/carrier/spine-deck-wiring.png)
+- Motor drivers: 2x DRV8871 (PWM on IN1/IN2; header VM is 12 V - leave it
+  unconnected)
+- Power: 3x 18650 in 3S with a BMS (12.6 V full), 5 A blade fuse, Wago
+  buses; LM2596 buck at 5.29 V for the ESP32, camera, TFMini and LEDs;
+  battery sense 100k/27k into GPIO8 (calibrated); dock sense 100k/15k
+  from the pad lead into GPIO9
+- Sensing: Benewake TFMini LiDAR (direct GH1.25 lead, 5 V); two front
+  TCRT5000 cliff modules at 3.3 V; L3G4200D gyro (yaw = +Z)
+- Lights: WS2812B chain on GPIO4 - two headlight dots and a 6-pixel status
+  strip (Charging pulse on the dock)
 - Vision: TTGO T-Camera on the rover (fisheye, ~111 deg); two Thingino
-  cameras on the bench (`camv3`, and `benchcam` - the PTZ overhead, renamed
-  from fishcam 10-24)
-- Markers: ArUco 4x4_50, ids 0 (80 mm) and 1 (160 mm) as homing targets,
-  id 2 (60 mm, FRONT-labelled) on Grover's top for the overhead camera -
-  pages in `hardware/markers/`, each with a 100 mm scale bar; print at
-  100 %, or send one straight to a network inkjet with
+  cameras on the bench (`benchcam`, the PTZ overhead, and `camv3`)
+- Markers: ArUco 4x4_50 - ids 0 (80 mm) and 1 (160 mm) homing targets,
+  id 2 (60 mm) on Grover's top for the overhead camera, id 3 (50 mm) on
+  the dock tower - pages in `hardware/markers/`, each with a 100 mm scale
+  bar; print at 100 %, or send one straight to a network inkjet with
   `scripts/print_marker.py`
 
 ## Software
@@ -111,18 +110,24 @@ settle, look again - talking to the rover over ESPHome's native API.
   `firmware/blackcam.yaml` for the Eufy's lid board; `rover.yaml` and
   `eufy-ir.yaml` are retired - all reference copies; the live configs with
   secrets are in a private repo).
-  Custom services `forward`/`backward`/`left`/`right`/`stop`; `Drive duty`
-  `Pivot duty` and `Left trim` (+6 %, calibrated) sliders; a `Brake on stop` switch (boots off); `Obstacle stop` distance (50 cm).
-- **Brain:** `brain/` - MCP tools `status`, `snapshot(bench|front|rover)`, `set_brake`, `set_obstacle_stop`,
-  `drive` (capped at 1 s, refused on low battery or cliff), `find_marker`,
-  `home_to_marker`, `stop`. Install with `scripts/install-brain.sh`; details
-  in `brain/README.md`.
+  Services `move`, `set_speeds`, `turn`, `stop` and the old
+  `forward`/`backward`/`left`/`right`; `Drive duty`, `Pivot duty`, `Min duty`
+  (all 60 % on the DRV8871s), `Left trim` (+6 %), accel/decel ramps,
+  `Gyro axis`/`Gyro scale`, `Obstacle stop` (50 cm), `Brake on stop` and
+  `Dock mode` switches, a `Restart` button.
+- **Brain:** `brain/` - MCP tools `status` (incl. dock sense), `snapshot`,
+  `locate`, `drive`, `turn`, `face`, `go_to`, `dock`, `dock_approach`,
+  `find_marker`, `home_to_marker`, `set_ramp`, `set_brake`,
+  `set_obstacle_stop`, `stop`; edge keep-out in `brain/keepout.py`; step
+  logs of notable runs in `brain/runs/`. Install with
+  `scripts/install-brain.sh`; details in `brain/README.md`.
 - **Printing:** parametric OpenSCAD in `hardware/` (camera cradle, adapter
   strip, TFMini bracket, cliff-sensor mounts, caster skid, marker pages, a
   shelved Roomba plug), sliced with the house rules
   (PETG, no brim, tree supports on auto) and printed through the
   print-warden service; toolchain via `scripts/install-tools.sh`.
 - **Scripts:** `rover_ctl.py` (drive over the native API),
+  `record_bench.py` (overhead timelapse with telemetry burned in),
   `test_disconnect_safety.py` (proves the disconnect-stop),
   `camera_snapshot.py`, `warden_call.py` (talk to the print-warden from a
   shell). All read hosts and credentials from environment variables.
@@ -136,15 +141,17 @@ mean it." In the firmware, always on:
 - **Disconnect-stop** - the API client goes away for any reason -> motors
   stop. Verified by `scripts/test_disconnect_safety.py`.
 - **Cliff guard** - a front IR sensor stops seeing the bench -> forward and
-  pivots refused (backward stays allowed).
+  pivots refused (backward stays allowed). Only exception: `Dock mode`,
+  which the brain turns on within 50 mm of the taught docked pose for
+  forward motion only, and which switches itself off after 3 s.
 - **Battery guard** - below 9.3 V the rover refuses to drive; resumes above
   9.6 V. Rolling 25 s average, ignored for 20 s after boot (a latched-low
   bug from a bad first sample was fixed 2026-10-05).
 - **Obstacle guard** - the TFMini (polled every 50 ms) refuses and cuts
   forward motion inside 50 cm; "was under 60 cm, now too close to measure"
   counts as an obstacle (a wall met at an angle slipped through before).
-- **Kick start** - 100 ms at full power from rest so both wheels break
-  stiction together, then the set duty and trim.
+- **Ramped starts** - from rest straight to `Min duty` (both tracks break
+  stiction together), then a ramp to the set duty; ramped stops.
 - **Brake-on-stop** (switch, boots off) - shorts the windings for 150 ms on
   every stop. Measured: no change in distance and it didn't stop the
   end-of-pulse yaw (the swivel caster did that).
@@ -173,7 +180,8 @@ the same three shots - side, top, rear - so the builds compare directly.
 
 | Date | Build | Why it changed | Photo |
 |---|---|---|---|
-| 10-31 | **Carrier rework** (in progress): DRV8871 drivers on a printed power deck with Wago buses; pack in a tray on the rails behind the deck; a fixed top plate on the posts for the FNK0101 breakout and a breadboard; rear cliff bar | The wiring had become "almost unmanageable" (Enoch); the DRV8871s are smaller than the L298N and drop far less voltage | [before](images/37-electronics-before-rework-2026-10-31.jpg), [top](images/44-battery-tray-and-power-deck-top-2026-10-31.jpg), [rear](images/45-rear-view-battery-tray-motor-2026-10-31.jpg) |
+| 11-01/02 | **ESP32-S3 spinal cord, dock kit**: `rover32` on a YD-ESP32-23 in the same FNK0101 (new pin map); dock sense on GPIO9; a white approach ramp at the dock; the marker on a C-bracket; the left motor re-seated on its gearbox | The ESP32 died to 12 V from a DRV8871 header VM pin; the dock's lip made climbs lurch; the loose motor (from the 10-18 fall) turned pivots into forward arcs | [dock front](images/47-dock-front-edge-ruler-2026-11-01.jpg), [timelapse](images/52-autonomous-undock-dock-timelapse-2026-11-02.mp4) |
+| 10-31 | **Carrier rework** (done 11-02): DRV8871 drivers on a printed power deck with Wago buses; pack in a tray on the tread beams behind the deck; a fixed top plate on the posts for the FNK0101 breakout and a breadboard; rear cliff bar | The wiring had become "almost unmanageable" (Enoch); the DRV8871s are smaller than the L298N and drop far less voltage | [before](images/37-electronics-before-rework-2026-10-31.jpg), [top](images/44-battery-tray-and-power-deck-top-2026-10-31.jpg), [rear](images/45-rear-view-battery-tray-motor-2026-10-31.jpg) |
 | 10-24..26 | **Docking tank**: pad bars on the nose, bumper bar, LED headlight; docks and charges on the Eufy base by itself | Phase 2, recharging | [docked](images/32-docked-2026-10-24.jpg), [timelapse](images/35-autonomous-dock-timelapse-2026-10-26.mp4) |
 | 10-22 | **Tank again**: pack cradle on the deck posts, camera mount on the front perch, gyro | The ramped motion engine removed the reason for the trike; the trike's balance line made cliff stops tip it | [side](images/09-tank-side-2026-10-22.jpg) |
 | 09-29..10-18 | **Trike**: two driven wheels + caster, later a fixed skid | Tank pivots skidded (stiction, 100 % bursts); ended when it fell off the bench on 10-18 | [at the edge](images/04-trike-at-the-edge-2026-10-18.jpg) |

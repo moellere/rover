@@ -16,8 +16,8 @@ courtesy layer that refuses obviously bad requests early.
 
 | Tool | What it does | Limits |
 |---|---|---|
-| `status` | motion, battery voltage, both cliff sensors, uptime, WiFi dBm, `brake_on_stop`, TFMini `front_range_cm`/`front_range_valid`, `obstacle_stop_cm` | - |
-| `snapshot(camera)` | JPEG from `bench` (camv3, behind the rover), `front` (benchcam, ex-fishcam, across the bench, head-on) or `rover` (onboard T-Camera) | - |
+| `status` | motion, battery voltage, both cliff sensors, uptime, WiFi dBm, `brake_on_stop`, TFMini `front_range_cm`/`front_range_valid`, `obstacle_stop_cm`, ramp, yaw, dock sense (`on_dock`, `dock_voltage`) | - |
+| `snapshot(camera)` | JPEG from `bench` (benchcam, the overhead PTZ looking straight down), `front` (camv3) or `rover` (onboard T-Camera); cameras are addressed by env prefix | - |
 | `drive(direction, seconds)` | pulse `forward`/`backward`/`left`/`right`, then stop | capped at 1.0 s per call, 0.3 s gap between pulses, refused below 9.6 V or when a cliff sensor is active (backward still allowed) |
 | `find_marker(camera)` | ArUco 4x4_50 markers in a fresh frame: id, pixel centre, apparent size, bearing (+ = right), distance in mm (per-camera calibration via `BENCH_CAM_FOCAL_PX` / `ROVER_CAM_FOCAL_PX`; bench cam calibrated 2026-09-29 at 1062 px, rover cam at 437 px, front cam not yet (`FRONT_CAM_FOCAL_PX`). A CLAHE contrast pass retries frames where plain detection finds nothing (backlit marker) - a ~111 deg fisheye, so the 80 mm marker decodes only within ~1 m; use the 160 mm id-1 marker beyond that) | - |
 | `set_obstacle_stop(cm)` | firmware TFMini guard distance; 0 = off. Boots at 50; `home_to_marker` relaxes it once the camera has the marker inside that distance, and restores it after | - |
@@ -26,8 +26,10 @@ courtesy layer that refuses obviously bad requests early.
 | `face(heading_deg, tol_deg)` | turn until the overhead reads that heading (image frame: 180 = toward the homing marker end, 270 = toward the pegboard); gyro turns, overhead re-read after each | needs id 2 in view; up to 3 corrections |
 | `go_to(marker_id | x_px,y_px, stop_mm)` | drive to a marker or pixel seen overhead: locate, turn if >10 deg off, else a forward pulse sized from the distance (<= 1 s), re-locate; stops inside `stop_mm` | check the lane first; 10 steps max; 10-24: 1.43 m to 30 cm of id 0 in 13 s, 4 steps (tape only the marker margin - gloss over the cells blinds the overhead) |
 | `dock_approach()` | overhead `go_to` + `face` to the goal spot, then onboard `home_to_marker` to the dock marker (the 10-24 visual-homing run) | check the lane first |
-| `dock()` | overhead-only docking onto the Eufy base: waypoints 450 and 200 mm out on the taught pose's axis (`dock_pose.json`), square up at each, then creep until the overhead reads the pose, steering back onto the axis if >8 mm off. The TFMini guard is relaxed from the 200 mm leg (the tower is in range) and restored after | base taped white under the cliff sensors; contacts need the pose within a few mm fore-aft (10-26); re-teach by pushing Grover on until it charges and recording `locate` |
+| `dock()` | overhead-only docking onto the Eufy base. Starting on or near the dock it first reverses straight out (0.4 s pulses). Waypoints 450 and 200 mm out on the taught pose's axis (`dock_pose.json`), square up at each, then creep, steering onto the axis beyond 4 mm; within 50 mm and 4 mm of the axis, square up and one 80 % climb pulse in firmware `Dock mode` (forward ignores the cliff guard, 3 s self-cancelling); off-axis at the lip, back off and re-centre. Stops on dock-sense contact and confirms charging by `on_dock`. TFMini guard relaxed from the 200 mm leg, restored after | edge keep-out (`keepout.py`) refuses any move within 130 mm of the open edge; re-teach the pose by pushing Grover on until it charges and recording `locate`; the white approach ramp at the dock's tip (11-02) |
 | `eufy(command)` | drive the Eufy RoboVac 12 over IR via its lid board: forward, backward, left, right, home, start_stop (one remote press each; floor only) | - |
+| `turn(degrees)` | gyro-closed pivot, + = left | 3 s cap |
+| `set_ramp(min_duty, accel_ms, decel_ms)` | firmware speed profile (min duty 60 % on the DRV8871s) | - |
 | `stop` | stop now | - |
 
 Orientation note: on the bench, `forward` moves the rover away from the fixed

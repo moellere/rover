@@ -32,7 +32,8 @@ cliff sensors installed.
 
 ## Architecture (decided 2026-09-28)
 
-Three layers: an ESP32 (`rover32`, since 2026-10-03; was a D1 Mini) is the
+Three layers: an ESP32-S3 (`rover32`; a YD-ESP32-23 since 2026-11-01, an ESP32
+devkit 10-03..10-31, a D1 Mini before) is the
 **spinal cord** (ESPHome; watchdog, disconnect-stop, cliff, battery and
 TFMini obstacle guards in firmware - authoritative), the
 T-Camera is the **eyes** (ESPHome; snapshot/stream), and `brain/` is the
@@ -52,11 +53,11 @@ its bracket) is a weak point we kept redesigning. Tracks put the balance
 point mid-chassis, need no rear support, and shrug off seams and
 thresholds. Cost: pivots scrub, so heading per pivot pulse is less
 repeatable - steering is closed on the overhead marker pose, not dead
-reckoning. Keep pivots slow (40-50 % duty, `set_speeds`). Steering is
+reckoning. Keep pivots slow: 60 % is the floor on the DRV8871s (50 % doesn't
+break the tracks free; 75/90 % from the L298N era ran away, 11-02). Steering is
 still differential, so `left`/`right` mean the same thing. The kit's Me
-Orion board is *not* used - an ESP + ESPHome stays. (Rebuild pending
-Enoch; until then Grover is the trike minus its rear support, and cannot
-drive.)
+Orion board is *not* used - an ESP + ESPHome stays. (Tank rebuilt 10-19;
+carrier rework with DRV8871s, power deck and top plate done 10-31..11-02.)
 
 ## The Eufy (decided 2026-10-24, Claude's call on Enoch's offer)
 

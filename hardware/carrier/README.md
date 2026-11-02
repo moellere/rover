@@ -54,7 +54,7 @@ and speed on a PWM EN pin; the DRV8871 takes PWM on IN1 (forward) or IN2
 ```
  J_BATT (screw, 2) ── F1 5 A blade fuse ──┬── VBAT rail ── DRV8871 VM (both)
    pack + / P-                            ├── LM2596 IN+ (socket) ── OUT+ ──[D2 1N5822, optional]── 5V rail
-                                          ├── vbat divider (GPIO34)
+                                          ├── vbat divider (GPIO8 on the S3; GPIO34 on the old board)
  J_DOCK (screw, 2) ──[D1 1N5822]──────────┘   (left pad +, band toward the rail; right pad -> GND/P-)
                   └── 100k ──┬── 15k ── GND      dock sense (pad side of D1): node -> GPIO9
 ```
