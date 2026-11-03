@@ -548,6 +548,13 @@ the lurch is the 6 mm step at the tip, which the wedge removes.
   rover32 hostname; its status returns on_dock / dock_voltage and it
   exposes dock, face, go_to, turn, set_ramp. Anything odd through the
   hosted MCP before tonight was old code plus a stale address.
+- **Rear cliff bar (11-02/03):** Enoch asked for the arms to angle inward
+  to the crossbar (they ran close to the tracks); tracks are 30 mm wide,
+  so the 105/165 mm assumption holds. Printing in blue PETG, job
+  `9434b1b09c`, started 11-03 on Enoch's "can you confirm the start?" -
+  the warden's phone notification linked an internal IP he couldn't open
+  from outside, so the start was confirmed in chat. Wiring: RL -> GPIO7,
+  RR -> GPIO15. Docs brought up to the 11-02 state the same night.
 - **Battery sense moved to GPIO8:** GPIO1's FNK0101 terminal was welded to
   GND by the 10-31 short (Enoch). On GPIO8 it reads 14.6 V with the
   WROOM-32 factor. Not an over-read: Enoch metered the node at 3.897 V
