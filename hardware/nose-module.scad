@@ -340,3 +340,7 @@ module ctx_dock() {
 }
 if (part == "ctx_grover") ctx_grover();
 if (part == "ctx_dock")   ctx_dock();
+// as installed (frame as above: bench at z=0), for viewing: printed parts only, or with
+// the TFMini, cliff boards and servos as plain blocks
+if (part == "installed") { body(); for (s = [-1, 1]) mirror([s < 0 ? 1 : 0, 0, 0]) { arm(); pad(); } }
+if (part == "installed_parts") { body(); for (s = [-1, 1]) { mirror([s < 0 ? 1 : 0, 0, 0]) { arm(); pad(); } cliff_dummy(s); servo_dummy(s); } tfmini_dummy(); }
