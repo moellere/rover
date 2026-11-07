@@ -546,6 +546,27 @@ output:
     pin: GPIO41
     frequency: 1000 Hz
     id: right_in2
+  # Contact-arm servos (Smraza S51 / SG90, nose module v1, 2026-11-07): 50 Hz
+  # servo PWM on GPIO10 (left) / GPIO11 (right), power from the 5 V bus.
+  - platform: ledc
+    pin: GPIO10
+    frequency: 50 Hz
+    id: servo_left_out
+  - platform: ledc
+    pin: GPIO11
+    frequency: 50 Hz
+    id: servo_right_out
+
+servo:
+  # Boots detached (no pulses) so the arms don't jump at power-on; the first
+  # write attaches. -100 / 0 / +100 = about -90 / centre / +90 deg. The two
+  # are mirror images, so the same arm motion is opposite signs on each side.
+  - id: servo_left
+    output: servo_left_out
+    transition_length: 0s
+  - id: servo_right
+    output: servo_right_out
+    transition_length: 0s
 
 # Downward-facing IR reflectance ("cliff") sensors on the free MCP23008 pins.
 # Wiring: VCC/GND + digital OUT of each IR module -> MCP4 (front-left), MCP5 (front-right).
@@ -824,6 +845,28 @@ sensor:
             ESP_LOGI("battery", "Battery recovered (%.2f V), drive enabled", x);
           }
 number:
+  - platform: template
+    name: "Left arm servo"
+    id: left_arm_servo
+    min_value: -100
+    max_value: 100
+    step: 1
+    optimistic: true
+    set_action:
+      - servo.write:
+          id: servo_left
+          level: !lambda 'return x / 100.0;'
+  - platform: template
+    name: "Right arm servo"
+    id: right_arm_servo
+    min_value: -100
+    max_value: 100
+    step: 1
+    optimistic: true
+    set_action:
+      - servo.write:
+          id: servo_right
+          level: !lambda 'return x / 100.0;'
   # 0 = guard off. Boots at 35 cm (verified 2026-10-03: forward refused and
   # a forward move cut once the range dropped under it). The TFMini goes
   # invalid under 30 cm, so 35 is about as close as the guard can act; the
@@ -958,6 +1001,20 @@ number:
     optimistic: true
     entity_category: config
 button:
+  # Centre both arm servos (1.5 ms) - fit the arms with the horns here, pointing
+  # forward and ~30 deg up (the middle of the 83 deg fold/lower swing).
+  - platform: template
+    name: "Centre arms"
+    id: centre_arms
+    on_press:
+      - number.set: {id: left_arm_servo, value: 0}
+      - number.set: {id: right_arm_servo, value: 0}
+  - platform: template
+    name: "Arms off"
+    id: arms_off
+    on_press:
+      - servo.detach: servo_left
+      - servo.detach: servo_right
   # Software reset (esp_restart). Added 2026-11-01 to test whether the
   # boot twitch on the left track happens on a soft reset too, or only on
   # power-on / the EN button.
