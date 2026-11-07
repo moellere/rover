@@ -641,8 +641,19 @@ distance, spacing, chamfer size.
   board, and the leads bend) - so the ramp math (which used 12) left only
   ~1-2 mm, hence the scraping. The module holds each sensor body in a
   printed socket at ~11 mm (parameter; verify reads on bench, white base,
-  dark), skids at ~8 mm. Still needed:
-  roller spring force (sizes the arm / toggle) and the TFMini's position.
+  dark), skids at ~8 mm. Enoch: spring force "not too worried"; TFMini
+  stays at 42 mm ahead / 53 mm up; front hole row's nearest edge 2 mm
+  behind the acrylic's edge (centres ~4 mm). **Nose module v1 drafted**
+  (`hardware/nose-module.scad`, not sliced): foot on holes 1/3/7/9 with a
+  lip, TFMini plate, socketed cliffs with skids, bumper at 66-72 mm, two
+  SG90s (Enoch's are Smraza S51 9 g) lying on the bumper, shafts outboard,
+  62 mm arms with a horn pocket, a thin leaf section as the spring and a
+  free M3 hinge so each 26 x 24 mm pad sits flat; three fore-aft 12 AWG
+  runs 8 mm apart per pad. Review views (`nose-module-views.png`) and an
+  assembly drawing with sensors, servos and leads
+  (`nose-module-assembly.png`, `scripts/nose_assembly_views.py`) - the
+  first draft's servo mounts weren't mirror images and the render caught
+  it; now one side is modelled and mirrored. Awaiting Enoch's review.
 
 **Claude-driven:** the S3 pin map and port; dock sense design and values;
 dock mode and its limits; `dock()`'s undock, climb, square-up and centring;

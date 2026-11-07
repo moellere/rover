@@ -24,7 +24,7 @@
 // forward x up = right). Origin: centreline, at the acrylic's front edge.
 // Measured (Enoch, 11-07): acrylic underside 55 mm up, ~2 mm thick; its front
 // edge ~10 mm ahead of the tracks' first ground contact; TFMini lens 53 mm up.
-// UNMEASURED: `row_y` (front hole row behind the edge) - MEASURE before slicing.
+// Front hole row: nearest hole edge 2 mm behind the acrylic's edge (Enoch, 11-07).
 //
 // Render: openscad -o nose-module.stl nose-module.scad
 // Print:  foot face down (as modelled, flipped), tree supports for the arms'
@@ -34,7 +34,7 @@ part = "body";        // "body" | "arm" | "pad" | "all" (preview)
 
 // ---- chassis (measured) ---------------------------------------------------
 acr_z0    = 55;       // acrylic underside above the bench
-row_y     = -6;       // front hole row behind the acrylic's front edge  <- MEASURE
+row_y     = -4.1;     // front hole row centres behind the acrylic's edge (Enoch 11-07: hole edge 2 mm in, 4.2 holes)
 hole_x    = [-32, -16, 16, 32];
 m4        = 4.5;
 track_y0  = -10;      // tracks' first ground contact
@@ -56,14 +56,22 @@ pcb_l = 31.5;  pcb_w = 14;  pcb_t = 1.6;  pcb_hole_in = 7.5;   // HW-870
 // ---- bumper ----------------------------------------------------------------
 bump_y = 66;  bump_t = 6;  bump_z = [16, 26];  bump_x = 78;
 
-// ---- servo arms (SG90) -------------------------------------------------------
+// ---- servo arms (SG90; Enoch's are Smraza S51 9 g, same body) -------------------------------------------------------
 sg_l = 22.5;  sg_w = 12.2;  sg_h = 22.7;  sg_tab_l = 32.2;  sg_tab_cc = 27.5;  sg_shaft_in = 5.9;
 arm_x    = 45;        // pads over the rollers, 90 mm c-c
 pivot_y  = 62;  pivot_z = 36;
 roller_y = bump_y + bump_t + 50;    // bumper at the dock tip, rollers 50 mm on
 roller_z = 13;        // pressed roller top (~9 base + 7 proud - 3 press)
-arm_down = atan2(roller_z + 4 - pivot_z, roller_y - pivot_y);   // pad pivot 4 mm above its face
-arm_len  = norm([roller_y - pivot_y, roller_z + 4 - pivot_z]);
+hinge_h  = 9;         // pad hinge axis above the pad face (pad 4 + clearance for the arm's tip boss)
+arm_down = atan2(roller_z + hinge_h - pivot_z, roller_y - pivot_y);
+arm_len  = norm([roller_y - pivot_y, roller_z + hinge_h - pivot_z]);
+sg_spline = 4.3;      // output spline face beyond the body's top (gear housing)
+horn_x   = arm_x + 2 + sg_spline;   // the arm's inner face sits on the horn here
+arm_t    = 4;         // arm thickness (x)
+// SG90 single-arm horn (the one in the bag) sits in a pocket on the arm's inner face  <- check yours
+horn_hub_d = 7.4;  horn_len = 17;  horn_w0 = 5.6;  horn_w1 = 4.0;  horn_t = 1.6;  horn_holes = [10, 14];
+leaf_t   = 2.2;       // flexure: thinned arm section, gives the pad a few mm of spring
+leaf_at  = [26, 44];  // along the arm from the pivot
 arm_up   = 70;        // folded, degrees above horizontal
 pad_x = 26;  pad_y = 24;  pad_t = 4;  run_dx = 8;  wire_d = 2.05;
 
@@ -156,26 +164,95 @@ module body() {
   for (s = [-1, 1]) { cliff_wing(s); servo_mount(s); }
 }
 
-// one arm (print 2, mirror one): servo-horn hub at the pivot, beam to the pad hinge
+// one arm (RIGHT shown; print one as modelled and one mirrored): horn pocket at the
+// pivot, a thin leaf section as the spring, M3 hinge boss at the tip for the pad.
 module arm(ang = arm_down) {
-  translate([arm_x, pivot_y, pivot_z]) rotate([ang, 0, 0]) {
-    rotate([0, 90, 0]) difference() { cylinder(d = 14, h = 4); translate([0, 0, -1]) cylinder(d = 2.2, h = 6); }
-    rbox(0, 0, -3, 4, arm_len, 3);
-    translate([0, arm_len, 0]) rotate([0, 90, 0]) difference() { cylinder(d = 8, h = 4); translate([0, 0, -1]) cylinder(d = 3.2, h = 6); }
+  translate([horn_x, pivot_y, pivot_z]) rotate([ang, 0, 0]) difference() {
+    union() {
+      rotate([0, 90, 0]) cylinder(d = 14, h = arm_t);
+      rbox(0, 0, -3, arm_t, leaf_at[0], 3);
+      rbox(0, leaf_at[0], -leaf_t / 2, arm_t + 2, leaf_at[1], leaf_t / 2);      // leaf: 6 wide, 2.2 thick
+      rbox(0, leaf_at[1], -3, arm_t, arm_len, 3);
+      translate([0, arm_len, 0]) rotate([0, 90, 0]) cylinder(d = 8, h = arm_t);
+    }
+    // horn pocket on the inner face (x = 0), horn pointing along the arm
+    translate([-0.01, 0, 0]) rotate([0, 90, 0]) cylinder(d = horn_hub_d + 0.4, h = horn_t + 0.2);
+    translate([-0.01, 0, 0]) rotate([0, 90, 0]) linear_extrude(horn_t + 0.2)
+      polygon([[horn_w0 / 2 + 0.2, 0], [horn_w1 / 2 + 0.2, horn_len], [-horn_w1 / 2 - 0.2, horn_len], [-horn_w0 / 2 - 0.2, 0]]);
+    translate([-1, 0, 0]) rotate([0, 90, 0]) cylinder(d = 2.4, h = arm_t + 2);                  // horn screw
+    for (h = horn_holes) translate([-1, h, 0]) rotate([0, 90, 0]) cylinder(d = 1.6, h = arm_t + 2);   // M2 self-tappers
+    translate([-1, arm_len, 0]) rotate([0, 90, 0]) cylinder(d = 3.2, h = arm_t + 2);            // hinge pin
   }
 }
 
-// pad: hangs on the arm tip's M3 hinge, copper runs fore-aft on the underside
+// pad: two lugs straddle the arm's tip boss on an M3 pin, so the pad pitches to sit
+// flat on the roller; three fore-aft copper runs underneath, all one 12 AWG wire laced
+// through end holes and soldered to the lead at the rear.
+pad_cx = arm_x;       // pad centred over the roller
 module pad() {
+  hz = roller_z + hinge_h;  hy = roller_y;  lx = horn_x + arm_t / 2;
   difference() {
-    rbox(arm_x + 2 - pad_x / 2, roller_y - pad_y / 2, roller_z, arm_x + 2 + pad_x / 2, roller_y + pad_y / 2, roller_z + pad_t);
-    for (dx = [-run_dx, 0, run_dx]) translate([arm_x + 2 + dx - 1.25, roller_y - pad_y / 2 + 2, roller_z - 0.01]) cube([2.5, pad_y - 4, 1.0]);
+    union() {
+      rbox(pad_cx - pad_x / 2, roller_y - pad_y / 2, roller_z, pad_cx + pad_x / 2, roller_y + pad_y / 2, roller_z + pad_t);
+      for (sx = [-1, 1]) hull() {
+        translate([lx + sx * (arm_t / 2 + 1.75) - 1.5, hy, hz]) rotate([0, 90, 0]) cylinder(d = 8, h = 3);
+        rbox(lx + sx * (arm_t / 2 + 1.75) - 1.5, hy - 5, roller_z + pad_t - 0.1, lx + sx * (arm_t / 2 + 1.75) + 1.5, hy + 5, roller_z + pad_t);
+      }
+    }
+    translate([lx - 8, hy, hz]) rotate([0, 90, 0]) cylinder(d = 3.2, h = 16);
+    for (dx = [-run_dx, 0, run_dx]) {
+      translate([pad_cx + dx - 1.15, roller_y - pad_y / 2 + 2, roller_z - 0.01]) cube([2.3, pad_y - 4, 1.0]);   // groove, wire 1 mm proud
+      for (dy = [-1, 1]) translate([pad_cx + dx, roller_y + dy * (pad_y / 2 - 2), roller_z - 1]) cylinder(d = 2.5, h = pad_t + 2);
+    }
+    for (dx = [-run_dx / 2, run_dx / 2]) {      // top-side lacing grooves between runs
+      dy = dx < 0 ? 1 : -1;
+      translate([pad_cx + dx - run_dx / 2, roller_y + dy * (pad_y / 2 - 2) - 1.15, roller_z + pad_t - 1]) cube([run_dx, 2.3, 1.1]);
+    }
   }
+}
+
+// ---- reference parts for the assembly drawing (not printed) ----------------------
+module tfmini_dummy() {
+  translate([-tf_body_w / 2, tf_face_y - tf_depth, tf_zc - tf_h / 2]) cube([tf_body_w, tf_depth, tf_h]);
+  translate([-tf_len / 2, tf_face_y - tf_depth, tf_zc - 3]) cube([tf_len, 2, 6]);
+}
+module cliff_dummy(s) {
+  x = s * cliff_x;
+  translate([x - tcrt_l / 2, cliff_y - tcrt_w / 2, cliff_face_z]) cube([tcrt_l, tcrt_w, tcrt_h]);                 // TCRT5000
+  translate([x - pcb_w / 2, cliff_y + tcrt_w / 2 - 0.5 - pcb_t, cliff_face_z + tcrt_h + 3]) cube([pcb_w, pcb_t, pcb_l]);  // HW-870, screwed to the front of the board plate
+}
+module servo_dummy_r() {
+  bx1 = arm_x + 2;  bx0 = bx1 - sg_h;  by0 = pivot_y - sg_shaft_in;
+  translate([bx0, by0, pivot_z - sg_w / 2]) cube([sg_h, sg_l, sg_w]);
+  translate([bx0 + sg_tab_from_base, by0 - (sg_tab_l - sg_l) / 2, pivot_z - sg_w / 2]) cube([2.5, sg_tab_l, sg_w]);
+  translate([bx1, pivot_y, pivot_z]) rotate([0, 90, 0]) cylinder(d = 11.8, h = sg_spline);
+}
+module servo_dummy(s) { if (s > 0) servo_dummy_r(); else mirror([1, 0, 0]) servo_dummy_r(); }
+
+// wires: polyline of points, drawn as a chain of hulled spheres
+module wire(pts, d = 1.6) { for (i = [0 : len(pts) - 2]) hull() { translate(pts[i]) sphere(d = d, $fn = 8); translate(pts[i + 1]) sphere(d = d, $fn = 8); } }
+deck_z = 95;          // where leads leave the drawing, up toward the spine deck
+module wires_tfmini() { wire([[0, tf_face_y - tf_depth, tf_zc], [0, 20, tf_zc], [0, 8, 58], [0, 2, 62], [0, -10, deck_z]], 3.0); }
+module wires_cliff(s) {
+  x = s * cliff_x;  zt = cliff_face_z + tcrt_h + 3 + pcb_l;
+  for (i = [-1, 0, 1]) wire([[x + i * 2.54, cliff_y + 1, zt], [x + i * 2.54, cliff_y + 1, zt + 6], [s * (62 + i * 2), 30, 62], [s * (58 + i * 2), -10, deck_z]]);
+}
+module wires_servo(s) {   // lead leaves the end face away from the shaft, near the base (Smraza S51 photo, 11-07)
+  bx0 = arm_x + 2 - sg_h;  yl = pivot_y - sg_shaft_in + sg_l;
+  for (i = [-1, 0, 1]) wire([[s * (bx0 + 3), yl, pivot_z + i * 1.3], [s * (bx0 + 3), yl + 3, pivot_z + i * 1.3], [s * (bx0 - 3), yl + 3, pivot_z + i * 1.3], [s * (bx0 - 3), 50, 30 + i * 1.3], [s * (30 + i * 1.3), 30, 30], [s * (30 + i * 1.3), 4, 50], [s * (30 + i * 1.3), -10, deck_z]], 1.3);
+}
+module wires_pad(s, ang) {  // pad lead: along the arm, a loop round the pivot, then back to the deck
+  hz = roller_z + hinge_h;  lx = horn_x + arm_t + 1.5;
+  tip = [lx, pivot_y + arm_len * cos(ang), pivot_z + arm_len * sin(ang)];
+  mid = [lx, pivot_y + 30 * cos(ang), pivot_z + 30 * sin(ang)];
+  pts = [[pad_cx, roller_y - pad_y / 2 + 2, roller_z + pad_t], [lx, roller_y - 4, roller_z + pad_t + 2], tip, mid,
+         [lx, pivot_y, pivot_z + 10], [lx, pivot_y - 10, pivot_z + 4], [lx, 50, 40], [s > 0 ? 50 : 50, 20, 52], [50, -10, deck_z]];
+  if (s > 0) wire(pts, 2.6); else mirror([1, 0, 0]) wire(pts, 2.6);
 }
 
 module ghosts() {
   %translate([-60, -40, acr_z0]) cube([120, 40, 2]);                                 // acrylic (front strip)
-  %translate([-tf_body_w / 2, tf_face_y - tf_depth, tf_zc - tf_h / 2]) cube([tf_body_w, tf_depth, tf_h]);   // TFMini
+  %tfmini_dummy();
   for (s = [-1, 1]) %translate([s * 67.5 - 15, track_y0 - 60, 0]) cube([30, 60 + track_r, 76]);              // tracks (box)
   for (s = [-1, 1]) %translate([s * arm_x - 2.5, roller_y - 9.5, roller_z - 10]) cube([5, 19, 10]);           // rollers
   %translate([-82.5, bump_y + bump_t, 0]) cube([165, 50 + 20, 6]);                                           // dock base front
@@ -189,6 +266,15 @@ if (part == "all") {
   for (s = [-1, 1]) mirror([s < 0 ? 1 : 0, 0, 0]) { arm(); arm(arm_up); pad(); }
   ghosts();
 }
+// assembly drawing: one STL per item, coloured by scripts/nose_assembly_views.py
+if (part == "asm_arms")   for (s = [-1, 1]) mirror([s < 0 ? 1 : 0, 0, 0]) { arm(); pad(); }
+if (part == "asm_tfmini") tfmini_dummy();
+if (part == "asm_cliff")  for (s = [-1, 1]) cliff_dummy(s);
+if (part == "asm_servo")  for (s = [-1, 1]) servo_dummy(s);
+if (part == "asm_w_tfmini") wires_tfmini();
+if (part == "asm_w_cliff")  for (s = [-1, 1]) wires_cliff(s);
+if (part == "asm_w_servo")  for (s = [-1, 1]) wires_servo(s);
+if (part == "asm_w_pad")    for (s = [-1, 1]) wires_pad(s, arm_down);
 
 echo(str("nose module: arm ", round(arm_len), " mm at ", round(arm_down), " deg down (folded ", arm_up,
          " up); rollers at y=", roller_y, "; cliff face ", cliff_face_z, " mm, skids ", cliff_face_z - skid_drop, " mm"));
