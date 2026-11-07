@@ -310,3 +310,33 @@ if (part == "print_arms") for (s = [-1, 1]) translate([s * 12, 0, 0]) mirror([s 
   translate([0, 0, 0]) rotate([0, -90, 0]) translate([-horn_x, -pivot_y, -pivot_z]) arm(0);
 if (part == "print_pads") for (s = [-1, 1]) translate([s * 20, 0, 0]) mirror([s < 0 ? 1 : 0, 0, 0])
   translate([-pad_cx, -roller_y, -roller_z]) pad();
+
+// ---- context for the drawing: Grover's front end and the dock (APPROXIMATE) ------------
+// Measured: acrylic underside 55 / ~2 thick, its front edge 10 mm ahead of the tracks'
+// first ground contact, tracks 30 wide and 165 over the outside. Guessed: the track's
+// front profile (ground run to y -10, rising to an idler, front ~y 30), beam sizes, the
+// acrylic's width and the spine deck. Dock: base tip at the bumper face, rollers 50 mm on.
+module ctx_grover() {
+  for (s = [-1, 1]) {
+    hull() {                                                     // track (front 140 mm)
+      translate([s * 67.5 - 15, -10, 18]) rotate([0, 90, 0]) cylinder(r = 18, h = 30);
+      translate([s * 67.5 - 15, 12, 40]) rotate([0, 90, 0]) cylinder(r = 18, h = 30);
+      translate([s * 67.5 - 15, -150, 18]) rotate([0, 90, 0]) cylinder(r = 18, h = 30);
+      translate([s * 67.5 - 15, -150, 40]) rotate([0, 90, 0]) cylinder(r = 18, h = 30);
+    }
+    translate([s * 47 - 4, -150, 40]) cube([8, 160, 24]);       // tread beam (Makeblock, approx.)
+    for (y = [-30, -120]) translate([s * 40, y, acr_z0 + 2]) cylinder(d = 5, h = 30);   // deck posts
+  }
+  translate([-55, -150, acr_z0]) cube([110, 150, 2]);           // acrylic plate
+  translate([-50, -130, acr_z0 + 32]) cube([100, 110, 4]);      // spine deck (approx.)
+}
+module ctx_dock() {
+  y0 = bump_y + bump_t;
+  hull() {                                                       // base: low tip rising to the roller deck
+    translate([-82.5, y0, 0]) cube([165, 1, 6]);
+    translate([-82.5, y0 + 35, 0]) cube([165, 60, 9]);
+  }
+  for (s = [-1, 1]) translate([s * arm_x - 2.5, roller_y, roller_z - 3]) rotate([0, 90, 0]) cylinder(d = 19, h = 5);   // rollers
+}
+if (part == "ctx_grover") ctx_grover();
+if (part == "ctx_dock")   ctx_dock();

@@ -4,7 +4,9 @@ Headless OpenSCAD can't render PNGs here, so this exports one STL per item
 (hardware/nose-module.scad's `asm_*` parts), colours them and draws an
 isometric view plus top and side views with a painter's sort in matplotlib.
 
-    uv run --with numpy-stl --with matplotlib python scripts/nose_assembly_views.py OUT.png
+    uv run --with numpy-stl --with matplotlib python scripts/nose_assembly_views.py OUT.png [--context]
+
+--context adds Grover's front end (tracks, beams, acrylic, deck) and the dock, approximately.
 """
 import os
 import subprocess
@@ -24,6 +26,10 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SCAD = os.path.join(ROOT, "hardware", "nose-module.scad")
 OPENSCAD = os.environ.get("OPENSCAD", os.path.expanduser("~/.local/bin/openscad"))
 
+CONTEXT = [
+    ("ctx_grover", (0.72, 0.72, 0.72), "Grover: tracks, tread beams, acrylic, spine deck (approx.)"),
+    ("ctx_dock", (0.9, 0.85, 0.7), "dock base and rollers (approx.)"),
+]
 ITEMS = [  # part, colour, legend
     ("body", (0.25, 0.45, 0.85), "nose module (printed, blue PETG)"),
     ("asm_arms", (0.45, 0.65, 0.95), "contact arms + pads (printed)"),
@@ -37,9 +43,9 @@ ITEMS = [  # part, colour, legend
 ]
 
 
-def load(tmp):
+def load(tmp, items):
     out = []
-    for part, col, label in ITEMS:
+    for part, col, label in items:
         f = os.path.join(tmp, part + ".stl")
         subprocess.run([OPENSCAD, "-D", f'part="{part}"', "-o", f, SCAD], check=True, capture_output=True)
         out.append((mesh.Mesh.from_file(f), np.array(col), label))
@@ -63,9 +69,11 @@ def draw(ax, meshes, R, title, light=np.array([0.3, -0.5, 0.8])):
 
 
 def main():
-    out = sys.argv[1] if len(sys.argv) > 1 else "nose-module-assembly.png"
+    args = [a for a in sys.argv[1:] if not a.startswith("--")]
+    out = args[0] if args else "nose-module-assembly.png"
+    items = ITEMS + (CONTEXT if "--context" in sys.argv else [])
     with tempfile.TemporaryDirectory() as tmp:
-        meshes = load(tmp)
+        meshes = load(tmp, items)
     fig = plt.figure(figsize=(22, 13))
     gs = fig.add_gridspec(2, 2, height_ratios=[1.25, 1])
     # isometric: from ahead, Grover's right and above
@@ -77,7 +85,7 @@ def main():
     a0 = fig.add_subplot(gs[0, :]); draw(a0, meshes, np.array([sx, sy, d]),
                                          "ISOMETRIC - from ahead of Grover, his RIGHT side nearest, arms lowered onto the rollers")
     a0.axis("off")
-    fig.legend(handles=[Patch(color=c, label=l) for _, c, l in ITEMS], loc="upper left", bbox_to_anchor=(0.02, 0.97), fontsize=12)
+    fig.legend(handles=[Patch(color=c, label=l) for _, c, l in items], loc="upper left", bbox_to_anchor=(0.02, 0.97), fontsize=12)
     a1 = fig.add_subplot(gs[1, 0]); draw(a1, meshes, np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1.0]]),
                                          "TOP (forward is UP; Grover's LEFT on the left)")
     a1.set_xlabel("x mm (Grover's LEFT <-  -> RIGHT)"); a1.set_ylabel("y mm ahead of the acrylic edge"); a1.grid(alpha=.3)
