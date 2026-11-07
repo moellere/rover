@@ -594,6 +594,15 @@ distance, spacing, chamfer size.
   whose end lands in the band (undock and go_to); undock pulses 0.2 s; off
   the dock, square to the dock axis before reversing out. Logs in
   `brain/runs/2026-11-07-dock-trials-run{1,2}.json`.
+  Run 3, cycle 1 (docked and square at the start): the undock was clean,
+  but the ~180 deg `go_to` turn toward the random start drifted Grover
+  ~6 cm toward the open edge - 91 mm, its left track corner at the edge
+  line; the guard refused the next move. The dock sits ~18 cm from the
+  edge and its axis runs toward the edge as it goes back, so the undock
+  end point is only ~15 cm from it. Trials paused. Fixes: turns over 30 deg
+  need 200 mm from the edge (`keepout.check_turn`, in go_to and face);
+  trial logs now keep the undock/go_to/face steps; and the dock moves
+  ~10 cm toward the pegboard (Enoch), with the pose re-taught after.
 
 **Claude-driven:** the S3 pin map and port; dock sense design and values;
 dock mode and its limits; `dock()`'s undock, climb, square-up and centring;

@@ -10,6 +10,9 @@ EDGE is the edge line in benchcam pixels, read off the 11-02 frames (the wide
 lens bends it); re-read it if the camera is moved.
 """
 EDGE = [(300, 372), (520, 322), (700, 300), (965, 265), (1300, 248), (1700, 242), (1900, 246)]
+TURN_MIN_MM = 200.0  # big pivots drift on the tank: a ~180 deg go_to turn moved Grover ~6 cm
+                     # toward the edge, ending 91 mm from it (trials 11-07)
+TURN_BIG_DEG = 30.0  # turns up to this are squaring corrections, allowed down to MIN_MM
 MIN_MM = 130.0   # marker centre to edge: ~80 mm to the outer track, ~50 mm spare
                  # (the taught dock pose sits ~175 mm from the edge)
 
@@ -55,4 +58,17 @@ def check_move(pose, dist_mm: float) -> str | None:
     if d < MIN_MM:
         return (f"edge keep-out: this {abs(dist_mm):.0f} mm {'forward' if dist_mm > 0 else 'backward'} move would end "
                 f"{d:.0f} mm from the open edge (< {MIN_MM:.0f}) - move Grover by hand")
+    return None
+
+
+def check_turn(pose, degrees: float) -> str | None:
+    """Refuse a big pivot near the edge: a tank pivot drifts, so a large turn
+    needs TURN_MIN_MM of room, a small squaring turn only MIN_MM."""
+    now = check(pose)
+    if now or pose is None or abs(degrees) <= TURN_BIG_DEG:
+        return now
+    d = edge_mm(pose.x_px, pose.y_px, pose.mm_per_px or 1.2)
+    if d < TURN_MIN_MM:
+        return (f"edge keep-out: a {abs(degrees):.0f} deg turn needs {TURN_MIN_MM:.0f} mm from the open edge, "
+                f"Grover is at {d:.0f} mm - move Grover by hand")
     return None

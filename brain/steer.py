@@ -131,7 +131,7 @@ async def face(heading_deg: float, camera: str = "bench", tol: float = FACE_TOL_
         if i == max_turns:
             break
         if abs(err) >= MIN_TURN_DEG:
-            ko = keepout.check(rover)
+            ko = keepout.check_turn(rover, err)
             if ko:
                 return SteerResult(False, ko, i, _pose_dict(rover), log)
             await client.turn(err, duty)
@@ -192,6 +192,10 @@ async def go_to(x_px: float | None = None, y_px: float | None = None, marker_id:
             log.append({**entry, "action": "keep-out"})
             return SteerResult(False, ko, step, _pose_dict(rover), log)
         if abs(err) > GO_HEADING_TOL:
+            ko = keepout.check_turn(rover, err)
+            if ko:
+                log.append({**entry, "action": "keep-out (turn)"})
+                return SteerResult(False, ko, step, _pose_dict(rover), log)
             log.append({**entry, "action": f"turn {err:+.0f}"})
             await client.turn(err, 0)
             await asyncio.sleep(POST_MOVE_S)

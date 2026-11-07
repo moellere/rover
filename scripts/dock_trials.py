@@ -45,18 +45,18 @@ async def cycle(n: int, rng: random.Random) -> dict:
     t0 = time.monotonic()
     rec = {"cycle": n, "started": datetime.datetime.now().isoformat(timespec="seconds"), "start_pose": pose_now()}
     u = await undock()
-    rec["undock"] = {"ok": u.get("ok"), "reason": u.get("reason")}
+    rec["undock"] = {"ok": u.get("ok"), "reason": u.get("reason"), "log": u.get("log")}
     if not u.get("ok"):
         return {**rec, "ok": False, "stage": "undock"}
     tx, ty = rng.uniform(*START_BOX["x"]), rng.uniform(*START_BOX["y"])
     th = rng.uniform(*HEADINGS)
     rec["target"] = {"x_px": round(tx), "y_px": round(ty), "heading_deg": round(th, 1)}
     g = await go_to(x_px=tx, y_px=ty, stop_mm=60.0)
-    rec["go_to"] = {"ok": g.ok, "reason": g.reason, "steps": g.steps}
+    rec["go_to"] = {"ok": g.ok, "reason": g.reason, "steps": g.steps, "log": g.log}
     if not g.ok:
         return {**rec, "ok": False, "stage": "go_to"}
     f = await face(th, tol=5.0)
-    rec["face"] = {"ok": f.ok, "reason": f.reason}
+    rec["face"] = {"ok": f.ok, "reason": f.reason, "log": f.log}
     if not f.ok:
         return {**rec, "ok": False, "stage": "face"}
     rec["dock_start_pose"] = pose_now()
