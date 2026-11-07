@@ -35,10 +35,12 @@ part = "body";        // "body" | "arm" | "pad" | "all" (preview)
 
 // ---- chassis (measured) ---------------------------------------------------
 acr_z0    = 55;       // acrylic underside above the bench
+foot_t    = 3;        // as the old cliff brackets' feet, so the existing M4 bolts fit (Enoch, 11-07); nuts below
 row_y     = -4.1;     // front hole row centres behind the acrylic's edge (Enoch 11-07: hole edge 2 mm in, 4.2 holes)
 hole_x    = [-32, -16, 16, 32];
 m4        = 4.5;
 track_y0  = -10;      // tracks' first ground contact
+track_front_y = 5;    // track front ~5 mm ahead of the acrylic edge at ~20 mm up (Enoch, 11-07)
 track_r   = 38;       // front sprocket wrap radius (track arc to keep clear of)
 track_x   = [52.5, 82.5];   // track inner / outer edge (30 mm tracks, 165 outside)
 
@@ -100,11 +102,10 @@ module rbox(x0, y0, z0, x1, y1, z1, r = 1.5) {
 module foot() {
   difference() {
     union() {
-      rbox(-40, row_y - 14, acr_z0 - 6, 40, 6, acr_z0);          // under the acrylic
+      rbox(-40, row_y - 14, acr_z0 - foot_t, 40, 6, acr_z0);     // under the acrylic
       rbox(-40, -0.01, acr_z0, 40, 3, acr_z0 + 2);                 // lip in front of the acrylic's edge
     }
     for (x = hole_x) translate([x, row_y, acr_z0 - 7]) cylinder(d = m4, h = 10);
-    for (x = hole_x) translate([x, row_y, acr_z0 - 7]) cylinder(d = 8.6, h = 3.4, $fn = 6);  // nut pockets
   }
 }
 
@@ -117,14 +118,14 @@ module tfmini_mount() {
     for (s = [-1, 1]) translate([s * tf_ear_cc / 2, y0 - 5, tf_zc]) rotate([-90, 0, 0]) cylinder(d = tf_ear_d, h = 6);
   }
   // cheeks from the foot down to the plate
-  for (s = [-1, 1]) rbox(s > 0 ? tf_len / 2 - 1 : -tf_len / 2 - 3, 0, tf_zc - tf_h / 2 - 3, s > 0 ? tf_len / 2 + 3 : -tf_len / 2 + 1, y0, acr_z0 - 6);
+  for (s = [-1, 1]) rbox(s > 0 ? tf_len / 2 - 1 : -tf_len / 2 - 3, 0, tf_zc - tf_h / 2 - 3, s > 0 ? tf_len / 2 + 3 : -tf_len / 2 + 1, y0, acr_z0 - foot_t + 0.1);
 }
 
 // crossbeam under the TFMini carrying the wings and the servos
 module crossbeam() {
   rbox(-cliff_x - 8, 34, 18, cliff_x + 8, 46, 26);
   // ties from the crossbeam up to the TFMini cheeks / foot
-  for (s = [-1, 1]) rbox(s > 0 ? 17 : -22, 6, 18, s > 0 ? 22 : -17, 46, acr_z0 - 6);   // under the TFMini ears, inboard of the servo leads
+  for (s = [-1, 1]) rbox(s > 0 ? 17 : -22, 6, 18, s > 0 ? 22 : -17, 46, acr_z0 - foot_t + 0.1);   // under the TFMini ears, inboard of the servo leads
 }
 
 // Wing, RIGHT side (mirrored for the left): a shelf over the board (which also carries the
@@ -318,14 +319,14 @@ if (part == "print_pads") for (s = [-1, 1]) translate([s * 20, 0, 0]) mirror([s 
 
 // ---- context for the drawing: Grover's front end and the dock (APPROXIMATE) ------------
 // Measured: acrylic underside 55 / ~2 thick, its front edge 10 mm ahead of the tracks'
-// first ground contact, tracks 30 wide and 165 over the outside. Guessed: the track's
-// front profile (ground run to y -10, rising to an idler, front ~y 30), beam sizes, the
+// first ground contact, tracks 30 wide and 165 over the outside, track front ~5 mm ahead of
+// the acrylic edge at 20 mm up. Guessed: the rest of the track profile, beam sizes, the
 // acrylic's width and the spine deck. Dock: base tip at the bumper face, rollers 50 mm on.
 module ctx_grover() {
   for (s = [-1, 1]) {
     hull() {                                                     // track (front 140 mm)
-      translate([s * 67.5 - 15, -10, 18]) rotate([0, 90, 0]) cylinder(r = 18, h = 30);
-      translate([s * 67.5 - 15, 12, 40]) rotate([0, 90, 0]) cylinder(r = 18, h = 30);
+      translate([s * 67.5 - 15, track_front_y - 18, 18]) rotate([0, 90, 0]) cylinder(r = 18, h = 30);
+      translate([s * 67.5 - 15, track_front_y - 18, 40]) rotate([0, 90, 0]) cylinder(r = 18, h = 30);
       translate([s * 67.5 - 15, -150, 18]) rotate([0, 90, 0]) cylinder(r = 18, h = 30);
       translate([s * 67.5 - 15, -150, 40]) rotate([0, 90, 0]) cylinder(r = 18, h = 30);
     }
