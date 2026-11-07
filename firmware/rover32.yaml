@@ -19,6 +19,8 @@
 #   GPIO39/38  left IN1/IN2 (swapped in firmware, 11-01)   GPIO40/41  right IN1/IN2   -> DRV8871 x2 (PWM)
 #   GPIO8      battery divider (ADC1_CH7; external 100k/27k, ~4.7x, recalibrate)
 #   GPIO1      DO NOT USE: its FNK0101 terminal is welded to GND (the 10-31 short)
+#   GPIO10 / GPIO11  contact-arm servos left / right (50 Hz)
+#   GPIO12 / GPIO13  bumper microswitches left / right (pull-up, pressed = low)
 #   GPIO9      dock sense (ADC1_CH8): dock pad + BEFORE the dock diode -> 100k -> node -> 15k -> GND
 #   Free: 10-14, 18, 21, 47.
 #   Avoid 0/3/45/46 (strapping), 19/20 (native USB), 43/44 (CH343 UART),
@@ -56,6 +58,10 @@ globals:
     restore_value: no
     initial_value: 'false'
   - id: rear_cliff_detected   # rear cliff bar (2026-11-07): either rear sensor sees no bench
+    type: bool
+    restore_value: no
+    initial_value: 'false'
+  - id: bump_detected   # nose bumper bar (2026-11-07): either microswitch pressed - refuses forward only
     type: bool
     restore_value: no
     initial_value: 'false'
@@ -235,11 +241,11 @@ script:
           id(last_command_ms) = millis();
           const bool fwdish = l >= 0 && r >= 0 && (l > 0 || r > 0);
           const bool backish = l <= 0 && r <= 0;
-          const bool ok = id(battery_ok) && (backish || !id(cliff_detected) || (id(dock_mode).state && fwdish)) && (fwdish || !id(rear_cliff_detected)) && (!fwdish || !id(obstacle_ahead));
+          const bool ok = id(battery_ok) && (backish || !id(cliff_detected) || (id(dock_mode).state && fwdish)) && (fwdish || !id(rear_cliff_detected)) && (!fwdish || !id(obstacle_ahead)) && (!fwdish || !id(bump_detected));
           if (!ok) {
             id(motor_stop).execute();
-            ESP_LOGW("guard", "Motion blocked (l=%.0f r=%.0f): battery_ok=%d cliff=%d rear_cliff=%d obstacle=%d range=%.0f last_good=%.0f",
-                     l, r, id(battery_ok), id(cliff_detected), id(rear_cliff_detected), id(obstacle_ahead), id(front_range).state, id(last_good_cm));
+            ESP_LOGW("guard", "Motion blocked (l=%.0f r=%.0f): battery_ok=%d cliff=%d rear_cliff=%d obstacle=%d bump=%d range=%.0f last_good=%.0f",
+                     l, r, id(battery_ok), id(cliff_detected), id(rear_cliff_detected), id(obstacle_ahead), id(bump_detected), id(front_range).state, id(last_good_cm));
             return;
           }
           id(tgt_l) = std::max(-1.0f, std::min(1.0f, l / 100.0f));
@@ -430,7 +436,7 @@ interval:
           const float gr = at_rest ? id(tgt_r) : id(cur_r);
           const bool fwdish = gl >= 0 && gr >= 0 && (gl > 0 || gr > 0);
           const bool backish = gl <= 0 && gr <= 0;
-          if (!id(battery_ok) || (!backish && id(cliff_detected) && !(id(dock_mode).state && fwdish)) || (!fwdish && id(rear_cliff_detected)) || (fwdish && id(obstacle_ahead))) {
+          if (!id(battery_ok) || (!backish && id(cliff_detected) && !(id(dock_mode).state && fwdish)) || (!fwdish && id(rear_cliff_detected)) || (fwdish && id(obstacle_ahead)) || (fwdish && id(bump_detected))) {
             id(motor_stop).execute();
             return;
           }
@@ -611,6 +617,50 @@ binary_sensor:
     filters:
       # at 10 Hz the odd read comes back not-ready even on a steady target
       - delayed_off: 400ms
+  # Nose bumper bar (nose module v1, 2026-11-07): lever microswitches, C to GND
+  # and NO to the pin, internal pull-up - pressed reads low. Unwired pins read
+  # "not pressed". Forward is refused and a forward move stopped while either is
+  # pressed; reverse and pivots stay allowed so Grover can back off.
+  - platform: gpio
+    name: "Bumper left"
+    id: bumper_left
+    pin:
+      number: GPIO12
+      mode: {input: true, pullup: true}
+      inverted: true
+    filters:
+      - delayed_off: 100ms
+    on_press:
+      - lambda: 'id(bump_detected) = true;'
+      - if:
+          condition:
+            lambda: 'return id(tgt_l) >= 0 && id(tgt_r) >= 0 && (id(tgt_l) > 0 || id(tgt_r) > 0);'
+          then:
+            - script.execute: motor_stop
+            - text_sensor.template.publish: {id: motion_status, state: "Stopped (bumper)"}
+            - logger.log: "Bumper (left) pressed, stop"
+    on_release:
+      - lambda: 'id(bump_detected) = id(bumper_left).state || id(bumper_right).state;'
+  - platform: gpio
+    name: "Bumper right"
+    id: bumper_right
+    pin:
+      number: GPIO13
+      mode: {input: true, pullup: true}
+      inverted: true
+    filters:
+      - delayed_off: 100ms
+    on_press:
+      - lambda: 'id(bump_detected) = true;'
+      - if:
+          condition:
+            lambda: 'return id(tgt_l) >= 0 && id(tgt_r) >= 0 && (id(tgt_l) > 0 || id(tgt_r) > 0);'
+          then:
+            - script.execute: motor_stop
+            - text_sensor.template.publish: {id: motion_status, state: "Stopped (bumper)"}
+            - logger.log: "Bumper (right) pressed, stop"
+    on_release:
+      - lambda: 'id(bump_detected) = id(bumper_left).state || id(bumper_right).state;'
   - platform: gpio
     name: "Front Left Cliff"
     id: front_left_cliff
