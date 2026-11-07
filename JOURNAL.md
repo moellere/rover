@@ -616,6 +616,19 @@ distance, spacing, chamfer size.
   needs pad voltage >= 9 V held on two reads 1.5 s apart. Open: the
   contacts tolerate less than the ~4 mm the climb lands off - tighter
   centring, or wider pads.
+- **Contacts rethought (11-07):** the pad bars do lie across the rollers
+  (Claude misread a photo as fore-aft), and the rollers turn side to
+  side - 19 mm diameter across, **5 mm wide fore-aft**, ~7 mm proud
+  unloaded, a small raised rim round each - so a single wire across only
+  touches within ~+/-3 mm fore-aft: that is the limit the misses hit.
+  Rollers 90 mm apart c-c; base tip to roller centres **50 mm** (Enoch).
+  Enoch suggested a sprung/hinged pad, then his SG90s: **drive to the
+  base tip, then a servo swings sprung pads down onto the rollers** - no
+  climb, no dock mode, retry on a miss. Pads: copper runs fore-aft, 7-8 mm
+  apart (with 1 mm proud on a 19 mm roller the crown reaches a wire up to
+  ~4 mm off-centre). Plan: one printed nose module (TFMini, both front
+  cliff wings, bumper face, SG90 contact arm) replacing today's four nose
+  parts - Enoch: "a single piece". Waiting on the nose mounting holes.
 
 **Claude-driven:** the S3 pin map and port; dock sense design and values;
 dock mode and its limits; `dock()`'s undock, climb, square-up and centring;
