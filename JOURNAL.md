@@ -25,8 +25,9 @@ DRV8871s at 60 % duty. The rear cliff bar is fitted with both sensors (11-07);
 jumpers and firmware still to do. Open: repeatability runs, ramp v2's
 divot key (first-ridge distance, spacing, chamfer size), battery-triggered
 docking, onboard-camera-only docking, and the power-on twitch (10k
-pull-downs). The buck was never re-metered after the 12 V event, though
-everything on it works. `rover32` was offline on 11-07 (hostname not resolving).
+pull-downs). Buck re-metered after the 12 V event: 5.2 V (Enoch, 11-07). Grover is
+switched off (11-07). `camv3` stays on the bench as the `front` camera (the
+Eufy-lid move is off).
 
 **Where things stood, 2026-10-26:**
 

@@ -132,8 +132,8 @@ straight down** (PTZ; pan sweeps along the bench). In its frame the marker
 end is on the **left**, the open garage-side edge along the **top**, the
 pegboard along the **bottom**. Grover's heading reads directly off its
 outline - check it, and the lane, before every run and before any reverse.
-`camv3` (until now the rear view) is moving to the Eufy's lid; the brain's
-`front` name points at it until it's renamed `eufy`.
+`camv3` stays on the bench as the brain's `front` camera (decided 11-07: the
+Eufy is shelved, so the move to its lid is off).
 
 **The bench has a hatch** (the outlined rectangular panel in the middle of
 the overhead frame) whose edge has a slight lip. A wheel catching it yaws
