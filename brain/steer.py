@@ -252,24 +252,27 @@ DOCK_POSE_FILE = Path(__file__).with_name("dock_pose.json")
 DOCK_WAYPOINTS_MM = (450.0, 200.0)   # on the axis, behind the docked pose
 DOCK_ARRIVE_MM = 0.0        # creep until AT the taught pose: 6 mm short had no contact (2026-10-26)
 DOCK_CREEP_S = 0.12
-DOCK_MAX_CREEPS = 14
+DOCK_MAX_CREEPS = 18        # was 14: one back-off and re-approach used it up (trials 11-07)
 DOCK_STALL_PX = 4.0
 DOCK_BUMP_MM = 25.0         # a stall this close to the pose = bumper against the wall
 DOCK_CHARGE_WAIT_S = 30.0   # battery_voltage is a 25 s rolling average
 DOCK_CHARGE_STEP_V = 0.15   # resting ~11.8 V -> ~12.0-12.2 V on the dock
 DOCK_GUARD_OFF_MM = 250.0  # waypoints this close relax the obstacle guard (the tower is in range)
-DOCK_LATERAL_MM = 4.0       # creep steers back onto the axis beyond this (the rollers allow ~+/-5; was 8
+DOCK_LATERAL_MM = 3.0       # creep steers back onto the axis beyond this (3, under the 5 mm climb limit, 11-07) (the rollers allow ~+/-5; was 8
                             #   while small pivots failed on the slipping left motor, 11-02)
-DOCK_LOOKAHEAD_MM = 150.0   # ... aiming at the axis this far ahead of Grover (was 100: too sharp, 11-01)
+DOCK_LOOKAHEAD_MM = 100.0   # ... aiming at the axis this far ahead of Grover (150 on 11-01 while the
+                            #   left motor slipped; too slow to converge once fixed, trials 11-07)
 DOCK_CLIMB_MM = 50.0        # this close and on the axis: climb pulses, not creeps - the ramp
 DOCK_CLIMB_PCT = 80         #   lip needs a firmer push (2026-11-01, Enoch); 80 % for 0.25 s
 DOCK_CLIMB_S = 0.25
-DOCK_CLIMB_LATERAL_MM = 4.0   # climb only this close to the axis: 6 mm at the lip ended 11 mm off, no contact (11-02)
-DOCK_BACKOFF_S = 0.3        # at the lip but off-axis: back up this much and re-centre
+DOCK_CLIMB_LATERAL_MM = 5.0   # climb only this close to the axis: 6 mm at the lip ended 11 mm off (11-01);
+                              #   4 was inside the overhead's own jitter - 4.3 mm forced a back-off (trials 11-07)
+DOCK_BACKOFF_S = 0.12       # at the lip but off-axis: back up one creep's worth (0.3 s threw it 17 cm, trials 11-07)
 DOCK_MAX_BACKOFFS = 2
 DOCK_SQUARE_DEG = 4.0       # square to the dock heading before climbing: 14 deg skew at the lip
                             #   put both pad bars left of the rollers (11-01)
-DOCK_MAX_CORR_DEG = 8.0     # cap the creep's steering correction off the dock heading (it built 14 deg)
+DOCK_MAX_CORR_DEG = 10.0    # cap the creep's steering correction off the dock heading (8 built 14 deg skew
+                            #   with the slipping motor; 10 with it fixed, trials 11-07)
 DOCK_UNDOCK_MM = 430.0      # starting nearer the dock than this (along the axis): back straight out first
 DOCK_UNDOCK_PULSE_S = 0.4   # reverse pulses (CLAUDE.md: <= 0.5 s, overhead checked before each)
 DOCK_UNDOCK_MAX = 6
