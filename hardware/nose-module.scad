@@ -57,7 +57,9 @@ pcb_l = 31.5;  pcb_w = 14;  pcb_t = 1.6;  pcb_hole_in = 7.5;   // HW-870
 bump_y = 66;  bump_t = 6;  bump_z = [16, 26];  bump_x = 78;
 
 // ---- servo arms (SG90; Enoch's are Smraza S51 9 g, same body) -------------------------------------------------------
-sg_l = 22.5;  sg_w = 12.2;  sg_h = 22.7;  sg_tab_l = 32.2;  sg_tab_cc = 27.5;  sg_shaft_in = 5.9;
+// Datasheet Enoch matched to the S51 (11-07): B 23 long, D 12 thick, E 32 over the tabs,
+// F 19.5 base to tab top, C 28.5 base to gear-housing top, A 32 base to spline top.
+sg_l = 23;  sg_w = 12.2;  sg_h = 22.7;  sg_tab_l = 32.2;  sg_tab_cc = 27.5;  sg_shaft_in = 5.9;
 arm_x    = 45;        // pads over the rollers, 90 mm c-c
 pivot_y  = 62;  pivot_z = 36;
 roller_y = bump_y + bump_t + 50;    // bumper at the dock tip, rollers 50 mm on
@@ -65,8 +67,9 @@ roller_z = 13;        // pressed roller top (~9 base + 7 proud - 3 press)
 hinge_h  = 9;         // pad hinge axis above the pad face (pad 4 + clearance for the arm's tip boss)
 arm_down = atan2(roller_z + hinge_h - pivot_z, roller_y - pivot_y);
 arm_len  = norm([roller_y - pivot_y, roller_z + hinge_h - pivot_z]);
-sg_spline = 4.3;      // output spline face beyond the body's top (gear housing)
-horn_x   = arm_x + 2 + sg_spline;   // the arm's inner face sits on the horn here
+sg_spline = 32 - 22.7 - 1.6;   // case top to the horn's inner face (horn flush with the spline top, A 32)  <- measure with the horn on
+horn_x   = arm_x + 6.3;  // the arm's inner face sits on the horn here (fixed: clear of the cliff board plate at 60.5)
+sg_top_x = horn_x - sg_spline; // servo case top (shaft end)
 arm_t    = 4;         // arm thickness (x)
 // SG90 single-arm horn (the one in the bag) sits in a pocket on the arm's inner face  <- check yours
 horn_hub_d = 7.4;  horn_len = 17;  horn_w0 = 5.6;  horn_w1 = 4.0;  horn_t = 1.6;  horn_holes = [10, 14];
@@ -143,9 +146,9 @@ module bumper() {
 // SG90 on its side, output shaft pointing OUTBOARD (+x on the right) at the pivot;
 // modelled for the RIGHT side, mirrored for the left. Body rests on a floor over the
 // bumper, its mounting tabs screw to a cradle plate.
-sg_tab_from_base = 15.9;    // tab underside above the body's base (shaft end is the top)
+sg_tab_from_base = 19.5 - 2.5;   // tab underside above the base (F 19.5 to the tab top, tab 2.5 thick)
 module servo_mount_r() {
-  bx1 = arm_x + 2;  bx0 = bx1 - sg_h;               // body along x, shaft face at bx1
+  bx1 = sg_top_x;  bx0 = bx1 - sg_h;                // body along x, shaft end at bx1
   by0 = pivot_y - sg_shaft_in;  by1 = by0 + sg_l;  byc = (by0 + by1) / 2;
   tx = bx0 + sg_tab_from_base;                       // tab underside
   difference() {
@@ -223,10 +226,11 @@ module cliff_dummy(s) {
   translate([x - pcb_w / 2, cliff_y + tcrt_w / 2 - 0.5 - pcb_t, cliff_face_z + tcrt_h + 3]) cube([pcb_w, pcb_t, pcb_l]);  // HW-870, screwed to the front of the board plate
 }
 module servo_dummy_r() {
-  bx1 = arm_x + 2;  bx0 = bx1 - sg_h;  by0 = pivot_y - sg_shaft_in;
+  bx1 = sg_top_x;  bx0 = bx1 - sg_h;  by0 = pivot_y - sg_shaft_in;
   translate([bx0, by0, pivot_z - sg_w / 2]) cube([sg_h, sg_l, sg_w]);
   translate([bx0 + sg_tab_from_base, by0 - (sg_tab_l - sg_l) / 2, pivot_z - sg_w / 2]) cube([2.5, sg_tab_l, sg_w]);
-  translate([bx1, pivot_y, pivot_z]) rotate([0, 90, 0]) cylinder(d = 11.8, h = sg_spline);
+  translate([bx1, pivot_y, pivot_z]) rotate([0, 90, 0]) cylinder(d = 11.8, h = 28.5 - sg_h);
+  translate([bx1, pivot_y, pivot_z]) rotate([0, 90, 0]) cylinder(d = 4.8, h = 32 - sg_h);
 }
 module servo_dummy(s) { if (s > 0) servo_dummy_r(); else mirror([1, 0, 0]) servo_dummy_r(); }
 
@@ -241,9 +245,9 @@ module wires_cliff(s) {
   x = s * cliff_x;  zt = cliff_face_z + tcrt_h + 3 + pcb_l;
   for (i = [-1, 0, 1]) wire([[x + i * 2.54, cliff_y + 1, zt], [x + i * 2.54, cliff_y + 1, zt + 6], [s * (62 + i * 2), 30, 62], [s * (58 + i * 2), -10, deck_z]]);
 }
-module wires_servo(s) {   // lead leaves the end face away from the shaft, near the base (Smraza S51 photo, 11-07)
-  bx0 = arm_x + 2 - sg_h;  yl = pivot_y - sg_shaft_in + sg_l;
-  for (i = [-1, 0, 1]) wire([[s * (bx0 + 3), yl, pivot_z + i * 1.3], [s * (bx0 + 3), yl + 3, pivot_z + i * 1.3], [s * (bx0 - 3), yl + 3, pivot_z + i * 1.3], [s * (bx0 - 3), 50, 30 + i * 1.3], [s * (30 + i * 1.3), 30, 30], [s * (30 + i * 1.3), 4, 50], [s * (30 + i * 1.3), -10, deck_z]], 1.3);
+module wires_servo(s) {   // lead leaves the SHAFT-end face (rear here), near the base (Enoch + S51 photo, 11-07)
+  bx0 = sg_top_x - sg_h;  yl = pivot_y - sg_shaft_in;
+  for (i = [-1, 0, 1]) wire([[s * (bx0 + 3), yl, pivot_z + i * 1.3], [s * (bx0 + 3), yl - 3, pivot_z + i * 1.3], [s * (bx0 + 3), 50, 32 + i * 1.3], [s * (30 + i * 1.3), 30, 30], [s * (30 + i * 1.3), 4, 50], [s * (30 + i * 1.3), -10, deck_z]], 1.3);
 }
 module wires_pad(s, ang) {  // pad lead: along the arm, a loop round the pivot, then back to the deck
   hz = roller_z + hinge_h;  lx = horn_x + arm_t + 1.5;

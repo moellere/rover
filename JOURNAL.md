@@ -646,7 +646,7 @@ distance, spacing, chamfer size.
   behind the acrylic's edge (centres ~4 mm). **Nose module v1 drafted**
   (`hardware/nose-module.scad`, not sliced): foot on holes 1/3/7/9 with a
   lip, TFMini plate, socketed cliffs with skids, bumper at 66-72 mm, two
-  SG90s (Enoch's are Smraza S51 9 g) lying on the bumper, shafts outboard,
+  SG90s (Enoch's are Smraza S51 9 g; datasheet A 32 / B 23 / C 28.5 / D 12 / E 32 / F 19.5; lead leaves the shaft-end face near the base) lying on the bumper, shafts outboard,
   62 mm arms with a horn pocket, a thin leaf section as the spring and a
   free M3 hinge so each 26 x 24 mm pad sits flat; three fore-aft 12 AWG
   runs 8 mm apart per pad. Review views (`nose-module-views.png`) and an
