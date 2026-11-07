@@ -27,8 +27,9 @@
 // Front hole row: nearest hole edge 2 mm behind the acrylic's edge (Enoch, 11-07).
 //
 // Render: openscad -o nose-module.stl nose-module.scad
-// Print:  foot face down (as modelled, flipped), tree supports for the arms'
-//         bosses if needed - TBD after review. Blue PETG (Grover parts).
+// Print:  part="print_body" (upside down: the lip and the TFMini plate top on the bed, tree
+//         supports for the frame), part="print_arms" (flat, horn pocket down, one mirrored),
+//         part="print_pads" (copper face down). Views: nose-module-print.png.
 
 part = "body";        // "body" | "arm" | "pad" | "all" (preview)
 
@@ -100,7 +101,7 @@ module foot() {
 module tfmini_mount() {
   y0 = tf_face_y - tf_depth;
   difference() {
-    rbox(-tf_len / 2 - 3, y0 - 4, tf_zc - tf_h / 2 - 3, tf_len / 2 + 3, y0, tf_zc + 5);
+    rbox(-tf_len / 2 - 3, y0 - 4, tf_zc - tf_h / 2 - 3, tf_len / 2 + 3, y0, acr_z0 + 2);   // top level with the lip: both sit on the bed
     for (s = [-1, 1]) translate([s * tf_ear_cc / 2, y0 - 5, tf_zc]) rotate([-90, 0, 0]) cylinder(d = tf_ear_d, h = 6);
   }
   // cheeks from the foot down to the plate
@@ -286,3 +287,12 @@ if (part == "asm_w_pad")    for (s = [-1, 1]) wires_pad(s, arm_down);
 
 echo(str("nose module: arm ", round(arm_len), " mm at ", round(arm_down), " deg down (folded ", arm_up,
          " up); rollers at y=", roller_y, "; cliff face ", cliff_face_z, " mm, skids ", cliff_face_z - skid_drop, " mm"));
+
+// ---- print layouts (2026-11-07): body upside down, acrylic face toward the bed (lip and
+// TFMini plate top touch it; tree supports under the foot's 2 mm step); arms flat on
+// their horn face, one mirrored; pads face down (lugs up).
+if (part == "print_body") translate([0, 0, acr_z0 + 2]) rotate([0, 180, 0]) body();   // a ROTATION, not a mirror
+if (part == "print_arms") for (s = [-1, 1]) translate([s * 12, 0, 0]) mirror([s < 0 ? 1 : 0, 0, 0])
+  translate([0, 0, 0]) rotate([0, -90, 0]) translate([-horn_x, -pivot_y, -pivot_z]) arm(0);
+if (part == "print_pads") for (s = [-1, 1]) translate([s * 20, 0, 0]) mirror([s < 0 ? 1 : 0, 0, 0])
+  translate([-pad_cx, -roller_y, -roller_z]) pad();
