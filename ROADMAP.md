@@ -71,7 +71,7 @@ and comes first.
 | 2.1 | Dock | the Eufy RoboVac 12's charging base (decided 2026-10-24, Claude's call, Enoch's offer) | reuse the base as-is, fed 12.6 V CC/CV from a brick instead of the Eufy adapter; the upright marker on its back wall. Grover's side: a printed carrier under the chassis with two contacts at the base's plate spacing/height, wired to the BMS terminals. Needs the base measured (plate spacing, width, contact height) and confirmed passive. Fallback: a $20-class replacement vacuum base from Amazon |
 | 2.2 | Charge contacts | pad plates (printed 10-24) + pad bars v2 (queued `c36cb73e52`), 2x M4 x 50, nuts, ring terminals, 12 AWG Romex staples - all inventory | **done 2026-10-26**: pad bars v2 across the base's sprung rollers, 12.47 V at the pads (left +), first charge through them. Contact margin at +/-1 cm still to check before auto-dock |
 | 2.3 | 3S charger + protection | BMS installed (HW-288); TalentCell 12.6 V 2 A brick **received 2026-10-26** ($16.45); 1N5822 Schottkys received 10-26 | **done 2026-10-26**: contacts feed the 12.6 V rail (pack + / buck input), - pad to P-, 1N5822 in the + lead so the bare staples are dead off the dock. Pack tops out ~12.0 V. The brick's LED reads green behind the diode (it can't see the pack) - judge charge by voltage/current, not the LED. Reviewed with Enoch, first charge attended, no excess heat |
-| 2.4 | Auto-dock | 1.4, 2.1-2.3 | **next.** Undock -> dock -> charge, filmed, on the S3 spinal cord (11-02: dock ramp, dock mode at the lip, dock sense confirms contact instantly, edge keep-out, 0 mm from the pose); first achieved 10-26 on the old board. Still to do: repeatability over many runs, a battery threshold that triggers it, ramp v2 keyed into the dock's divot, and docking on the onboard camera alone (Phase 3) |
+| 2.4 | Auto-dock | 1.4, 2.1-2.3 | **next.** Undock -> dock -> charge, filmed, on the S3 spinal cord (11-01: dock ramp, dock mode at the lip, dock sense confirms contact instantly, edge keep-out, 0 mm from the pose); first achieved 10-26 on the old board. Still to do: repeatability over many runs, a battery threshold that triggers it, ramp v2 keyed into the dock's divot, and docking on the onboard camera alone (Phase 3) |
 | 2.5 | Charge telemetry | 2.3 | charging state and current into the brain and HA |
 
 ## Tier 3 - robustness and efficiency
@@ -106,7 +106,7 @@ is janky; these make docking work unattended:
    BTF-Lighting WS2812B single-pixel dots, **10 mm dia, 3 mm thick with LED**
    (pads on the back: Din top, Dout bottom, 5V right, gnd left); status = 10 mm wide 60/m strip, 6-8 pixels.
 6a'. **Carrier board for the electronics (decided 10-26, with Enoch: "almost
-   unmanageable today")** - with the DRV8871 swap, before more sensors and before
+   unmanageable today"; 11-07: not built - the rework used the FNK0101 + breadboard instead)** - with the DRV8871 swap, before more sensors and before
    the status-strip plate / rear cliff mounts: ESP32 devkit in header sockets
    (removable; a later S3 or other MCU is a new carrier, not a teardown), a keyed
    JST-XH connector per peripheral (4 cliff, TFMini, gyro, LED chain, battery
@@ -156,7 +156,7 @@ is janky; these make docking work unattended:
 | 4.5 | House rules | Enoch | where it may go, quiet hours, what to do when it meets an animal (stop, retreat) |
 | 4.6 | Odometry without the overhead camera | optical-flow sensor | Tracks slip, so motor time can't measure distance. A near-field flow sensor (PAA5100JE-type, ~15-35 mm working distance, own LEDs) under the chassis measures the body's real motion; with the gyro for heading that is dead reckoning, and ArUco landmarks (4.3) reset its drift. The house floors suit it (Enoch, 11-01: hardwood, matte tile with grout, low-pile carpet). Calibrate counts/mm once on the bench against the overhead. Its surface-quality reading says when to fall back to motor time. Price to research before asking. |
 | 4.7 | Wider obstacle view | 3.4, SG90 (inventory) | Sweep the TFMini on a servo for a poor-man's 2D scan / occupancy map; a 360 deg lidar if budget allows. |
-| 4.8 | Rear cliff bar + bumper | stairs, pets | Rear cliff bar is designed (`hardware/rear-cliff-bar.scad`), not built; a microswitch bumper across the nose catches what the TFMini misses. Both before any roaming. |
+| 4.8 | Rear cliff bar + bumper | stairs, pets | Rear cliff bar printed 11-03 (`hardware/rear-cliff-bar.scad`), firmware still to add (GPIO7/15); a microswitch bumper across the nose catches what the TFMini misses. Both before any roaming. |
 
 ## Tier 5 - operations and fun
 

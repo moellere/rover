@@ -15,6 +15,9 @@ on 5 V it would drive the ESP32's input above 3.3 V.
 
 # As built before the DRV8871 swap (2026-10-31)
 
+> Historical: GPIO numbers here are the dead WROOM-32's. Current wiring:
+> [spine-deck-wiring.png](spine-deck-wiring.png).
+
 Recorded before Enoch disassembled the acrylic plate. The firmware pin map is
 authoritative (`firmware/rover32.yaml`); the physical routing below comes from
 his photos and his labels - **rows marked TODO are not yet confirmed** and must

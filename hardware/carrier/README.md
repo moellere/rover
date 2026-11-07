@@ -1,5 +1,9 @@
 # Grover carrier board - v1 DRAFT (2026-10-26, for Enoch's review)
 
+> **Status 11-07:** this PCB was never built. The 10-31 rework used the Freenove
+> FNK0101 and a breadboard (see the [wiring diagram](spine-deck-wiring.png)). The
+> pin map below is current; the board design around it is a draft.
+
 One board for Grover's electronics, replacing the breadboard and flying leads
 ("almost unmanageable today", Enoch). ROADMAP item 6a'. Nothing here is
 ordered or built; this is the design to argue with.
@@ -15,7 +19,7 @@ doesn't fit wirestudio's board-rail model and is added in KiCad.
 - **MCU in sockets** (2x 19-pin female headers): a later ESP32-S3 - or the Pico 2 W
   Enoch raised - is a new carrier, not a teardown. The spinal cord stays an ESP32
   for now (ROADMAP 6a').
-- **Keep `rover32`'s proven pin map**, except the motor driver change below.
+- **Pin map:** the current one below (the S3 needed a new map on 11-01).
 
 ## Pin map (ESP32-S3, YD-ESP32-23, since 2026-11-01)
 

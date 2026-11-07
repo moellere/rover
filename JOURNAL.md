@@ -18,15 +18,15 @@ breakdown of the notable decisions. Newest entry on top.
 
 ## Current status (as of the latest entry below)
 
-**Where things stand, 2026-11-01:** rover32's devkit died (12 V from a DRV8871 header
-VM pin, entry below); replaced by an ESP32-S3 (YD-ESP32-23) on a new pin
-map; running at Enoch's desk, LEDs work. drivers, motors and pin
-map proven (one-track test passed). `dock` undocks, returns and charges, filmed (11-02: ramp, fixed left motor, 60 % duties, dock mode, dock sense, edge keep-out, 4 mm centring).
-To do: a top-marker holder for the new top plate, the boot twitch. Otherwise mid carrier rework -
-DRV8871 drivers never run on the motors, Wago power deck
-and battery tray printed, top plate v2 printing; Grover is apart and
-cannot drive until the deck is reassembled. The 10-26 notes below
-still hold for everything else.
+**Where things stand, 2026-11-07:** Grover undocks, docks and charges hands
+off on the overhead camera (filmed 11-01: 0 mm from the taught pose, 12.54 V).
+`rover32` is an ESP32-S3 on the FNK0101; the carrier rework is finished, with
+DRV8871s at 60 % duty. The rear cliff bar is printed (11-03), but its fitting,
+wiring and firmware are not recorded yet. Open: repeatability runs, ramp v2's
+divot key (first-ridge distance, spacing, chamfer size), battery-triggered
+docking, onboard-camera-only docking, and the power-on twitch (10k
+pull-downs). The buck was never re-metered after the 12 V event, though
+everything on it works. `rover32` was offline on 11-07 (hostname not resolving).
 
 **Where things stood, 2026-10-26:**
 
@@ -237,49 +237,16 @@ notes after it carry the detail (a few were appended out of order).
 
 ---
 
-## 2026-10-27 .. 10-31 - The carrier rework: DRV8871s, Wago power deck, battery on the rails, a fixed top plate
+## 2026-10-31 .. 11-03 - Smoke, an S3 spinal cord, and Grover undocks, docks and charges on film
 
-*Model: Opus 5.5. Guidance: Enoch said the electronics had become "almost
-unmanageable" and offered layout ideas, measurements and photos throughout;
-DRV8871 drivers arrived; he asked for Grover's parts in blue PETG from now on.*
+*Model: Opus 5.5. Guidance: Enoch reported the spinal cord had let its smoke
+out, supplied the replacement board and every measurement, and tested by hand
+throughout; he proposed the marker C-bracket, the approach ramp and the divot
+key, spotted the skew, the dragging sensor and the loose motor, and set the
+review-before-slicing rule ("make sure it's not mirrored"). (This entry was
+filed inside the 10-31 one at first and reordered 11-07; times are local.
+File names and some code comments say 11-02: that was the UTC date.)*
 
-- **Motor drivers:** the L298N is out, two DRV8871 boards in (3-pack,
-  $14.26, Enoch's pick of listing). Firmware flashed: four LEDC outputs
-  (left GPIO22/23, right GPIO19/18, 1 kHz), slow decay (one input held
-  high, the other PWM'd at 1 - duty), brake = both high, coast = both
-  low. Current limit ~2.1 A per board (the boards' 30 k ILIM). **Not yet
-  run on the motors** - first test with the tracks lifted, buck at 5.2 V.
-- **Driver tray v3 (printed white, `260931d442`):** a power deck on the
-  acrylic - buck lengthwise, OUT forward; two Wago 221-415s press-fit (+
-  bus left, GND right); both DRV8871s at the rear on slotted standoffs
-  clear of their 2 mm through-hole pins; a BMS opening and drill-template
-  holes. v1 had the buck's diagonal holes mirrored (Enoch caught it); v2
-  bridged a separate Wago tray in; v3 follows Enoch's mock-up of the five
-  parts.
-- **Battery tray (printed blue, `cfde5f9b89`):** Enoch's idea - the pack
-  rides on top of the two track rails behind the acrylic, not on the
-  posts. v1 recessed it between the rails and the rear motor was in the
-  way; v2 sits on the rail tops with 12 mm tabs bolting to the top hole
-  row through slots. **It printed mirrored**: the file's frame had y
-  pointing rearward, which makes +x Grover's LEFT, and the labels assumed
-  right. Enoch is fitting the print as is (short tab now left, BMS window
-  over the motor); the file is fixed with a final `mirror()`, and
-  CLAUDE.md now says to check handedness on a top view before slicing.
-- **Top plate (v2 printing blue, `4e53ea4a93`, 10-31):** with the pack
-  gone from the posts, nothing under the deck needs access, so the
-  hinged-plate plan was dropped (Enoch's suggestion) for a plate fixed
-  on the four posts: Freenove FNK0101 (devkit fitted) on the left on
-  5 mm standoffs, the half breadboard on the right in a locating pocket,
-  cradle v3's camera perch grid on a front tab, cable slots, post holes
-  slotted +/-1.5 mm. v1/v1b stood on 15 mm risers because Claude had
-  read the post tops as level with the tracks; Enoch's side photo showed
-  them well clear, so v2 sits straight on the posts at 3.5 mm thick
-  (cradle v3 was 11 mm, too thick for his bolts).
-- **LEDs (late 10-31):** with rover32 on the bench, a test over the ESPHome
-  API (headlight white, strip red/green/blue, whole chain white) lit
-  everything - including the status strip, dark since 10-26 because the
-  right dot's Dout was shorted to 5 V (Enoch resoldered it). Home
-  Assistant had banned the VM again (403), so the test went direct.
 - **rover32 destroyed (night of 10-31):** wiring the drivers, the
   DRV8871 header's VM pin went to the ESP32 and the devkit let its smoke
   out. On these boards header VM is tied straight to the POWER screw
@@ -311,7 +278,7 @@ DRV8871 drivers arrived; he asked for Grover's parts in blue PETG from now on.*
   in red, both USB-C ports. The gyro moved to GPIO42/GPIO2 (right header, a
   short hop to the breadboard) instead of 9/10, which would have looped
   around the board; OTA-flashed.
-- **First DRV8871 bench test (11-01 afternoon, run from the WireStudio
+- **First DRV8871 bench test (11-01 late morning, run from the WireStudio
   session by mistake, handed back here):** both drivers, both motors and
   their power are good - Enoch tied each IN1/IN2 to 3.3 V and got both
   directions on both. Every "dead pin" reading (GPIO39, GPIO40) was the
@@ -326,7 +293,7 @@ DRV8871 drivers arrived; he asked for Grover's parts in blue PETG from now on.*
   visibly moved (GPIO39 at 3.3 V) and wasn't re-run with the guard off -
   a one-track-at-a-time test (L+, L-, R+, R-) comes before the spine deck
   goes back on. The API was flaky just after boot (Hello timeouts).
-- **Spine deck rewired on the S3 (11-01 evening):** the TFMini survived the
+- **Spine deck rewired on the S3 (11-01 ~2 PM):** the TFMini survived the
   12 V - answers at 0x10, 73 cm at strength 395. Gyro answers at 0x69
   (bus_c 42/2), cliff FL/FR read floor. Battery reads 1.06 V, so the
   divider isn't reaching GPIO1 yet. The firmware still integrates the
@@ -337,6 +304,34 @@ DRV8871 drivers arrived; he asked for Grover's parts in blue PETG from now on.*
   (~+100 deg integrated for a ~90 deg turn), so yaw is still +Z - the
   default needed no change. (A ~-55 deg Z swing just before it was
   Grover being set down.)
+- **Battery sense moved to GPIO8:** GPIO1's FNK0101 terminal was welded to
+  GND by the 10-31 short (Enoch). On GPIO8 it reads 14.6 V with the
+  WROOM-32 factor. Not an over-read: Enoch metered the node at 3.897 V
+  with 12.16 V in (ratio 0.32, not 100k/27k's 0.213 - most likely a 47k
+  in the bottom position), so the ADC was saturated at ~3.13 V, GPIO8 was
+  above its ~3.6 V limit, and the low-battery guard was blind (always
+  "14.6 V"). Node off GPIO8 until the bottom resistor is a real 27k;
+  then recalibrate.
+- **One-track test (11-01 ~2:03 PM):** with a healthy battery
+  reading (no 20 s boot window) and something under the cliff sensors,
+  L+80, L-80, R+80, R-80 for 1 s each - all four moved (Enoch: "all
+  good"). Directions were not really proven: the left motor turned out
+  reversed on the bench an hour later. The two earlier runs moved nothing: the first was
+  sent at 0.9 s of uptime with Grover in the air (cliff guard blocks
+  forward; why the reverse steps did nothing too was not pinned down -
+  probably too early in boot), the second never fired.
+- **Boot twitch:** at power-on the left track jerks briefly - forward
+  once, backward-then-forward another time - before the firmware's
+  first act (coast). So a driver pin moves during reset/bootloader, when
+  ESPHome isn't in control yet. Next: a 10k pull-down on the left IN
+  terminal (stops it if it's a weak pull-up) or a logic-analyzer capture.
+  **Narrowed (11-01):** no twitch on either soft reset - the OTA reboot
+  or the new Restart button (esp_restart) - only on power-on and the EN
+  button. So it is the pads' state during a *hardware* reset, which no
+  firmware can reach. Most likely a weak internal pull-up (~45k) beating
+  the DRV8871's ~100k input pull-down; the fix is a 10k pull-down on each
+  driver input (verify with one on left IN1 first). It matters: every
+  pack connect is a power-on.
 - **Battery calibrated:** with the real 27k the node reads 2.522 V at
   12.15 V. First factor 4.864 was wrong: Grover was touching the dock on
   and off, so the meter caught charger voltage that the 25 s average
@@ -366,7 +361,6 @@ DRV8871 drivers arrived; he asked for Grover's parts in blue PETG from now on.*
   edge (photo), so a bracket can't stack on it - three bolts at most.
 
 ![Rear-left post bolt against the FNK0101's edge, battery tray behind](images/46-rear-left-post-bolt-by-fnk0101-2026-11-01.jpg)
-
 - **Marker bracket (Enoch's design):** Claude first drafted a cap on the
   camera cradle; Enoch proposed a C-bracket off the two rear post bolts,
   loops reaching forward under the FNK0101, carrying the old marker cap
@@ -375,17 +369,17 @@ DRV8871 drivers arrived; he asked for Grover's parts in blue PETG from now on.*
   the post centre. Enoch confirmed the 5 mm gap under the FNK0101, the
   existing bolts and the room to the battery holder. Enoch then added a
   lip under each leg that drops over the plate's rear edge, so it can't
-  rock. Staged blue PETG, job `648a584ab7` (52 min, 11 g; the lipless
-  `e032076ad6` skipped) - waits on the bed being cleared and Enoch's go.
+  rock. Blue PETG, job `648a584ab7` (52 min, 11 g; the lipless
+  `e032076ad6` skipped), started by phone tap.
 - **Charging lights:** they don't come on by themselves - the status
   strip's "Charging" effect exists but nothing triggers it, and the
   pack voltage alone can't tell "on the dock" from "freshly charged".
-  Fix (Enoch building it): a dock-sense divider, 100k/15k, on the power
+  Fix: a dock-sense divider, 100k/15k, on the power
   deck next to D1, tapping the pad + lead *before* the diode - 1.64 V at
   12.6 V, 0 V off the dock - into GPIO9 as an analog input (1.6 V is
   under the S3's logic-high threshold). Firmware: "Dock voltage" and an
   "On dock" sensor (9 V on / 6 V off) that runs the Charging effect;
-  compiled, held until the divider is wired (a floating GPIO9 could fake
+  flashed only once the divider was wired (a floating GPIO9 could fake
   "on dock"). The brain gets an instant contact signal for docking too.
   **Built and flashed (11-01):** Enoch metered 1.625 V at the node on
   the dock; the ADC read 1.608 V, so the factor is 7.748 (was 7.667).
@@ -432,7 +426,8 @@ DRV8871 drivers arrived; he asked for Grover's parts in blue PETG from now on.*
   most two climbs (80 %, 0.25 s); it switches itself off after 3 s;
   contact (On dock) stops a forward push and ends it; reverse, pivots,
   the watchdog, disconnect and battery guards are untouched. What it
-  can't catch: a wrong overhead reading inside that window.
+  can't catch: a wrong overhead reading inside that window. (The axis
+  limit tightened to 4 mm later the same evening.)
 - **Third `dock`, first with dock mode (11-01 ~5:16 PM):** waypoints 70 /
   72 mm off; the creep steered out a 22-29 mm lateral error but left
   Grover 14 deg across the axis (196.7 vs 182.5) when it reached the lip
@@ -464,7 +459,7 @@ DRV8871 drivers arrived; he asked for Grover's parts in blue PETG from now on.*
   so <= 14 % keeps 3 mm under them). The servo drop-down stays the
   fallback, and the likely house answer.
   Printing in **white** PETG (Enoch switched - best for the cliff
-  sensors), job `3ffa29cb05`, 1 h 28 m, 39 g, started ~6 PM on "bed is
+  sensors), job `3ffa29cb05`, 1 h 27 m, 39 g, started ~6 PM on "bed is
   clear, ready to print".
 
 ![The dock's front edge, painted white, ruler along it](images/47-dock-front-edge-ruler-2026-11-01.jpg)
@@ -475,7 +470,14 @@ the lurch is the 6 mm step at the tip, which the wedge removes.
 
 ![The dock from the side, ruler at the base: thin rounded tip, top rising toward the tower](images/48-dock-side-profile-ruler-2026-11-01.jpg)
 
-- **Ramp fitted, pose re-taught (11-02):** white wedge against the dock
+For a ramp v2 keyed into the dock (Enoch's idea, not built): the base's front has a symmetric trapezoid divot, 70 mm wide at the
+front edge, 30-35 mm at the short end, 72 mm long, 1.5 -> 7 mm deep, with 5 ridges 0.5-1 mm tall. Still needed: first-ridge
+distance, spacing, chamfer size.
+
+![The divot from above, ruler across its short end](images/49-dock-divot-top-2026-11-02.jpg)
+![Depth at the divot's short end](images/50-dock-divot-depth-2026-11-02.jpg)
+![The divot's length](images/51-dock-divot-length-2026-11-02.jpg)
+- **Ramp fitted, pose re-taught (11-01 ~7:30 PM):** white wedge against the dock
   (Enoch repositioned the dock: pose 607.5 / 453.0 / 187.6, On dock
   True, both cliffs read floor). First `dock` with it stopped at the
   450 mm waypoint: `face` couldn't fix 6 deg in 3 turns, and Enoch saw
@@ -495,10 +497,10 @@ the lurch is the 6 mm step at the tip, which the wedge removes.
   per-step log wasn't printed, so the cause is unproven. Before any more
   autonomous runs: single-pulse calibration at 60 % on the overhead, a
   keep-out band along the open edge in the brain, and every step logged.
-  **Calibration (11-02):** forward 0.2 s at 60 %: 66 mm, dead straight.
+  **Calibration (~7:45 PM):** forward 0.2 s at 60 %: 66 mm, dead straight.
   Then `turn(+30)` drove Grover ~70 cm mostly forward, yawing only ~20 deg
-  before its 3 s cap, ending beside the dock among the parts trays -
-  stopped by hand command. The firmware turn is set_motion(-d, +d), the
+  before its 3 s cap, ending beside the dock among the parts trays;
+  the turn's own cap ended it. The firmware turn is set_motion(-d, +d), the
   same path as drive, so the left track is not running backward when
   told to: pivots become forward arcs. That explains the failed `face`
   and the drive to the edge. Prior hints: "left reverse never visibly
@@ -516,7 +518,7 @@ the lurch is the 6 mm step at the tip, which the wedge removes.
   open edge in the overhead frame; dock pose sits at 174 mm, the incident
   spot was 88 mm) and a fix for go_to's cliff check (it referenced dock's
   `at_lip`).
-- **Docked and charging, cleanly (11-02, ~2:12 AM UTC):** waypoint 450 mm
+- **Docked and charging, cleanly (11-01 ~8:12 PM):** waypoint 450 mm
   in 3 pulses + a turn (a 0.42 s pulse ~29 cm, as modelled), `face`
   165 -> 186 deg in two turns, waypoint 200 mm, `face` 187.0, creep
   lateral 16 -> 9 -> 3 -> 2 mm, ONE climb in dock mode with both cliffs
@@ -525,7 +527,7 @@ the lurch is the 6 mm step at the tip, which the wedge removes.
   `brain/runs/2026-11-02-dock-ramp-contact.json`. The fixes that made it:
   the left motor's gearbox coupling, the ramp, 60 % duties, the painted
   base, the swapped cliff sensor, dock mode and dock sense.
-- **Undock -> dock -> charge, filmed (11-02, ~2:27 AM UTC).** `dock()` now
+- **Undock -> dock -> charge, filmed (11-01 ~8:27 PM).** `dock()` now
   undocks first when it starts on the dock (straight reverse along the
   axis, 0.4 s pulses, overhead checked before each). First filmed try
   (run b) climbed on 6 mm off-axis and ended 11 mm to the side - no
@@ -541,48 +543,74 @@ the lurch is the 6 mm step at the tip, which the wedge removes.
   `scripts/record_bench.py` (benchcam snapshots, ~1.6 frames/s, encoded
   with imageio-ffmpeg's bundled ffmpeg). Step log:
   `brain/runs/2026-11-02-undock-dock-filmed.json`.
-- **Hosted brain brought current (11-02, homelab session, Enoch's go):**
+- **Hosted brain brought current (11-01 ~9:20 PM, homelab session, Enoch's go):**
   the cluster's rover-brain had run image 0.1.0 since 10-05, with its
   sealed ROVER_HOST still the dead board's IP. Now
   `ghcr.io/moellere/rover:sha-ede5bf7` (argocd PR #201), ROVER_HOST the
   rover32 hostname; its status returns on_dock / dock_voltage and it
   exposes dock, face, go_to, turn, set_ramp. Anything odd through the
   hosted MCP before tonight was old code plus a stale address.
-- **Rear cliff bar (11-02/03):** Enoch asked for the arms to angle inward
+- **Rear cliff bar (11-01..03):** Enoch asked for the arms to angle inward
   to the crossbar (they ran close to the tracks); tracks are 30 mm wide,
-  so the 105/165 mm assumption holds. Printing in blue PETG, job
-  `9434b1b09c`, started 11-03 on Enoch's "can you confirm the start?" -
+  so the 105/165 mm assumption holds. Printed in blue PETG, job
+  `9434b1b09c` (1 h 18 m, 25 g, done 11-03 ~9:46 AM), started on Enoch's "can you confirm the start?" -
   the warden's phone notification linked an internal IP he couldn't open
   from outside, so the start was confirmed in chat. Wiring: RL -> GPIO7,
-  RR -> GPIO15. Docs brought up to the 11-02 state the same night.
-- **Battery sense moved to GPIO8:** GPIO1's FNK0101 terminal was welded to
-  GND by the 10-31 short (Enoch). On GPIO8 it reads 14.6 V with the
-  WROOM-32 factor. Not an over-read: Enoch metered the node at 3.897 V
-  with 12.16 V in (ratio 0.32, not 100k/27k's 0.213 - most likely a 47k
-  in the bottom position), so the ADC was saturated at ~3.13 V, GPIO8 was
-  above its ~3.6 V limit, and the low-battery guard was blind (always
-  "14.6 V"). Node off GPIO8 until the bottom resistor is a real 27k;
-  then recalibrate.
-- **One-track test passed (11-01, 20:03 UTC):** with a healthy battery
-  reading (no 20 s boot window) and something under the cliff sensors,
-  L+80, L-80, R+80, R-80 for 1 s each - all four moved, the right way
-  (Enoch: "all good"). The two earlier runs moved nothing: the first was
-  sent at 0.9 s of uptime with Grover in the air (cliff guard blocks
-  forward; why the reverse steps did nothing too was not pinned down -
-  probably too early in boot), the second never fired.
-- **Boot twitch:** at power-on the left track jerks briefly - forward
-  once, backward-then-forward another time - before the firmware's
-  first act (coast). So a driver pin moves during reset/bootloader, when
-  ESPHome isn't in control yet. Next: a 10k pull-down on the left IN
-  terminal (stops it if it's a weak pull-up) or a logic-analyzer capture.
-  **Narrowed (11-01):** no twitch on either soft reset - the OTA reboot
-  or the new Restart button (esp_restart) - only on power-on and the EN
-  button. So it is the pads' state during a *hardware* reset, which no
-  firmware can reach. Most likely a weak internal pull-up (~45k) beating
-  the DRV8871's ~100k input pull-down; the fix is a 10k pull-down on each
-  driver input (verify with one on left IN1 first). It matters: every
-  pack connect is a power-on.
+  RR -> GPIO15; not yet in the firmware.
 
+**Claude-driven:** the S3 pin map and port; dock sense design and values;
+dock mode and its limits; `dock()`'s undock, climb, square-up and centring;
+the edge keep-out; the duty diagnosis; `scripts/record_bench.py`; the ramp and
+bracket geometry. Also the misses: the VM pin left off the diagram, and running
+`dock` on new drivers with old duties and no slow test first.
+**Enoch-decided:** the YD-ESP32-23; all wiring and soldering; the C-bracket,
+ramp and divot-key ideas, the lip and the angled rear arms; white for the ramp;
+fixing the motor and swapping the sensor; agreeing to dock mode; filming the
+run; approving the hosted brain's rollout.
+
+## 2026-10-27 .. 10-31 - The carrier rework: DRV8871s, Wago power deck, battery on the rails, a fixed top plate
+
+*Model: Opus 5.5. Guidance: Enoch said the electronics had become "almost
+unmanageable" and offered layout ideas, measurements and photos throughout;
+DRV8871 drivers arrived; he asked for Grover's parts in blue PETG from now on.*
+
+- **Motor drivers:** the L298N is out, two DRV8871 boards in (3-pack,
+  $14.26, Enoch's pick of listing). Firmware flashed: four LEDC outputs
+  (left GPIO22/23, right GPIO19/18, 1 kHz), slow decay (one input held
+  high, the other PWM'd at 1 - duty), brake = both high, coast = both
+  low. Current limit ~2.1 A per board (the boards' 30 k ILIM). **Not yet
+  run on the motors** - first test with the tracks lifted, buck at 5.2 V.
+- **Driver tray v3 (printed white, `260931d442`):** a power deck on the
+  acrylic - buck lengthwise, OUT forward; two Wago 221-415s press-fit (+
+  bus left, GND right); both DRV8871s at the rear on slotted standoffs
+  clear of their 2 mm through-hole pins; a BMS opening and drill-template
+  holes. v1 had the buck's diagonal holes mirrored (Enoch caught it); v2
+  bridged a separate Wago tray in; v3 follows Enoch's mock-up of the five
+  parts.
+- **Battery tray (printed blue, `cfde5f9b89`):** Enoch's idea - the pack
+  rides on top of the two track rails behind the acrylic, not on the
+  posts. v1 recessed it between the rails and the rear motor was in the
+  way; v2 sits on the rail tops with 12 mm tabs bolting to the top hole
+  row through slots. **It printed mirrored**: the file's frame had y
+  pointing rearward, which makes +x Grover's LEFT, and the labels assumed
+  right. Enoch is fitting the print as is (short tab now left, BMS window
+  over the motor); the file is fixed with a final `mirror()`, and
+  CLAUDE.md now says to check handedness on a top view before slicing.
+- **Top plate (v2 printing blue, `4e53ea4a93`, 10-31):** with the pack
+  gone from the posts, nothing under the deck needs access, so the
+  hinged-plate plan was dropped (Enoch's suggestion) for a plate fixed
+  on the four posts: Freenove FNK0101 (devkit fitted) on the left on
+  5 mm standoffs, the half breadboard on the right in a locating pocket,
+  cradle v3's camera perch grid on a front tab, cable slots, post holes
+  slotted +/-1.5 mm. v1/v1b stood on 15 mm risers because Claude had
+  read the post tops as level with the tracks; Enoch's side photo showed
+  them well clear, so v2 sits straight on the posts at 3.5 mm thick
+  (cradle v3 was 11 mm, too thick for his bolts).
+- **LEDs (late 10-31):** with rover32 on the bench, a test over the ESPHome
+  API (headlight white, strip red/green/blue, whole chain white) lit
+  everything - including the status strip, dark since 10-26 because the
+  right dot's Dout was shorted to 5 V (Enoch resoldered it). Home
+  Assistant had banned the VM again (403), so the test went direct.
 - **Gyro:** Enoch had screwed it upright to the old cradle's front
   face, where the Z axis the firmware reads lies horizontal - `turn()`
   would not see the rotation. It goes upright into the breadboard

@@ -22,20 +22,20 @@ instructions, and readable as plain English by anyone.
 2. **Phase 2 (current):** recharge itself - it docks and charges on the bench; next, on its own when the battery runs low.
 3. **Phase 3:** roam the house.
 
-## Where it stands (2026-11-02)
+## Where it stands (2026-11-07)
 
 - **It docks and charges by itself.** `dock()` backs Grover off the Eufy
   base, drives the dock's axis on the overhead camera, squares up,
   centres to within 4 mm, climbs a printed ramp onto the base and stops
   the instant the pads touch - **0 mm from the taught pose, charging, on
-  film (11-02):** [timelapse](images/52-autonomous-undock-dock-timelapse-2026-11-02.mp4).
-  (First done 10-26 on the old board: [timelapse](images/35-autonomous-dock-timelapse-2026-10-26.mp4).)
+  film (11-01):** [timelapse](images/52-autonomous-undock-dock-timelapse-2026-11-02.mp4).
+  (First done 10-26 on the old board and L298N: [timelapse](images/35-autonomous-dock-timelapse-2026-10-26.mp4).)
 - **New spinal cord (11-01):** the ESP32 devkit died when a DRV8871
   header VM pin (12 V) met its 5V; `rover32` is now an **ESP32-S3**
   (YD-ESP32-23) on the same Freenove FNK0101, with a new pin map
   ([wiring](hardware/carrier/spine-deck-wiring.png)). Motor drivers are
   two **DRV8871s** (the L298N is retired); duties 60 % (min/drive/pivot).
-- **Carrier rework done (10-31..11-02):** power deck (driver tray, buck,
+- **Carrier rework done (10-31..11-01):** power deck (driver tray, buck,
   Wago buses) on the acrylic, pack in a tray on the tread beams, top
   plate on the posts carrying the FNK0101 and a breadboard, the overhead
   marker on a C-bracket off the rear post bolts.
@@ -59,7 +59,7 @@ instructions, and readable as plain English by anyone.
   battery and dock voltage, the onboard camera, the overhead bench camera.
 - **The Eufy RoboVac 12** is shelved as a chassis; its charging base is
   Grover's dock.
-- Known hazards: no rear cliff sensors yet (bar designed, not printed);
+- Known hazards: no rear cliff sensors yet (bar printed 11-03, not yet in the firmware);
   the cliff guard trips late enough that edge tests need a soft landing
   or a tether; the left track twitches at power-on until the driver
   inputs get pull-downs (see `CLAUDE.md` and the journal).
@@ -88,8 +88,7 @@ look again - talking to the rover over ESPHome's native API.
   in [spine-deck-wiring.png](hardware/carrier/spine-deck-wiring.png)
 - Motor drivers: 2x DRV8871 (PWM on IN1/IN2; header VM is 12 V - leave it
   unconnected)
-- Power: 3x 18650 in 3S with a BMS (12.6 V full), 5 A blade fuse, Wago
-  buses; LM2596 buck at 5.29 V for the ESP32, camera, TFMini and LEDs;
+- Power: 3x 18650 in 3S with a BMS (12.6 V full), Wago buses; LM2596 buck at 5.29 V for the ESP32, camera, TFMini and LEDs;
   battery sense 100k/27k into GPIO8 (calibrated); dock sense 100k/15k
   from the pad lead into GPIO9
 - Sensing: Benewake TFMini LiDAR (direct GH1.25 lead, 5 V); two front
@@ -180,8 +179,8 @@ the same three shots - side, top, rear - so the builds compare directly.
 
 | Date | Build | Why it changed | Photo |
 |---|---|---|---|
-| 11-01/02 | **ESP32-S3 spinal cord, dock kit**: `rover32` on a YD-ESP32-23 in the same FNK0101 (new pin map); dock sense on GPIO9; a white approach ramp at the dock; the marker on a C-bracket; the left motor re-seated on its gearbox | The ESP32 died to 12 V from a DRV8871 header VM pin; the dock's lip made climbs lurch; the loose motor (from the 10-18 fall) turned pivots into forward arcs | [dock front](images/47-dock-front-edge-ruler-2026-11-01.jpg), [timelapse](images/52-autonomous-undock-dock-timelapse-2026-11-02.mp4) |
-| 10-31 | **Carrier rework** (done 11-02): DRV8871 drivers on a printed power deck with Wago buses; pack in a tray on the tread beams behind the deck; a fixed top plate on the posts for the FNK0101 breakout and a breadboard; rear cliff bar | The wiring had become "almost unmanageable" (Enoch); the DRV8871s are smaller than the L298N and drop far less voltage | [before](images/37-electronics-before-rework-2026-10-31.jpg), [top](images/44-battery-tray-and-power-deck-top-2026-10-31.jpg), [rear](images/45-rear-view-battery-tray-motor-2026-10-31.jpg) |
+| 11-01 | **ESP32-S3 spinal cord, dock kit**: `rover32` on a YD-ESP32-23 in the same FNK0101 (new pin map); dock sense on GPIO9; a white approach ramp at the dock; the marker on a C-bracket; the left motor re-seated on its gearbox | The ESP32 died to 12 V from a DRV8871 header VM pin; the dock's lip made climbs lurch; the loose motor (from the 10-18 fall) turned pivots into forward arcs | [dock front](images/47-dock-front-edge-ruler-2026-11-01.jpg), [timelapse](images/52-autonomous-undock-dock-timelapse-2026-11-02.mp4) |
+| 10-31 | **Carrier rework** (done 11-01): DRV8871 drivers on a printed power deck with Wago buses; pack in a tray on the tread beams behind the deck; a fixed top plate on the posts for the FNK0101 breakout and a breadboard; rear cliff bar | The wiring had become "almost unmanageable" (Enoch); the DRV8871s are smaller than the L298N and drop far less voltage | [before](images/37-electronics-before-rework-2026-10-31.jpg), [top](images/44-battery-tray-and-power-deck-top-2026-10-31.jpg), [rear](images/45-rear-view-battery-tray-motor-2026-10-31.jpg) |
 | 10-24..26 | **Docking tank**: pad bars on the nose, bumper bar, LED headlight; docks and charges on the Eufy base by itself | Phase 2, recharging | [docked](images/32-docked-2026-10-24.jpg), [timelapse](images/35-autonomous-dock-timelapse-2026-10-26.mp4) |
 | 10-22 | **Tank again**: pack cradle on the deck posts, camera mount on the front perch, gyro | The ramped motion engine removed the reason for the trike; the trike's balance line made cliff stops tip it | [side](images/09-tank-side-2026-10-22.jpg) |
 | 09-29..10-18 | **Trike**: two driven wheels + caster, later a fixed skid | Tank pivots skidded (stiction, 100 % bursts); ended when it fell off the bench on 10-18 | [at the edge](images/04-trike-at-the-edge-2026-10-18.jpg) |
