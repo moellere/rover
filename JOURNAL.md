@@ -635,7 +635,13 @@ distance, spacing, chamfer size.
   holes and the switch cut-out, so the module uses the four front holes
   plus a lip over the acrylic's front edge. Enoch: the front cliff sensors
   "got a little beat up" climbing onto the base - the module adds a skid
-  tab either side of each, reaching ~3 mm below the sensor. Still needed:
+  tab either side of each, reaching ~3 mm below the sensor. Correction
+  (Enoch): the front sensor faces sit only **~6 mm** above the bench, not
+  the 12 mm recorded 10-24 (the TCRT5000 hangs on its leads below the
+  board, and the leads bend) - so the ramp math (which used 12) left only
+  ~1-2 mm, hence the scraping. The module holds each sensor body in a
+  printed socket at ~11 mm (parameter; verify reads on bench, white base,
+  dark), skids at ~8 mm. Still needed:
   roller spring force (sizes the arm / toggle) and the TFMini's position.
 
 **Claude-driven:** the S3 pin map and port; dock sense design and values;
