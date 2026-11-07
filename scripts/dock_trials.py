@@ -20,7 +20,6 @@ import argparse
 import asyncio
 import datetime
 import json
-import math
 import os
 import random
 import sys
@@ -89,7 +88,6 @@ async def main():
         results.append(r)
         with open(out, "w") as fh:
             json.dump({"seed": seed, "cycles": results}, fh, indent=1, default=str)
-        p = (r.get("dock") or {}).get("pose") or {}
         print(f"cycle {n}: {'OK ' if r['ok'] else 'FAIL'} stage={r['stage']} "
               f"{(r.get('dock') or {}).get('reason') or r.get(r['stage'], {}).get('reason')} "
               f"({r.get('seconds', '?')} s)")
