@@ -660,6 +660,16 @@ distance, spacing, chamfer size.
   forward, not down. Servo firmware (rover32): GPIO10 left / GPIO11 right,
   50 Hz LEDC, boots detached; `Left/Right arm servo` numbers, `Centre arms`,
   `Arms off`. First sweep: one S51 was faulty; Enoch swapped it, both work.
+  Later the same evening: TCRT5000 turned (its long axis runs across the
+  board - Enoch's photo); skids were silently missing from the model (a
+  variable used before it was defined) - now 3.5 mm clear of the socket,
+  slope on the leading edge; servos 10 mm further back; foot 3 mm so the
+  existing M4 bolts fit (Enoch); track front measured ~5 mm ahead of the
+  acrylic at 20 mm up. Bumper (ROADMAP 4.8): a floating bar ahead of the
+  fixed back plate presses two lever microswitches (Enoch's stock, KW11
+  size, seller drawing) on platforms, slides on two M3 x 16, stops after
+  2.2 mm; switches on GPIO12/13 (pull-up, pressed low), firmware refuses
+  and stops forward while pressed - flashed, both read released.
 
 **Claude-driven:** the S3 pin map and port; dock sense design and values;
 dock mode and its limits; `dock()`'s undock, climb, square-up and centring;
