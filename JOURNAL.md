@@ -564,6 +564,15 @@ distance, spacing, chamfer size.
   cliff refuses reverse and pivots, forward stays allowed. Same build: duty
   defaults 75/90/75 -> 60/60/60, so a flash wipe can't bring back the
   speeds that ran away on 11-01.
+- **Prep for the next session (11-07, while Enoch wires the rear jumpers
+  and four 10k pull-downs on the driver inputs):** the wiring diagram shows
+  both (rear cliffs as real wires, pull-down note on the power deck, buck
+  5.2 V); the brain reports `rear_left_cliff`/`rear_right_cliff` and refuses
+  to start a move with a rear cliff active; `undock()` split out of `dock()`;
+  `scripts/dock_trials.py` for repeatability (undock -> random start right of
+  the hatch -> random heading -> `dock()`, logged per cycle to `brain/runs/`,
+  stops at the first failure). Tool descriptions for `dock`/`set_ramp`
+  brought current.
 
 **Claude-driven:** the S3 pin map and port; dock sense design and values;
 dock mode and its limits; `dock()`'s undock, climb, square-up and centring;

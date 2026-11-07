@@ -55,7 +55,8 @@ _last_drive_end = 0.0
 
 @mcp.tool()
 async def status() -> dict:
-    """Current rover state: motion, battery voltage, cliff sensors, uptime, WiFi,
+    """Current rover state: motion, battery voltage, cliff sensors (front, and rear
+    once that firmware is flashed - None before), uptime, WiFi,
     whether stops brake, and the TFMini forward range (cm; valid=False under
     30 cm or with no return) plus the firmware obstacle-stop threshold, and
     dock sense (on_dock, dock_voltage: pad voltage present = on the dock)."""
@@ -65,6 +66,8 @@ async def status() -> dict:
         "battery_voltage": st.battery_voltage,
         "front_left_cliff": st.front_left_cliff,
         "front_right_cliff": st.front_right_cliff,
+        "rear_left_cliff": st.rear_left_cliff,
+        "rear_right_cliff": st.rear_right_cliff,
         "uptime_s": st.uptime_s,
         "wifi_dbm": st.wifi_dbm,
         "brake_on_stop": st.brake_on_stop,
@@ -253,12 +256,14 @@ async def dock_approach(goal_marker: int = 0, final_marker: int = 1, final_stop_
 
 @mcp.tool()
 async def dock() -> dict:
-    """Dock on the overhead alone: drive the dock's axis to the taught docked
-    pose (brain/dock_pose.json - re-teach by pushing Grover fully on by
-    hand and recording `locate`), squaring up at two waypoints, then creep
-    in with the obstacle guard relaxed until the overhead reads the pose or
-    Grover stops moving. The base must read as floor to the cliff sensors
-    (white tape on a black base). Check the lane first."""
+    """Dock on the overhead alone. Starting on or near the dock it first
+    reverses straight out. Then it drives the dock's axis to the taught
+    docked pose (brain/dock_pose.json - re-teach by pushing Grover fully on
+    and recording `locate`), squaring up at 450 and 200 mm, creeps in centring
+    to within 4 mm, and climbs the approach ramp with one firm pulse in
+    firmware Dock mode (forward ignores the cliff guard, 3 s max). Stops the
+    moment dock sense reports contact. Refuses to move within 130 mm of the
+    open bench edge (brain/keepout.py). Check the lane first."""
     global _last_drive_end
     from brain.steer import dock as _dock
     r = await _dock()
@@ -271,7 +276,7 @@ async def set_ramp(min_duty_pct: Optional[float] = None, accel_ms: Optional[floa
                    decel_ms: Optional[float] = None) -> dict:
     """Tune the firmware's speed profile (persisted on the rover). min_duty_pct
     is applied at once from rest so both wheels break stiction together
-    (default 40); accel_ms / decel_ms are the time to sweep the full 0..100%
+    (60 % on the DRV8871s: 50 % doesn't break the tracks free); accel_ms / decel_ms are the time to sweep the full 0..100%
     range (default 300 each). 0 ms = step. Guards never ramp. Pass only the
     values to change."""
     c = RoverClient()

@@ -106,6 +106,8 @@ async def _preflight(client: RoverClient) -> str | None:
         return f"battery {st.battery_voltage:.2f}V below {LOW_BATTERY_V}V"
     if st.front_left_cliff or st.front_right_cliff:
         return "cliff sensor active"
+    if st.rear_left_cliff or st.rear_right_cliff:
+        return "rear cliff sensor active"
     if st.yaw_deg is None:
         return "gyro not reporting"
     return None
@@ -334,9 +336,10 @@ async def dock(camera: str = "bench", max_steps: int = 8) -> dict:
                 pass
 
 
-async def _dock_legs(client: RoverClient, pose: dict, camera: str, max_steps: int, log: list,
-                     guard: float) -> dict:
-    # 0. starting on (or near) the dock: reverse straight out along the axis to the
+async def _undock(client: RoverClient, pose: dict, camera: str, log: list) -> dict | None:
+    """Reverse straight out along the dock axis until DOCK_UNDOCK_MM out. None
+    when out (or already out), else the failure dict."""
+    # starting on (or near) the dock: reverse straight out along the axis to the
     # first waypoint instead of pivoting on the base (11-02: go_to tried to turn
     # 180 deg on the ramp and ran out of steps)
     h = math.radians(pose["heading_deg"])
@@ -349,7 +352,7 @@ async def _dock_legs(client: RoverClient, pose: dict, camera: str, max_steps: in
         if along >= DOCK_UNDOCK_MM:
             if i:
                 log.append({"undock": i, "short_mm": round(along), "action": "out"})
-            break
+            return None
         if i == DOCK_UNDOCK_MAX:
             return {"ok": False, "reason": f"undock: still {along:.0f} mm out after {i} reverse pulses", "log": log}
         if prev is not None and math.hypot(rover.x_px - prev[0], rover.y_px - prev[1]) < DOCK_STALL_PX:
@@ -362,6 +365,14 @@ async def _dock_legs(client: RoverClient, pose: dict, camera: str, max_steps: in
                     "action": f"reverse {DOCK_UNDOCK_PULSE_S:.1f}s"})
         await client.drive("backward", DOCK_UNDOCK_PULSE_S)
         await asyncio.sleep(POST_MOVE_S)
+    return None
+
+
+async def _dock_legs(client: RoverClient, pose: dict, camera: str, max_steps: int, log: list,
+                     guard: float) -> dict:
+    r = await _undock(client, pose, camera, log)
+    if r is not None:
+        return r
     # 1. waypoints on the axis, squaring up at each
     for back in DOCK_WAYPOINTS_MM:
         if back <= DOCK_GUARD_OFF_MM and guard > 0:
@@ -493,3 +504,15 @@ async def _dock_legs(client: RoverClient, pose: dict, camera: str, max_steps: in
             await client.drive("forward", creep)
         await asyncio.sleep(POST_MOVE_S)
     return {"ok": False, "reason": "creep cap reached", "log": log}
+
+
+async def undock(camera: str = "bench") -> dict:
+    """Back straight off the dock to ~430 mm out (for trials and parking)."""
+    pose = load_dock_pose()
+    client = RoverClient()
+    st = await client.state(timeout=3.0)
+    if st.battery_voltage is not None and st.battery_voltage < LOW_BATTERY_V:
+        return {"ok": False, "reason": f"battery {st.battery_voltage:.2f}V"}
+    log: list = []
+    r = await _undock(client, pose, camera, log)
+    return r if r is not None else {"ok": True, "reason": "undocked", "log": log}

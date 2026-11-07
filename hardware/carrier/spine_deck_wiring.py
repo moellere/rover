@@ -166,17 +166,17 @@ port = LB + bwid
 yFL, yFR, yRL, yRR, yTS = 380, 432, 478, 515, P["L16"][1]
 box(LB, yFL - 22, bwid, [("Cliff FL (front-left)", True), ("OUT -> GPIO5", False)], C["sig"])
 box(LB, yFR - 22, bwid, [("Cliff FR (front-right)", True), ("OUT -> GPIO6", False)], C["sig"])
-box(LB, yRL - 17, bwid, [("Cliff RL - planned, GPIO7", True)], C["plan"], dash=True, h=34)
-box(LB, yRR - 17, bwid, [("Cliff RR - planned, GPIO15", True)], C["plan"], dash=True, h=34)
+box(LB, yRL - 17, bwid, [("Cliff RL (rear-left) -> GPIO7", True)], C["sig"], h=34)
+box(LB, yRR - 17, bwid, [("Cliff RR (rear-right) -> GPIO15", True)], C["sig"], h=34)
 box(LB, yTS - 19, bwid, [("TFMini (Qwiic), bus_b", True), ("SDA 16 / SCL 17, 5 V", False)], C["i2c"])
-text(LB, yFL - 40, "SENSORS (front slot; rear cliff bar)", 13, weight="bold", col="#333")
+text(LB, yFL - 40, "SENSORS (front wings; rear cliff bar)", 13, weight="bold", col="#333")
 box(LB, 700, bwid, [("Sensor power", True), ("cliff VCC: 3V3 rail (see note)", False),
                     ("TFMini 5V: 5V rail", False), ("all GND: GND rail", False)], "#444")
 
 line([P["L5"], (440, P["L5"][1]), (440, yFL), (port, yFL)], C["sig"])
 line([P["L6"], (425, P["L6"][1]), (425, yFR), (port, yFR)], C["sig"])
-line([P["L7"], (410, P["L7"][1]), (410, yRL), (port, yRL)], C["plan"], dash=True)
-line([P["L15"], (395, P["L15"][1]), (395, yRR), (port, yRR)], C["plan"], dash=True)
+line([P["L7"], (410, P["L7"][1]), (410, yRL), (port, yRL)], C["sig"])
+line([P["L15"], (395, P["L15"][1]), (395, yRR), (port, yRR)], C["sig"])
 line([P["L16"], (port, P["L16"][1])], C["i2c"])
 line([P["L17"], (port, P["L17"][1])], C["i2c"])
 
@@ -224,11 +224,11 @@ text(pdx + 12, PDy + 22, "POWER DECK (below the top plate)", 14, weight="bold", 
 text(pdx + 12, PDy + 44, "Left DRV8871 (left track):  IN1 <- GPIO38   IN2 <- GPIO39 (firmware swaps them)   GND <- ESP GND", 12)
 text(pdx + 12, PDy + 63, "Right DRV8871 (right track): IN1 <- GPIO40   IN2 <- GPIO41   GND <- ESP GND", 12)
 text(pdx + 12, PDy + 186, "DANGER: header VM = 12 V (tied to the POWER terminals). Leave it UNCONNECTED.", 12, weight="bold", col="#d62828")
-text(pdx + 12, PDy + 82, "Buck OUT (5.29 V) + GND -> breadboard 5V / GND rails", 12)
+text(pdx + 12, PDy + 82, "Buck OUT (5.2 V, re-metered 11-07) + GND -> breadboard 5V / GND rails", 12)
 text(pdx + 12, PDy + 101, "12 V bus (+ Wago) -> 100k -> sense node -> 27k -> GND;  node -> GPIO8", 12)
 text(pdx + 12, PDy + 119, "Dock sense: dock pad + (BEFORE D1) -> 100k -> node -> 15k -> GND;  node -> GPIO9", 12, col="#8a5a00")
-text(pdx + 12, PDy + 137, "Forward = IN1 high, IN2 PWM (both sides). A track running backward is fixed by", 11, col="#555")
-text(pdx + 12, PDy + 152, "swapping its IN1/IN2 pins in firmware, not the wires.", 11, col="#555")
+text(pdx + 12, PDy + 137, "Pull-downs: 10k from each DRV8871 IN (GPIO38/39/40/41) to GND - stops the power-on twitch.", 11, weight="bold", col="#c2410c")
+text(pdx + 12, PDy + 152, "Forward = IN1 high, IN2 PWM; a reversed track is fixed by swapping IN1/IN2 in firmware.", 11, col="#555")
 text(pdx + 12, PDy + 169, "Wires reach it down the centre slot (signals) and past the breadboard's rear end (power).", 11, col="#555")
 
 # ---- legend / notes ----------------------------------------------------------
@@ -237,7 +237,7 @@ rect(lgx, lgy, 350, 272, "#fff", "#999", rx=8)
 text(lgx + 12, lgy + 24, "Legend", 14, weight="bold")
 for i, (k, s) in enumerate([("sig", "cliff sensor signal"), ("i2c", "I2C (TFMini bus_b, gyro bus_c)"),
                             ("drv", "driver inputs"), ("led", "LED data"), ("bat", "battery sense / 12 V"),
-                            ("v5", "5 V"), ("v33", "3.3 V"), ("gnd", "GND"), ("plan", "planned (rear cliff bar)")]):
+                            ("v5", "5 V"), ("v33", "3.3 V"), ("gnd", "GND")]):
     y = lgy + 48 + i * 24
     add(f'<line x1="{lgx + 14}" y1="{y - 4}" x2="{lgx + 50}" y2="{y - 4}" stroke="{C[k]}" stroke-width="3"'
         f'{" stroke-dasharray=\"7 5\"" if k == "plan" else ""}/>')
@@ -247,7 +247,7 @@ nx, ny = 1120, 650
 rect(nx, ny, 350, 258, "#fffbe6", "#c9a227", rx=8)
 text(nx + 12, ny + 24, "Notes", 14, weight="bold")
 for i, s in enumerate([
-        "Cliff VCC on 3V3: the HW-870's output pulls up",
+        "Cliff VCC (all four) on 3V3: the HW-870 pulls up",
         "to its VCC, so on 5 V it would drive the ESP32",
         "input above 3.3 V.",
         "Gyro: one pin per breadboard row; wire",

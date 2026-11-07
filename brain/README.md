@@ -16,13 +16,13 @@ courtesy layer that refuses obviously bad requests early.
 
 | Tool | What it does | Limits |
 |---|---|---|
-| `status` | motion, battery voltage, both cliff sensors, uptime, WiFi dBm, `brake_on_stop`, TFMini `front_range_cm`/`front_range_valid`, `obstacle_stop_cm`, ramp, yaw, dock sense (`on_dock`, `dock_voltage`) | - |
+| `status` | motion, battery voltage, front and rear cliff sensors (rear: None until that firmware is flashed), uptime, WiFi dBm, `brake_on_stop`, TFMini `front_range_cm`/`front_range_valid`, `obstacle_stop_cm`, ramp, yaw, dock sense (`on_dock`, `dock_voltage`) | - |
 | `snapshot(camera)` | JPEG from `bench` (benchcam, the overhead PTZ looking straight down), `front` (camv3) or `rover` (onboard T-Camera); cameras are addressed by env prefix | - |
 | `drive(direction, seconds)` | pulse `forward`/`backward`/`left`/`right`, then stop | capped at 1.0 s per call, 0.3 s gap between pulses, refused below 9.6 V or when a cliff sensor is active (backward still allowed) |
 | `find_marker(camera)` | ArUco 4x4_50 markers in a fresh frame: id, pixel centre, apparent size, bearing (+ = right), distance in mm (per-camera calibration via `BENCH_CAM_FOCAL_PX` / `ROVER_CAM_FOCAL_PX`; bench cam calibrated 2026-09-29 at 1062 px, rover cam at 437 px, front cam not yet (`FRONT_CAM_FOCAL_PX`). A CLAHE contrast pass retries frames where plain detection finds nothing (backlit marker) - a ~111 deg fisheye, so the 80 mm marker decodes only within ~1 m; use the 160 mm id-1 marker beyond that) | - |
 | `set_obstacle_stop(cm)` | firmware TFMini guard distance; 0 = off. Boots at 50; `home_to_marker` relaxes it once the camera has the marker inside that distance, and restores it after | - |
 | `set_brake(on)` | firmware `Brake on stop` switch (boots off) | - |
-| `locate(camera)` | overhead marker poses: Grover's position and heading from ArUco id 2 (60 mm, taped on top, FRONT edge to the nose; page in `hardware/markers/`), plus any other markers; image-frame angles, local mm/px | - |
+| `locate(camera)` | overhead marker poses: Grover's position and heading from ArUco id 2 (60 mm, on marker cap v1 on the marker bracket, FRONT edge to the nose; page in `hardware/markers/`), plus any other markers; image-frame angles, local mm/px | - |
 | `face(heading_deg, tol_deg)` | turn until the overhead reads that heading (image frame: 180 = toward the homing marker end, 270 = toward the pegboard); gyro turns, overhead re-read after each | needs id 2 in view; up to 3 corrections |
 | `go_to(marker_id | x_px,y_px, stop_mm)` | drive to a marker or pixel seen overhead: locate, turn if >10 deg off, else a forward pulse sized from the distance (<= 1 s), re-locate; stops inside `stop_mm` | check the lane first; 10 steps max; 10-24: 1.43 m to 30 cm of id 0 in 13 s, 4 steps (tape only the marker margin - gloss over the cells blinds the overhead) |
 | `dock_approach()` | overhead `go_to` + `face` to the goal spot, then onboard `home_to_marker` to the dock marker (the 10-24 visual-homing run) | check the lane first |

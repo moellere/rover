@@ -127,6 +127,7 @@ look again - talking to the rover over ESPHome's native API.
   print-warden service; toolchain via `scripts/install-tools.sh`.
 - **Scripts:** `rover_ctl.py` (drive over the native API),
   `record_bench.py` (overhead timelapse with telemetry burned in),
+  `dock_trials.py` (repeatability: undock, random start, dock, logged; attended),
   `test_disconnect_safety.py` (proves the disconnect-stop),
   `camera_snapshot.py`, `warden_call.py` (talk to the print-warden from a
   shell). All read hosts and credentials from environment variables.

@@ -27,6 +27,8 @@ class RoverState:
     battery_voltage: Optional[float] = None
     front_left_cliff: Optional[bool] = None
     front_right_cliff: Optional[bool] = None
+    rear_left_cliff: Optional[bool] = None     # rear cliff bar (firmware 2026-11-07); None on older firmware
+    rear_right_cliff: Optional[bool] = None
     uptime_s: Optional[float] = None
     wifi_dbm: Optional[float] = None
     brake_on_stop: Optional[bool] = None
@@ -90,6 +92,10 @@ class RoverClient:
                     out.front_left_cliff = bool(val)
                 elif oid == "front_right_cliff":
                     out.front_right_cliff = bool(val)
+                elif oid == "rear_left_cliff":
+                    out.rear_left_cliff = bool(val)
+                elif oid == "rear_right_cliff":
+                    out.rear_right_cliff = bool(val)
                 elif oid.endswith("uptime"):
                     out.uptime_s = float(val)
                 elif oid.endswith("wifi_signal"):
