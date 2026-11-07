@@ -628,7 +628,15 @@ distance, spacing, chamfer size.
   apart (with 1 mm proud on a 19 mm roller the crown reaches a wire up to
   ~4 mm off-centre). Plan: one printed nose module (TFMini, both front
   cliff wings, bumper face, SG90 contact arm) replacing today's four nose
-  parts - Enoch: "a single piece". Waiting on the nose mounting holes.
+  parts - Enoch: "a single piece". Nose mounting (Enoch): acrylic front
+  row holes 1-9 on 8 mm, hole 5 on the centreline, today's brackets on
+  1/3 and 7/9; acrylic front edge ~10 mm ahead of the track's first ground
+  contact, underside 55 mm up, ~2 mm thick; the second row has only two
+  holes and the switch cut-out, so the module uses the four front holes
+  plus a lip over the acrylic's front edge. Enoch: the front cliff sensors
+  "got a little beat up" climbing onto the base - the module adds a skid
+  tab either side of each, reaching ~3 mm below the sensor. Still needed:
+  roller spring force (sizes the arm / toggle) and the TFMini's position.
 
 **Claude-driven:** the S3 pin map and port; dock sense design and values;
 dock mode and its limits; `dock()`'s undock, climb, square-up and centring;
