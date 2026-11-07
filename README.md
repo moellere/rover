@@ -143,6 +143,9 @@ mean it." In the firmware, always on:
   pivots refused (backward stays allowed). Only exception: `Dock mode`,
   which the brain turns on within 50 mm of the taught docked pose for
   forward motion only, and which switches itself off after 3 s.
+- **Rear cliff guard** (firmware ready 11-07, flashed once the rear bar's
+  jumpers are wired) - a rear sensor stops seeing the bench -> reverse and
+  pivots refused (forward stays allowed).
 - **Battery guard** - below 9.3 V the rover refuses to drive; resumes above
   9.6 V. Rolling 25 s average, ignored for 20 s after boot (a latched-low
   bug from a bad first sample was fixed 2026-10-05).

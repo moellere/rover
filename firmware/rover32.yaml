@@ -13,7 +13,7 @@
 # 9..14,5V,GND from the antenna end; J3 GND,43,44,1,2,42..35,0,45,48,47,21,20,19):
 #   GPIO4      WS2812B chain (unchanged)
 #   GPIO5 / GPIO6    front-left / front-right cliff
-#   GPIO7 / GPIO15   reserved: rear cliff sensors (RL / RR)
+#   GPIO7 / GPIO15   rear cliff left / right (rear cliff bar, firmware 11-07, pulled down)
 #   GPIO16 SDA / GPIO17 SCL  bus_b: TFMini (0x10) - the only device on it
 #   GPIO42 SDA / GPIO2 SCL   bus_c: gyro L3G4200D (0x69) (right header, beside the breadboard)
 #   GPIO39/38  left IN1/IN2 (swapped in firmware, 11-01)   GPIO40/41  right IN1/IN2   -> DRV8871 x2 (PWM)
@@ -52,6 +52,10 @@ globals:
     restore_value: no
     initial_value: '0'
   - id: cliff_detected
+    type: bool
+    restore_value: no
+    initial_value: 'false'
+  - id: rear_cliff_detected   # rear cliff bar (2026-11-07): either rear sensor sees no bench
     type: bool
     restore_value: no
     initial_value: 'false'
@@ -231,11 +235,11 @@ script:
           id(last_command_ms) = millis();
           const bool fwdish = l >= 0 && r >= 0 && (l > 0 || r > 0);
           const bool backish = l <= 0 && r <= 0;
-          const bool ok = id(battery_ok) && (backish || !id(cliff_detected) || (id(dock_mode).state && fwdish)) && (!fwdish || !id(obstacle_ahead));
+          const bool ok = id(battery_ok) && (backish || !id(cliff_detected) || (id(dock_mode).state && fwdish)) && (fwdish || !id(rear_cliff_detected)) && (!fwdish || !id(obstacle_ahead));
           if (!ok) {
             id(motor_stop).execute();
-            ESP_LOGW("guard", "Motion blocked (l=%.0f r=%.0f): battery_ok=%d cliff=%d obstacle=%d range=%.0f last_good=%.0f",
-                     l, r, id(battery_ok), id(cliff_detected), id(obstacle_ahead), id(front_range).state, id(last_good_cm));
+            ESP_LOGW("guard", "Motion blocked (l=%.0f r=%.0f): battery_ok=%d cliff=%d rear_cliff=%d obstacle=%d range=%.0f last_good=%.0f",
+                     l, r, id(battery_ok), id(cliff_detected), id(rear_cliff_detected), id(obstacle_ahead), id(front_range).state, id(last_good_cm));
             return;
           }
           id(tgt_l) = std::max(-1.0f, std::min(1.0f, l / 100.0f));
@@ -426,7 +430,7 @@ interval:
           const float gr = at_rest ? id(tgt_r) : id(cur_r);
           const bool fwdish = gl >= 0 && gr >= 0 && (gl > 0 || gr > 0);
           const bool backish = gl <= 0 && gr <= 0;
-          if (!id(battery_ok) || (!backish && id(cliff_detected) && !(id(dock_mode).state && fwdish)) || (fwdish && id(obstacle_ahead))) {
+          if (!id(battery_ok) || (!backish && id(cliff_detected) && !(id(dock_mode).state && fwdish)) || (!fwdish && id(rear_cliff_detected)) || (fwdish && id(obstacle_ahead))) {
             id(motor_stop).execute();
             return;
           }
@@ -653,6 +657,67 @@ binary_sensor:
       - lambda: |-
           id(cliff_detected) = id(front_left_cliff).state || id(front_right_cliff).state;
 
+  # Rear cliff left (rear cliff bar, 2026-11-07). Pulled down so an unwired
+  # input reads "bench" (no false stops) until the jumper is in - wire, then test.
+  - platform: gpio
+    name: "Rear Left Cliff"
+    id: rear_left_cliff
+    device_class: safety
+    pin:
+      number: GPIO7
+      inverted: false
+      mode:
+        input: true
+        pulldown: true
+    filters:
+      - delayed_off: 100ms
+    on_press:
+      - lambda: 'id(rear_cliff_detected) = true;'
+      - if:
+          # forward-ish motion is moving away from a rear edge: let it run
+          condition:
+            lambda: 'return !(id(tgt_l) >= 0 && id(tgt_r) >= 0 && (id(tgt_l) > 0 || id(tgt_r) > 0));'
+          then:
+            - lambda: 'id(hard_stop) = true;'
+            - script.execute: motor_stop
+            - text_sensor.template.publish:
+                id: motion_status
+                state: "Stopped (rear cliff)"
+            - logger.log: "Rear cliff detected (left), stop"
+    on_release:
+      - lambda: |-
+          id(rear_cliff_detected) = id(rear_left_cliff).state || id(rear_right_cliff).state;
+  # Rear cliff right (rear cliff bar, 2026-11-07). Pulled down so an unwired
+  # input reads "bench" (no false stops) until the jumper is in - wire, then test.
+  - platform: gpio
+    name: "Rear Right Cliff"
+    id: rear_right_cliff
+    device_class: safety
+    pin:
+      number: GPIO15
+      inverted: false
+      mode:
+        input: true
+        pulldown: true
+    filters:
+      - delayed_off: 100ms
+    on_press:
+      - lambda: 'id(rear_cliff_detected) = true;'
+      - if:
+          # forward-ish motion is moving away from a rear edge: let it run
+          condition:
+            lambda: 'return !(id(tgt_l) >= 0 && id(tgt_r) >= 0 && (id(tgt_l) > 0 || id(tgt_r) > 0));'
+          then:
+            - lambda: 'id(hard_stop) = true;'
+            - script.execute: motor_stop
+            - text_sensor.template.publish:
+                id: motion_status
+                state: "Stopped (rear cliff)"
+            - logger.log: "Rear cliff detected (right), stop"
+    on_release:
+      - lambda: |-
+          id(rear_cliff_detected) = id(rear_left_cliff).state || id(rear_right_cliff).state;
+
 # Battery voltage: 3S 18650 pack (~12.6V full, ~9.0V empty) through an external divider
 # into A0. A0 on the D1 mini already has an onboard divider extending it to ~0-3.2V;
 # add your OWN divider from pack+ -> A0 -> GND with R_top=100k, R_bottom=27k (scales
@@ -794,7 +859,7 @@ number:
     min_value: 20
     max_value: 100
     step: 5
-    initial_value: 75
+    initial_value: 60     # DRV8871s (11-01): 75 % overshot go_to's speed model (was tuned on the L298N)
     restore_value: true
     optimistic: true
   - platform: template
@@ -804,7 +869,7 @@ number:
     min_value: 20
     max_value: 100
     step: 5
-    initial_value: 90     # tank: pivots scrub, 60 % didn't break free (10-22)
+    initial_value: 60     # DRV8871s (11-01): 90 % ran away; 60 % pivots cleanly with the left motor re-seated
     restore_value: true
     optimistic: true
 
@@ -819,7 +884,7 @@ number:
     min_value: 0
     max_value: 100
     step: 5
-    initial_value: 75     # tank with the pack: 60 % hums, 100 % moves (10-22)
+    initial_value: 60     # DRV8871s (11-01): 50 % doesn't break the tracks free, 60 % does (was 75 on the L298N)
     restore_value: true
     optimistic: true
     entity_category: config
@@ -902,7 +967,7 @@ button:
 switch:
   # Dock mode: forward motion ignores the cliff sensors (the dock ramp reads as
   # a cliff under the left one). The brain turns it on only within 50 mm of the
-  # taught docked pose and 10 mm of the dock axis; it switches itself off after
+  # taught docked pose and 4 mm of the dock axis; it switches itself off after
   # 3 s, and contact (On dock) ends it at once.
   - platform: template
     name: "Dock mode"

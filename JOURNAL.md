@@ -559,6 +559,11 @@ distance, spacing, chamfer size.
   from outside, so the start was confirmed in chat. Wiring: RL -> GPIO7,
   RR -> GPIO15; not yet in the firmware. **Fitted (by 11-07)** with both
   sensors installed - Enoch: "nice design work"; jumpers not wired yet.
+  Firmware ready, not flashed (11-07): "Rear Left/Right Cliff" on GPIO7/15
+  with pull-downs (an unwired input reads bench, so no false stops); a rear
+  cliff refuses reverse and pivots, forward stays allowed. Same build: duty
+  defaults 75/90/75 -> 60/60/60, so a flash wipe can't bring back the
+  speeds that ran away on 11-01.
 
 **Claude-driven:** the S3 pin map and port; dock sense design and values;
 dock mode and its limits; `dock()`'s undock, climb, square-up and centring;
