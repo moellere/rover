@@ -287,6 +287,8 @@ DOCK_UNDOCK_PULSE_S = 0.2   # reverse pulses (CLAUDE.md: <= 0.5 s, overhead chec
 DOCK_UNDOCK_STEP_MM = 160.0 # what one undock pulse is assumed to cover, for the predictive keep-out
 DOCK_UNDOCK_SQUARE_DEG = 5.0  # off the dock, square to the dock heading before reversing out
 DOCK_UNDOCK_MAX = 10
+DOCK_CONTACT_V = 9.0        # pad voltage that counts as contact; On dock alone latched 0.5 s after a
+                            #   momentary touch and logged 'charging' at 0.05 V (trials 11-07)
 DOCK_MAX_CLIMBS = 2         # climbs in dock mode (firmware ignores the cliff guard for forward, 3 s max)
 
 
@@ -314,21 +316,27 @@ async def dock(camera: str = "bench", max_steps: int = 8) -> dict:
     try:
         r = await _dock_legs(client, pose, camera, max_steps, log, guard)
         if r.get("ok") or r.get("contact"):
+            # contact settles a moment after the last move (11-01: read 6.2 V
+            # mid-rise, then 12.4 V), and a momentary touch can latch On dock for
+            # 0.5 s (11-07: 'charging' at 0.05 V). Require pad voltage on two reads
+            # 1.5 s apart, within ~6 s.
             st = await client.state(timeout=3.0)
-            for _ in range(4):
-                # contact settles a moment after the last move (11-01: read 6.2 V
-                # mid-rise, "missed", then 12.4 V and charging seconds later)
-                if not st.on_dock is False:
+            good = 0
+            for _ in range(5):
+                v = st.dock_voltage if st.dock_voltage is not None else 0.0
+                good = good + 1 if (st.on_dock and v >= DOCK_CONTACT_V) else 0
+                if good >= 2:
                     break
-                await asyncio.sleep(1.0)
+                await asyncio.sleep(1.5)
                 st = await client.state(timeout=3.0)
             if st.on_dock is not None:
-                # dock sense (2026-11-01): pad voltage present = contact, no waiting
-                r["charging"] = bool(st.on_dock)
-                r["ok"] = bool(st.on_dock)
+                contact = good >= 2
+                r["charging"] = contact
+                r["ok"] = contact
+                r["dock_voltage_reads"] = good
                 r["volts"] = {"before": v_before, "dock": st.dock_voltage}
-                r["reason"] += ("; on the dock, charging (dock %.2f V)" % st.dock_voltage if st.on_dock
-                                else "; NOT on the dock (no pad voltage) - contacts missed")
+                r["reason"] += ("; on the dock, charging (dock %.2f V, held)" % st.dock_voltage if contact
+                                else "; NOT charging (dock %.2f V) - contacts missed" % (st.dock_voltage or 0.0))
                 return r
             # older firmware: confirm by the voltage step.
             # battery_voltage is a 25 s rolling average, so wait it out.
@@ -482,7 +490,7 @@ async def _dock_legs(client: RoverClient, pose: dict, camera: str, max_steps: in
             continue
         steer_fails = 0
         st = await client.state(timeout=3.0)
-        if st.on_dock:
+        if st.on_dock and (st.dock_voltage or 0.0) >= DOCK_CONTACT_V:
             # dock sense: the pads touch the rollers - done, whatever the overhead says
             log.append({**entry, "action": "contact (dock sense)"})
             return {"ok": True, "contact": True, "reason": f"contact {along:.0f} mm short of the taught pose",
