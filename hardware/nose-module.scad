@@ -29,7 +29,8 @@
 // Render: openscad -o nose-module.stl nose-module.scad
 // Print:  part="print_body" (upside down: the lip and the TFMini plate top on the bed, tree
 //         supports for the frame), part="print_arms" (flat, horn pocket down, one mirrored),
-//         part="print_pads" (copper face down). Views: nose-module-print.png.
+//         part="print_pads" (copper face down), part="print_bump_bar" (front face down).
+//         Views: nose-module-print.png.
 
 part = "body";        // "body" | "arm" | "pad" | "all" (preview)
 
@@ -69,7 +70,23 @@ shelf_t  = 4;
 pcb_x1   = cliff_x + tcrt_in;  pcb_x0 = pcb_x1 - pcb_l;   // outboard / inboard (pin) ends
 
 // ---- bumper ----------------------------------------------------------------
-bump_y = 66;  bump_t = 6;  bump_z = [16, 26];  bump_x = 78;
+bump_y = 66;  bump_t = 6;  bump_z = [16, 26];  bump_x = 78;   // fixed back plate (structural tie)
+
+// ---- bumper switches (ROADMAP 4.8; 2 lever microswitches from Enoch's stock, 11-07) --------
+// KW11-3Z style: 20 x 10.3 x 6.4, M2 holes 9.5 c-c. Each lies flat on a platform on top of
+// the back plate, lever edge facing forward; a floating bar ahead of the plate presses the
+// levers, slides back on two M3 screws, and stops on bosses before the switches bottom out.
+// Seller's drawing (Enoch, 11-07): body 20 x 10.6, holes 9.5 c-c centred along the body ~2.7 from the
+// terminal edge; lever pivots at one end, 16 long, tip 5 proud of the body edge at rest.
+ms_l = 20;  ms_w = 10.6;  ms_t = 6.4;  ms_hole_cc = 9.5;  ms_hole_from_back = 2.7;
+ms_lever = 5;         // lever tip proud of the body's front edge at rest
+ms_x0 = 59.5;         // inboard end (clear of the arm at 51-57)
+ms_plat_z = shelf_z0 + shelf_t;          // platform top = shelf top
+ms_y1 = bump_y + bump_t;                 // body's front (lever) edge flush with the back plate's face
+bar_gap = ms_lever + 0.5;                // bar's back face at rest, ahead of the plate
+bar_t = 6;  bar_x = 82;  bar_z = [14, 26];  bar_z_ms = ms_plat_z + ms_t + 1;   // taller over the switches
+bar_travel = 2.2;     // to the stops: past the click (~1.5 at the tip), short of bottoming (~3)
+guide_x = 28;  guide_z = 21;   // M3 x 16, head behind the back plate
 
 // ---- servo arms (SG90; Enoch's are Smraza S51 9 g, same body) -------------------------------------------------------
 // Datasheet Enoch matched to the S51 (11-07): B 23 long, D 12 thick, E 32 over the tabs,
@@ -159,7 +176,36 @@ module cliff_wing_r() {
 module cliff_wing(s) { if (s > 0) cliff_wing_r(); else mirror([1, 0, 0]) cliff_wing_r(); }
 
 module bumper() {
-  rbox(-bump_x, bump_y, bump_z[0], bump_x, bump_y + bump_t, bump_z[1]);   // tied up to the wings and the servo floors
+  difference() {
+    union() {
+      rbox(-bump_x, bump_y, bump_z[0], bump_x, bump_y + bump_t, bump_z[1]);   // tied up to the wings and the servo floors
+      for (s = [-1, 1]) mirror([s < 0 ? 1 : 0, 0, 0])                          // switch platforms
+        rbox(ms_x0, ms_y1 - ms_w, bump_z[1] - 0.1, ms_x0 + ms_l, ms_y1, ms_plat_z);
+    }
+    for (s = [-1, 1]) mirror([s < 0 ? 1 : 0, 0, 0]) {
+      for (dx = [-ms_hole_cc / 2, ms_hole_cc / 2])                           // M2 self-tap pilots
+        translate([ms_x0 + ms_l / 2 + dx, ms_y1 - ms_w + ms_hole_from_back, ms_plat_z - 8]) cylinder(d = 1.6, h = 9);   // M2 x 10 self-tappers (Enoch): 3.6 mm into the platform
+      translate([guide_x, bump_y - 1, guide_z]) rotate([-90, 0, 0]) cylinder(d = 3.4, h = bump_t + 2);   // guide clearance
+    }
+  }
+}
+
+// floating bumper bar (separate print): M3 x 16 screws come from behind the back plate and
+// self-tap into its bosses; their heads are the forward stop, the two end bosses the rear stop
+module bump_bar() {
+  y0 = ms_y1 + bar_gap;
+  difference() {
+    union() {
+      rbox(-bar_x, y0, bar_z[0], bar_x, y0 + bar_t, bar_z[1]);
+      for (s = [-1, 1]) mirror([s < 0 ? 1 : 0, 0, 0]) {
+        rbox(ms_x0 - 1, y0, bar_z[1] - 0.1, bar_x, y0 + bar_t, bar_z_ms);           // over the switch levers
+        translate([guide_x, y0 + 0.1, guide_z]) rotate([90, 0, 0]) cylinder(d = 8, h = 2);   // guide boss
+        for (x = [20, 74]) translate([x, y0 + 0.1, (bar_z[0] + bar_z[1]) / 2])               // rear stops
+          rotate([90, 0, 0]) cylinder(d = 5, h = bar_gap - bar_travel + 0.1);
+      }
+    }
+    for (s = [-1, 1]) translate([s * guide_x, y0 - 3, guide_z]) rotate([-90, 0, 0]) cylinder(d = 2.6, h = bar_t + 1);  // M3 pilot
+  }
 }
 
 // SG90 on its side, output shaft pointing OUTBOARD (+x on the right) at the pivot;
@@ -296,7 +342,8 @@ if (part == "all") {
   ghosts();
 }
 // assembly drawing: one STL per item, coloured by scripts/nose_assembly_views.py
-if (part == "asm_arms")   for (s = [-1, 1]) mirror([s < 0 ? 1 : 0, 0, 0]) { arm(); pad(); }
+if (part == "asm_arms")   { bump_bar(); for (s = [-1, 1]) mirror([s < 0 ? 1 : 0, 0, 0]) { arm(); pad(); } }
+if (part == "asm_ms")     for (s = [-1, 1]) ms_dummy(s);
 if (part == "asm_tfmini") tfmini_dummy();
 if (part == "asm_cliff")  for (s = [-1, 1]) cliff_dummy(s);
 if (part == "asm_servo")  for (s = [-1, 1]) servo_dummy(s);
@@ -348,5 +395,11 @@ if (part == "ctx_grover") ctx_grover();
 if (part == "ctx_dock")   ctx_dock();
 // as installed (frame as above: bench at z=0), for viewing: printed parts only, or with
 // the TFMini, cliff boards and servos as plain blocks
-if (part == "installed") { body(); for (s = [-1, 1]) mirror([s < 0 ? 1 : 0, 0, 0]) { arm(); pad(); } }
-if (part == "installed_parts") { body(); for (s = [-1, 1]) { mirror([s < 0 ? 1 : 0, 0, 0]) { arm(); pad(); } cliff_dummy(s); servo_dummy(s); } tfmini_dummy(); }
+if (part == "installed") { body(); bump_bar(); for (s = [-1, 1]) mirror([s < 0 ? 1 : 0, 0, 0]) { arm(); pad(); } }
+if (part == "installed_parts") { body(); bump_bar(); for (s = [-1, 1]) { mirror([s < 0 ? 1 : 0, 0, 0]) { arm(); pad(); } cliff_dummy(s); servo_dummy(s); ms_dummy(s); } tfmini_dummy(); }
+if (part == "bump_bar") bump_bar();
+if (part == "print_bump_bar") translate([0, 0, ms_y1 + bar_gap + bar_t]) rotate([-90, 0, 0]) bump_bar();   // front face down
+module ms_dummy(s) { mirror([s < 0 ? 1 : 0, 0, 0]) {
+  translate([ms_x0, ms_y1 - ms_w, ms_plat_z]) cube([ms_l, ms_w, ms_t]);
+  translate([ms_x0 + 2, ms_y1, ms_plat_z + 1]) rotate([0, 0, 12]) cube([ms_l - 3, 0.8, ms_t - 2]);   // lever
+} }

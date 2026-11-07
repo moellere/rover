@@ -32,10 +32,11 @@ CONTEXT = [
 ]
 ITEMS = [  # part, colour, legend
     ("body", (0.25, 0.45, 0.85), "nose module (printed, blue PETG)"),
-    ("asm_arms", (0.45, 0.65, 0.95), "contact arms + pads (printed)"),
+    ("asm_arms", (0.45, 0.65, 0.95), "contact arms, pads, bumper bar (printed)"),
     ("asm_tfmini", (0.15, 0.15, 0.15), "TFMini"),
     ("asm_cliff", (0.1, 0.55, 0.25), "cliff FL / FR (TCRT5000 on HW-870)"),
     ("asm_servo", (0.35, 0.35, 0.40), "SG90 servos"),
+    ("asm_ms", (0.1, 0.1, 0.1), "bumper microswitches (lever)"),
     ("asm_w_tfmini", (0.95, 0.75, 0.1), "TFMini lead (4 wire, to spine deck)"),
     ("asm_w_cliff", (0.6, 0.2, 0.8), "cliff leads (3 wire each: 5 V, GND, DO)"),
     ("asm_w_servo", (0.95, 0.45, 0.1), "servo leads (3 wire each: 5 V, GND, signal)"),
