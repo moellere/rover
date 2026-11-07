@@ -74,7 +74,7 @@ bump_y = 66;  bump_t = 6;  bump_z = [16, 26];  bump_x = 78;
 // F 19.5 base to tab top, C 28.5 base to gear-housing top, A 32 base to spline top.
 sg_l = 23;  sg_w = 12.2;  sg_h = 22.7;  sg_tab_l = 32.2;  sg_tab_cc = 27.5;  sg_shaft_in = 5.9;
 arm_x    = 45;        // pads over the rollers, 90 mm c-c
-pivot_y  = 64;  pivot_z = 36;   // gear housing clears the cliff board's screw
+pivot_y  = 54;  pivot_z = 37;   // 10 mm further back (Enoch, 11-07); servo case clears the crossbeam ties; hub clears the shelf
 roller_y = bump_y + bump_t + 50;    // bumper at the dock tip, rollers 50 mm on
 roller_z = 13;        // pressed roller top (~9 base + 7 proud - 3 press)
 hinge_h  = 9;         // pad hinge axis above the pad face (pad 4 + clearance for the arm's tip boss)
@@ -124,7 +124,7 @@ module tfmini_mount() {
 module crossbeam() {
   rbox(-cliff_x - 8, 34, 18, cliff_x + 8, 46, 26);
   // ties from the crossbeam up to the TFMini cheeks / foot
-  for (s = [-1, 1]) rbox(s > 0 ? 20 : -26, 6, 18, s > 0 ? 26 : -20, 46, acr_z0 - 6);
+  for (s = [-1, 1]) rbox(s > 0 ? 17 : -22, 6, 18, s > 0 ? 22 : -17, 46, acr_z0 - 6);   // under the TFMini ears, inboard of the servo leads
 }
 
 // Wing, RIGHT side (mirrored for the left): a shelf over the board (which also carries the
