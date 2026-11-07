@@ -573,6 +573,12 @@ distance, spacing, chamfer size.
   the hatch -> random heading -> `dock()`, logged per cycle to `brain/runs/`,
   stops at the first failure). Tool descriptions for `dock`/`set_ramp`
   brought current.
+- **Rear cliff guard live (11-07):** jumpers wired (RL GPIO7, RR GPIO15);
+  firmware flashed by IP (the rover32 DNS record had lapsed while it was
+  off). All four cliffs read floor; lifting each rear corner logged
+  "Stopped (rear cliff)" and cleared (Enoch: "tested and confirmed").
+  Duties read 60/60/60. The 10k pull-downs on the driver inputs go on
+  before free roaming - until then, power up away from edges.
 
 **Claude-driven:** the S3 pin map and port; dock sense design and values;
 dock mode and its limits; `dock()`'s undock, climb, square-up and centring;

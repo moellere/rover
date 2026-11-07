@@ -59,7 +59,7 @@ instructions, and readable as plain English by anyone.
   battery and dock voltage, the onboard camera, the overhead bench camera.
 - **The Eufy RoboVac 12** is shelved as a chassis; its charging base is
   Grover's dock.
-- Known hazards: rear cliff sensors fitted (11-07) but not wired or in the firmware yet;
+- Known hazards: rear cliff sensors live since 11-07;
   the cliff guard trips late enough that edge tests need a soft landing
   or a tether; the left track twitches at power-on until the driver
   inputs get pull-downs (see `CLAUDE.md` and the journal).
@@ -144,9 +144,8 @@ mean it." In the firmware, always on:
   pivots refused (backward stays allowed). Only exception: `Dock mode`,
   which the brain turns on within 50 mm of the taught docked pose for
   forward motion only, and which switches itself off after 3 s.
-- **Rear cliff guard** (firmware ready 11-07, flashed once the rear bar's
-  jumpers are wired) - a rear sensor stops seeing the bench -> reverse and
-  pivots refused (forward stays allowed).
+- **Rear cliff guard** (since 11-07) - a rear sensor stops seeing the bench
+  -> reverse and pivots refused, a backward move stops (forward stays allowed).
 - **Battery guard** - below 9.3 V the rover refuses to drive; resumes above
   9.6 V. Rolling 25 s average, ignored for 20 s after boot (a latched-low
   bug from a bad first sample was fixed 2026-10-05).

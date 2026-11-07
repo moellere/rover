@@ -156,7 +156,7 @@ is janky; these make docking work unattended:
 | 4.5 | House rules | Enoch | where it may go, quiet hours, what to do when it meets an animal (stop, retreat) |
 | 4.6 | Odometry without the overhead camera | optical-flow sensor | Tracks slip, so motor time can't measure distance. A near-field flow sensor (PAA5100JE-type, ~15-35 mm working distance, own LEDs) under the chassis measures the body's real motion; with the gyro for heading that is dead reckoning, and ArUco landmarks (4.3) reset its drift. The house floors suit it (Enoch, 11-01: hardwood, matte tile with grout, low-pile carpet). Calibrate counts/mm once on the bench against the overhead. Its surface-quality reading says when to fall back to motor time. Price to research before asking. |
 | 4.7 | Wider obstacle view | 3.4, SG90 (inventory) | Sweep the TFMini on a servo for a poor-man's 2D scan / occupancy map; a 360 deg lidar if budget allows. |
-| 4.8 | Rear cliff bar + bumper | stairs, pets | Rear cliff bar printed 11-03 and fitted with both sensors (11-07); jumpers and firmware still to add (GPIO7/15); a microswitch bumper across the nose catches what the TFMini misses. Both before any roaming. |
+| 4.8 | Rear cliff bar + bumper | stairs, pets | Rear cliff bar printed 11-03, fitted and live 11-07 (GPIO7/15, firmware guard tested); a microswitch bumper across the nose catches what the TFMini misses. Both before any roaming. |
 
 ## Tier 5 - operations and fun
 
