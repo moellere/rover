@@ -30,8 +30,9 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from brain import keepout  # noqa: E402
 from brain.steer import _rover, dock, face, go_to, undock  # noqa: E402
 
-START_BOX = {"x": (1220, 1480), "y": (450, 500)}   # benchcam px: right of the hatch (x 975-1195), above it,
-                                                   # clear of the edge and of the far-right clutter
+START_BOX = {"x": (1320, 1500), "y": (460, 500)}   # benchcam px: right of the hatch (x 975-1195) so the
+                                                   # body clears it, and >= 200 mm from the open edge so the
+                                                   # random-heading turn there passes keepout.check_turn (11-07)
 HEADINGS = (120.0, 240.0)                          # image-frame deg: roughly toward the dock end, +/- 60
 
 
@@ -78,7 +79,7 @@ async def main():
     for x in START_BOX["x"]:          # the box must sit inside the keep-out margin with room to spare
         for y in START_BOX["y"]:
             d = keepout.edge_mm(x, y, 1.0)
-            assert d > keepout.MIN_MM + 60, f"start box corner ({x},{y}) only {d:.0f} mm from the edge"
+            assert d > keepout.TURN_MIN_MM + 5, f"start box corner ({x},{y}) only {d:.0f} mm from the edge"
     out = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "brain", "runs",
                        f"{datetime.date.today().isoformat()}-dock-trials.json")
     results = []

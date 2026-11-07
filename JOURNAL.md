@@ -603,6 +603,10 @@ distance, spacing, chamfer size.
   need 200 mm from the edge (`keepout.check_turn`, in go_to and face);
   trial logs now keep the undock/go_to/face steps; and the dock moves
   ~10 cm toward the pegboard (Enoch), with the pose re-taught after.
+  Dock moved (~8 cm in the frame) and the pose re-taught: 609.8 / 519.2 /
+  185.8; every path point now clears both margins (pose 257 mm from the
+  edge, waypoint 200 mm 262, undock end 269, trial start box 212-255 - the
+  box moved right of the hatch).
 
 **Claude-driven:** the S3 pin map and port; dock sense design and values;
 dock mode and its limits; `dock()`'s undock, climb, square-up and centring;
