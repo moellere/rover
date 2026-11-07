@@ -1,0 +1,31 @@
+{
+ "seed": 1794071240,
+ "cycles": [
+  {
+   "cycle": 1,
+   "started": "2026-11-07T17:07:20",
+   "start_pose": {
+    "x_px": 619.5,
+    "y_px": 448.8,
+    "heading_deg": 192.2,
+    "mm_per_px": 1.2411654991494954
+   },
+   "undock": {
+    "ok": true,
+    "reason": "undocked"
+   },
+   "target": {
+    "x_px": 1464,
+    "y_px": 480,
+    "heading_deg": 132.5
+   },
+   "go_to": {
+    "ok": false,
+    "reason": "edge keep-out: marker 97 mm from the open edge (< 130) - move Grover by hand",
+    "steps": 0
+   },
+   "ok": false,
+   "stage": "go_to"
+  }
+ ]
+}

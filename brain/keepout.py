@@ -36,3 +36,23 @@ def check(pose) -> str | None:
     if d < MIN_MM:
         return f"edge keep-out: marker {d:.0f} mm from the open edge (< {MIN_MM:.0f}) - move Grover by hand"
     return None
+
+
+def check_move(pose, dist_mm: float) -> str | None:
+    """Like check(), but also refuses a straight move whose END lands inside the
+    band: dist_mm along the heading (+ forward, - backward). 11-07: a 0.4 s
+    undock reverse took Grover from clear to 97 mm from the edge in one pulse,
+    so checking only the start was not enough."""
+    now = check(pose)
+    if now or pose is None:
+        return now
+    import math
+    mpp = pose.mm_per_px or 1.2
+    h = math.radians(pose.heading_deg)
+    x = pose.x_px + math.cos(h) * dist_mm / mpp
+    y = pose.y_px - math.sin(h) * dist_mm / mpp      # image y grows downward
+    d = edge_mm(x, y, mpp)
+    if d < MIN_MM:
+        return (f"edge keep-out: this {abs(dist_mm):.0f} mm {'forward' if dist_mm > 0 else 'backward'} move would end "
+                f"{d:.0f} mm from the open edge (< {MIN_MM:.0f}) - move Grover by hand")
+    return None

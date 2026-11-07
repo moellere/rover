@@ -579,6 +579,21 @@ distance, spacing, chamfer size.
   "Stopped (rear cliff)" and cleared (Enoch: "tested and confirmed").
   Duties read 60/60/60. The 10k pull-downs on the driver inputs go on
   before free roaming - until then, power up away from edges.
+- **Repeatability trials, first two attempts (11-07 ~11 AM):** run 1,
+  cycle 1 (seed 1794070594): undock, go_to a random start, face, then
+  `dock` arrived 12 mm off the axis at 200 mm, the creep converged too
+  slowly (-12 -> -4 mm), 4.3 mm at the lip forced a back-off whose 0.3 s
+  reverse threw it 17 cm back, twice, until the creep cap. Tuned: back-off
+  0.12 s, climb within 5 mm (4 was inside the overhead's jitter), steer
+  beyond 3 mm with a 100 mm lookahead and 10 deg cap, 18 creeps. Run 2,
+  cycle 1: starting skewed where run 1 left it, the undock reversed along
+  Grover's own heading - diagonally toward the open edge - and one 0.4 s
+  pulse (~30 cm) ended **97 mm from the edge**; the keep-out refused the
+  next move, but the guard had only checked where Grover *was*. Fixed: a
+  predictive keep-out (`keepout.check_move`) refuses any straight pulse
+  whose end lands in the band (undock and go_to); undock pulses 0.2 s; off
+  the dock, square to the dock axis before reversing out. Logs in
+  `brain/runs/2026-11-07-dock-trials-run{1,2}.json`.
 
 **Claude-driven:** the S3 pin map and port; dock sense design and values;
 dock mode and its limits; `dock()`'s undock, climb, square-up and centring;

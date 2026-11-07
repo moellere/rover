@@ -201,6 +201,10 @@ async def go_to(x_px: float | None = None, y_px: float | None = None, marker_id:
         st = await client.state(timeout=3.0)
         if st.front_left_cliff or st.front_right_cliff:
             return SteerResult(False, "cliff sensor active", step, _pose_dict(rover), log)
+        ko = keepout.check_move(rover, pulse * speed)
+        if ko:
+            log.append({**entry, "action": "keep-out"})
+            return SteerResult(False, ko, step, _pose_dict(rover), log)
         await client.drive("forward", pulse)
         prev = (rover, pulse, scale)
         await asyncio.sleep(POST_MOVE_S)
@@ -274,8 +278,11 @@ DOCK_SQUARE_DEG = 4.0       # square to the dock heading before climbing: 14 deg
 DOCK_MAX_CORR_DEG = 10.0    # cap the creep's steering correction off the dock heading (8 built 14 deg skew
                             #   with the slipping motor; 10 with it fixed, trials 11-07)
 DOCK_UNDOCK_MM = 430.0      # starting nearer the dock than this (along the axis): back straight out first
-DOCK_UNDOCK_PULSE_S = 0.4   # reverse pulses (CLAUDE.md: <= 0.5 s, overhead checked before each)
-DOCK_UNDOCK_MAX = 6
+DOCK_UNDOCK_PULSE_S = 0.2   # reverse pulses (CLAUDE.md: <= 0.5 s, overhead checked before each); 0.4 s
+                            #   moved ~30 cm and once ended 97 mm from the edge (trials 11-07)
+DOCK_UNDOCK_STEP_MM = 160.0 # what one undock pulse is assumed to cover, for the predictive keep-out
+DOCK_UNDOCK_SQUARE_DEG = 5.0  # off the dock, square to the dock heading before reversing out
+DOCK_UNDOCK_MAX = 10
 DOCK_MAX_CLIMBS = 2         # climbs in dock mode (firmware ignores the cliff guard for forward, 3 s max)
 
 
@@ -360,9 +367,19 @@ async def _undock(client: RoverClient, pose: dict, camera: str, log: list) -> di
             return {"ok": False, "reason": f"undock: still {along:.0f} mm out after {i} reverse pulses", "log": log}
         if prev is not None and math.hypot(rover.x_px - prev[0], rover.y_px - prev[1]) < DOCK_STALL_PX:
             return {"ok": False, "reason": f"undock: no movement at {along:.0f} mm", "log": log}
-        ko = keepout.check(rover)
+        ko = keepout.check_move(rover, -DOCK_UNDOCK_STEP_MM)
         if ko:
             return {"ok": False, "reason": ko, "log": log}
+        if i == 0 and abs(heading_change(rover.heading_deg, pose["heading_deg"])) > DOCK_UNDOCK_SQUARE_DEG:
+            st = await client.state(timeout=3.0)
+            if not st.on_dock:
+                # off the dock and skewed (e.g. left by a failed run): square up so the
+                # reverse follows the dock axis, not Grover's own heading (trials 11-07)
+                f = await face(pose["heading_deg"], camera, 3.0)
+                log.append({"undock": i, "short_mm": round(along), "heading": rover.heading_deg,
+                            "action": f"square to {pose['heading_deg']:.1f} before undock", "ok": f.ok})
+                prev = None
+                continue
         prev = (rover.x_px, rover.y_px)
         log.append({"undock": i, "short_mm": round(along), "heading": rover.heading_deg,
                     "action": f"reverse {DOCK_UNDOCK_PULSE_S:.1f}s"})
