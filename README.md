@@ -59,7 +59,7 @@ instructions, and readable as plain English by anyone.
   battery and dock voltage, the onboard camera, the overhead bench camera.
 - **The Eufy RoboVac 12** is shelved as a chassis; its charging base is
   Grover's dock.
-- Known hazards: no rear cliff sensors yet (bar printed 11-03, not yet in the firmware);
+- Known hazards: rear cliff sensors fitted (11-07) but not wired or in the firmware yet;
   the cliff guard trips late enough that edge tests need a soft landing
   or a tether; the left track twitches at power-on until the driver
   inputs get pull-downs (see `CLAUDE.md` and the journal).

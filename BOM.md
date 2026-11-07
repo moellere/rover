@@ -42,7 +42,7 @@ All from Enoch's inventory unless the Source column says otherwise.
 | GH1.25-to-Dupont lead (kit B087N4GY8Z) | 1 | TFMini direct connection (replaced the Qwiic boost chain and LD33V) | $0.40 prorated (budget) | Installed |
 | TCRT5000 cliff modules (HW-870) | 2 | Front cliff detection, DO at 3.3 V | Enoch's purchase (not budget) | Installed on the wings ahead of the tracks; front-right swapped for a spare 11-01 (faulty) |
 | TTGO T-Camera (`redcam`) | 1 | Rover camera | Inventory | On camera mount v7, on the top plate's front tab |
-| Printed parts (PETG): driver tray v3, battery tray v2, top plate v2, camera mount v7, marker bracket, TFMini bracket, cliff mounts, headlight clip, dock ramp (white), rear cliff bar (printed 11-03) | - | see `hardware/README.md` | $0 | Installed (carrier rework 10-31..11-01); battery cradle v3 retired |
+| Printed parts (PETG): driver tray v3, battery tray v2, top plate v2, camera mount v7, marker bracket, TFMini bracket, cliff mounts, headlight clip, dock ramp (white), rear cliff bar (printed 11-03, fitted 11-07) | - | see `hardware/README.md` | $0 | Installed (carrier rework 10-31..11-01); battery cradle v3 retired |
 | Printed caster skid (`hardware/caster-skid.scad`) + M5 bolt 25-30 mm + nut | 1 | Replaced the swivel caster on the trike | $0 | Printed and fitted 10-18, lost in the fall; superseded |
 | 3S BMS 40A board (1 of a 3-pack, B0G6JQ8ZFN) | 1 | Per-cell protection + balancing | $2.89 prorated (budget) | Soldered to a new 3x18650 holder 2026-10-18 (Enoch); in the battery tray on the tread beams since 10-31 |
 | Bench cameras: `benchcam` (Wyze Pan v2, Thingino PTZ, overhead; was `fishcam` until 2026-10-24), `camv3` (Thingino) | 2 | Overhead pose for steering and docking; a second view | Inventory | Installed |
@@ -60,7 +60,7 @@ chain.
 | SG90 9 g micro servos (Enoch, 10-31) | 10 | **`redcam` pan mount** for Phase 3 dock search - better fit than the stepper: one PWM pin, absolute position, no homing |
 | DRV8871 (one spare from the 3-pack) | 1 | spare motor driver |
 | AI-Thinker ESP32-CAM | a couple | Spare cameras (too few free GPIOs to be the spinal cord) |
-| WS2812B dots / strips, TCRT5000 (10-pack spares) | many | Lights; rear cliff sensors |
+| WS2812B dots / strips, TCRT5000 (10-pack spares) | many | Lights; spare cliff sensors (two now on the rear cliff bar, one replaced front-right 11-01) |
 
 ## Candidates (researched, not ordered)
 

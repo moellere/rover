@@ -21,8 +21,8 @@ breakdown of the notable decisions. Newest entry on top.
 **Where things stand, 2026-11-07:** Grover undocks, docks and charges hands
 off on the overhead camera (filmed 11-01: 0 mm from the taught pose, 12.54 V).
 `rover32` is an ESP32-S3 on the FNK0101; the carrier rework is finished, with
-DRV8871s at 60 % duty. The rear cliff bar is printed (11-03), but its fitting,
-wiring and firmware are not recorded yet. Open: repeatability runs, ramp v2's
+DRV8871s at 60 % duty. The rear cliff bar is fitted with both sensors (11-07);
+jumpers and firmware still to do. Open: repeatability runs, ramp v2's
 divot key (first-ridge distance, spacing, chamfer size), battery-triggered
 docking, onboard-camera-only docking, and the power-on twitch (10k
 pull-downs). The buck was never re-metered after the 12 V event, though
@@ -556,7 +556,8 @@ distance, spacing, chamfer size.
   `9434b1b09c` (1 h 18 m, 25 g, done 11-03 ~9:46 AM), started on Enoch's "can you confirm the start?" -
   the warden's phone notification linked an internal IP he couldn't open
   from outside, so the start was confirmed in chat. Wiring: RL -> GPIO7,
-  RR -> GPIO15; not yet in the firmware.
+  RR -> GPIO15; not yet in the firmware. **Fitted (by 11-07)** with both
+  sensors installed - Enoch: "nice design work"; jumpers not wired yet.
 
 **Claude-driven:** the S3 pin map and port; dock sense design and values;
 dock mode and its limits; `dock()`'s undock, climb, square-up and centring;
