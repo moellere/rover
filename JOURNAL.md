@@ -607,6 +607,15 @@ distance, spacing, chamfer size.
   185.8; every path point now clears both margins (pose 257 mm from the
   edge, waypoint 200 mm 262, undock end 269, trial start box 212-255 - the
   box moved right of the hatch).
+  Run 4 (seed 1794072669), cycle 1: undock, start spot, face and `dock`
+  all clean - climb at 18 mm short, 3 mm lateral - and the brain logged
+  "charging (dock 0.05 V)". Enoch: it landed ~4 mm to the left, off the
+  contacts. On dock had latched a momentary touch (its 0.5 s off-delay),
+  so the success was false. Trials stopped; battery down to 11.34 V
+  after an hour of runs that never really charged. Fixed: contact now
+  needs pad voltage >= 9 V held on two reads 1.5 s apart. Open: the
+  contacts tolerate less than the ~4 mm the climb lands off - tighter
+  centring, or wider pads.
 
 **Claude-driven:** the S3 pin map and port; dock sense design and values;
 dock mode and its limits; `dock()`'s undock, climb, square-up and centring;
