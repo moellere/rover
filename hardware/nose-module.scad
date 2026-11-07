@@ -51,7 +51,9 @@ cliff_x     = 67.5;   // in front of each track's centreline (today's position)
 cliff_y     = 55;     // 65 mm ahead of the track contact (today's position)
 cliff_face_z = 11;    // TCRT5000 face above the bench (was ~6)       <- verify reads
 skid_drop   = 3;      // skids reach this far below the TCRT face
-tcrt_l = 10.2;  tcrt_w = 5.8;  tcrt_h = 7.0;    // TCRT5000 body
+tcrt_l = 10.2;  tcrt_w = 5.8;  tcrt_h = 7.0;    // TCRT5000 body; on the HW-870 its LONG axis runs across the
+                                                 // board's width (Enoch's photo, 11-07) = fore-aft on Grover
+skid_off    = tcrt_w / 2 + 1.6 + 3.5 + 1.2;   // skid centre from the TCRT centre (3.5 mm clear of the socket)
 pcb_l = 31.5;  pcb_w = 14;  pcb_t = 1.6;  pcb_hole_in = 7.5;   // HW-870 (Enoch, 10-03)
 // Board FLAT, as on today's cliff mounts (v4): sensor side down, lying ACROSS Grover,
 // TCRT5000 at the outboard end over the track, pins pointing inboard; component side up
@@ -138,14 +140,17 @@ module cliff_wing_r() {
         rbox(pcb_x0 + pcb_hole_in + 6, cliff_y + sy * (pcb_w / 2 + 0.3) + (sy > 0 ? 0 : -1.6), pcb_z0 - 0.5,
              pcb_x1 + 1, cliff_y + sy * (pcb_w / 2 + 0.3) + (sy > 0 ? 1.6 : 0), shelf_z0);
       // TCRT5000 socket under the board's outboard end, tied to the end wall
-      rbox(x - tcrt_l / 2 - 1.6, cliff_y - tcrt_w / 2 - 1.6, cliff_face_z, pcb_x1 + 1, cliff_y + tcrt_w / 2 + 1.6, pcb_z0 - 0.2);
-      for (sx = [-1, 1]) hull() {                                                        // skids, sloped leading edge
-        rbox(x + sx * (tcrt_l / 2 + 2.5) - 1.2, cliff_y - 8, cliff_face_z - skid_drop + 2, x + sx * (tcrt_l / 2 + 2.5) + 1.2, cliff_y + 4, pcb_z0 - 0.2);
-        rbox(x + sx * (tcrt_l / 2 + 2.5) - 1.2, cliff_y - 4, cliff_face_z - skid_drop, x + sx * (tcrt_l / 2 + 2.5) + 1.2, cliff_y + 2, cliff_face_z - skid_drop + 1);
+      rbox(x - tcrt_w / 2 - 1.6, cliff_y - tcrt_l / 2 - 1.6, cliff_face_z, pcb_x1 + 1, cliff_y + tcrt_l / 2 + 1.6, pcb_z0 - 0.2);
+      // skids either side, 3.5 mm clear of the socket so they stay out of the beam, with
+      // the slope on the LEADING (+y) edge; a bridge under the board joins them to the socket
+      for (sx = [-1, 1]) hull() {
+        rbox(x + sx * skid_off - 1.2, cliff_y - 4, cliff_face_z - skid_drop + 2, x + sx * skid_off + 1.2, cliff_y + 8, pcb_z0 - 1);
+        rbox(x + sx * skid_off - 1.2, cliff_y - 2, cliff_face_z - skid_drop, x + sx * skid_off + 1.2, cliff_y + 4, cliff_face_z - skid_drop + 1);
       }
+      rbox(x - skid_off - 1.2, cliff_y - 4, pcb_z0 - 3, x + skid_off + 1.2, cliff_y + 4, pcb_z0 - 1);   // bridge (1 mm under the board)
       rbox(pcb_x1 - 8, y1 - 0.01, bump_z[0], pcb_x1 + 4, bump_y + 0.01, shelf_z0 + shelf_t);   // tie down to the bumper
     }
-    rbox(x - tcrt_l / 2 - 0.2, cliff_y - tcrt_w / 2 - 0.2, cliff_face_z - 1, x + tcrt_l / 2 + 0.2, cliff_y + tcrt_w / 2 + 0.2, pcb_z0 + 0.1);
+    rbox(x - tcrt_w / 2 - 0.2, cliff_y - tcrt_l / 2 - 0.2, cliff_face_z - 1, x + tcrt_w / 2 + 0.2, cliff_y + tcrt_l / 2 + 0.2, pcb_z0 + 0.1);
     translate([pcb_x0 + pcb_hole_in, cliff_y, pcb_z0 - 1]) cylinder(d = 3.2, h = 20);                   // M3
     translate([pcb_x0 + pcb_hole_in, cliff_y, shelf_z0 + shelf_t - 2.6]) cylinder(d = 6.4, h = 3, $fn = 6);   // nut, top
   }
@@ -236,7 +241,7 @@ module tfmini_dummy() {
 }
 module cliff_dummy(s) {
   x = s * cliff_x;
-  translate([x - tcrt_l / 2, cliff_y - tcrt_w / 2, cliff_face_z]) cube([tcrt_l, tcrt_w, tcrt_h]);                 // TCRT5000
+  translate([x - tcrt_w / 2, cliff_y - tcrt_l / 2, cliff_face_z]) cube([tcrt_w, tcrt_l, tcrt_h]);                 // TCRT5000
   translate([s > 0 ? pcb_x0 : -pcb_x1, cliff_y - pcb_w / 2, pcb_z0]) cube([pcb_l, pcb_w, pcb_t]);   // HW-870, flat
   translate([s > 0 ? pcb_x0 - 8 : -pcb_x0, cliff_y - 5, pcb_z0 + pcb_t]) cube([8, 10, 2.5]);         // header + plug, inboard
 }
