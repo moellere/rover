@@ -92,12 +92,13 @@ module foot() {
   }
 }
 
+// The lead leaves the TFMini's TOP face (Enoch, 11-07), so the plate stops below
+// the top and leaves the connector free; the ears bolt to its front face.
 module tfmini_mount() {
-  y0 = tf_face_y - tf_depth;          // the ears bolt to this plate's front face
+  y0 = tf_face_y - tf_depth;
   difference() {
-    rbox(-tf_len / 2 - 3, y0 - 4, tf_zc - tf_h / 2 - 3, tf_len / 2 + 3, y0, acr_z0 - 6);
+    rbox(-tf_len / 2 - 3, y0 - 4, tf_zc - tf_h / 2 - 3, tf_len / 2 + 3, y0, tf_zc + 5);
     for (s = [-1, 1]) translate([s * tf_ear_cc / 2, y0 - 5, tf_zc]) rotate([-90, 0, 0]) cylinder(d = tf_ear_d, h = 6);
-    translate([-tf_body_w / 2 + 4, y0 - 5, tf_zc - tf_h / 2 + 3]) cube([tf_body_w - 8, 6, tf_h - 6]);   // cable window
   }
   // cheeks from the foot down to the plate
   for (s = [-1, 1]) rbox(s > 0 ? tf_len / 2 - 1 : -tf_len / 2 - 3, 0, tf_zc - tf_h / 2 - 3, s > 0 ? tf_len / 2 + 3 : -tf_len / 2 + 1, y0, acr_z0 - 6);
@@ -232,7 +233,10 @@ module servo_dummy(s) { if (s > 0) servo_dummy_r(); else mirror([1, 0, 0]) servo
 // wires: polyline of points, drawn as a chain of hulled spheres
 module wire(pts, d = 1.6) { for (i = [0 : len(pts) - 2]) hull() { translate(pts[i]) sphere(d = d, $fn = 8); translate(pts[i + 1]) sphere(d = d, $fn = 8); } }
 deck_z = 95;          // where leads leave the drawing, up toward the spine deck
-module wires_tfmini() { wire([[0, tf_face_y - tf_depth, tf_zc], [0, 20, tf_zc], [0, 8, 58], [0, 2, 62], [0, -10, deck_z]], 3.0); }
+module wires_tfmini() {   // connector on the top face, toward the rear (position along the top not measured)
+  zt = tf_zc + tf_h / 2;  yc = tf_face_y - tf_depth + 4;
+  wire([[0, yc, zt], [0, yc, zt + 6], [0, 6, zt + 6], [0, -10, deck_z]], 3.0);
+}
 module wires_cliff(s) {
   x = s * cliff_x;  zt = cliff_face_z + tcrt_h + 3 + pcb_l;
   for (i = [-1, 0, 1]) wire([[x + i * 2.54, cliff_y + 1, zt], [x + i * 2.54, cliff_y + 1, zt + 6], [s * (62 + i * 2), 30, 62], [s * (58 + i * 2), -10, deck_z]]);
