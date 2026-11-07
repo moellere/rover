@@ -654,6 +654,12 @@ distance, spacing, chamfer size.
   (`nose-module-assembly.png`, `scripts/nose_assembly_views.py`) - the
   first draft's servo mounts weren't mirror images and the render caught
   it; now one side is modelled and mirrored. Awaiting Enoch's review.
+  Cliff boards went back to FLAT (sensor side down, across Grover, pins
+  inboard, under a shelf that also carries the servo) after Enoch spotted
+  they had been drawn vertical - which would have pointed the TCRT5000
+  forward, not down. Servo firmware (rover32): GPIO10 left / GPIO11 right,
+  50 Hz LEDC, boots detached; `Left/Right arm servo` numbers, `Centre arms`,
+  `Arms off`. First sweep: one S51 was faulty; Enoch swapped it, both work.
 
 **Claude-driven:** the S3 pin map and port; dock sense design and values;
 dock mode and its limits; `dock()`'s undock, climb, square-up and centring;
