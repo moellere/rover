@@ -444,3 +444,6 @@ if (part == "x_screws") {
   translate([pcb_x0 + pcb_hole_in, cliff_y, pcb_z0 - 3 - 2 * explode - 2]) cylinder(d = 3, h = 16 + 2 * explode);   // M3 x 14 path
   translate([shoe_m2_x, cliff_y, pcb_z0 - 3 - 2 * explode - 2]) cylinder(d = 2, h = 12 + 2 * explode);             // M2 x 10 path
 }
+// TFMini mount close-up for the drawing
+if (part == "t_body")   intersection() { body(); translate([-35, -20, 35]) cube([70, 70, 25]); }
+if (part == "t_tfmini") tfmini_dummy();
