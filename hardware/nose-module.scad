@@ -429,8 +429,12 @@ module ms_dummy(s) { mirror([s < 0 ? 1 : 0, 0, 0]) {
 } }
 if (part == "shoes") for (s = [-1, 1]) shoe(s);
 // shoes flipped (strip top on the bed); a ROTATION, so the right one stays a right one
-if (part == "print_shoes") for (s = [-1, 1]) translate([s * 22, 0, 0]) rotate([180, 0, 0])
-  translate([-s * (cliff_x + 2), -cliff_y, -(pcb_z0 - tcrt_gap)]) shoe(s);
+// (11-08: the first layout offset them by 22 mm, they overlapped and printed fused - each is
+// ~35 mm long, so centre each on its own length and put 10 mm between them)
+shoe_xc = (pcb_x0 + pcb_hole_in - 5 + wall_x1) / 2;
+shoe_len = wall_x1 - (pcb_x0 + pcb_hole_in - 5);
+if (part == "print_shoes") for (s = [-1, 1]) translate([s * (shoe_len / 2 + 5), 0, 0]) rotate([180, 0, 0])
+  translate([-s * shoe_xc, -cliff_y, -(pcb_z0 - tcrt_gap)]) shoe(s);
 // exploded right cliff mount for the drawing: wing (body), board, shoe, screws
 explode = 0;
 if (part == "x_body")  intersection() { body(); translate([38, 30, 0]) cube([45, 45, 40]); }
