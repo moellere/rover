@@ -68,6 +68,8 @@ pcb_z0   = cliff_face_z + tcrt_h + tcrt_gap;       // board underside
 shelf_z0 = pcb_z0 + pcb_t + boss_h;                // shelf underside
 shelf_t  = 4;
 pcb_x1   = cliff_x + tcrt_in;  pcb_x0 = pcb_x1 - pcb_l;   // outboard / inboard (pin) ends
+wall_x1  = pcb_x1 + 5.5;   // end wall outer face (5 mm wall)
+shoe_m2_x = pcb_x1 + 3;    // shoe's M2 into the end wall
 
 // ---- bumper ----------------------------------------------------------------
 bump_y = 66;  bump_t = 6;  bump_z = [16, 26];  bump_x = 78;   // fixed back plate (structural tie)
@@ -146,33 +148,48 @@ module crossbeam() {
 }
 
 // Wing, RIGHT side (mirrored for the left): a shelf over the board (which also carries the
-// servo), an end wall outboard of the board down to the TCRT socket and skids.
+// servo) and an end wall outboard of it. Nothing of the body is below the board, so the board
+// goes in from underneath; the TCRT socket and skids are a separate SHOE (below) that clamps it.
 module cliff_wing_r() {
-  x = cliff_x;  y0 = cliff_y - pcb_w / 2 - 1;  y1 = cliff_y + pcb_w / 2 + 1;
+  y0 = cliff_y - pcb_w / 2 - 1;  y1 = cliff_y + pcb_w / 2 + 1;
   difference() {
     union() {
-      rbox(20, y0, shelf_z0, pcb_x1 + 4, y1, shelf_z0 + shelf_t);                        // shelf
-      rbox(pcb_x1 + 0.5, 34, cliff_face_z, pcb_x1 + 4, y1, shelf_z0 + shelf_t);          // end wall, back to the crossbeam
+      rbox(20, y0, shelf_z0, wall_x1, y1, shelf_z0 + shelf_t);                          // shelf
+      rbox(pcb_x1 + 0.5, 34, pcb_z0, wall_x1, y1, shelf_z0 + shelf_t);                   // end wall, back to the crossbeam
       translate([pcb_x0 + pcb_hole_in, cliff_y, pcb_z0 + pcb_t]) cylinder(d = 8, h = boss_h + 0.1);   // boss
-      for (sy = [-1, 1])                                                                 // ribs either side of the board
-        rbox(pcb_x0 + pcb_hole_in + 6, cliff_y + sy * (pcb_w / 2 + 0.3) + (sy > 0 ? 0 : -1.6), pcb_z0 - 0.5,
-             pcb_x1 + 1, cliff_y + sy * (pcb_w / 2 + 0.3) + (sy > 0 ? 1.6 : 0), shelf_z0);
-      // TCRT5000 socket under the board's outboard end, tied to the end wall
-      rbox(x - tcrt_w / 2 - 1.6, cliff_y - tcrt_l / 2 - 1.6, cliff_face_z, pcb_x1 + 1, cliff_y + tcrt_l / 2 + 1.6, pcb_z0 - 0.2);
-      // skids either side, 3.5 mm clear of the socket so they stay out of the beam, with
-      // the slope on the LEADING (+y) edge; a bridge under the board joins them to the socket
-      for (sx = [-1, 1]) hull() {
-        rbox(x + sx * skid_off - 1.2, cliff_y - 4, cliff_face_z - skid_drop + 2, x + sx * skid_off + 1.2, cliff_y + 8, pcb_z0 - 1);
-        rbox(x + sx * skid_off - 1.2, cliff_y - 2, cliff_face_z - skid_drop, x + sx * skid_off + 1.2, cliff_y + 4, cliff_face_z - skid_drop + 1);
-      }
-      rbox(x - skid_off - 1.2, cliff_y - 4, pcb_z0 - 3, x + skid_off + 1.2, cliff_y + 4, pcb_z0 - 1);   // bridge (1 mm under the board)
-      rbox(pcb_x1 - 8, y1 - 0.01, bump_z[0], pcb_x1 + 4, bump_y + 0.01, shelf_z0 + shelf_t);   // tie down to the bumper
+      rbox(pcb_x1 - 8, y1 - 0.01, bump_z[0], wall_x1, bump_y + 0.01, shelf_z0 + shelf_t);   // tie down to the bumper
     }
-    rbox(x - tcrt_w / 2 - 0.2, cliff_y - tcrt_l / 2 - 0.2, cliff_face_z - 1, x + tcrt_w / 2 + 0.2, cliff_y + tcrt_l / 2 + 0.2, pcb_z0 + 0.1);
     translate([pcb_x0 + pcb_hole_in, cliff_y, pcb_z0 - 1]) cylinder(d = 3.2, h = 20);                   // M3
     translate([pcb_x0 + pcb_hole_in, cliff_y, shelf_z0 + shelf_t - 2.6]) cylinder(d = 6.4, h = 3, $fn = 6);   // nut, top
+    translate([shoe_m2_x, cliff_y, pcb_z0 - 1]) cylinder(d = 1.6, h = 10);                              // shoe's M2 pilot
   }
 }
+
+// Shoe, RIGHT side (print one mirrored for the left): a strip under the board from the M3
+// screw to the end wall. The TCRT5000 drops into its socket, the board lies on its two pads,
+// then the pair goes up under the shelf: an M3 x 14 (from below, through shoe, board, boss and
+// shelf, nut in the shelf top; longer hits the servo's gear housing) clamps the board; an M2 x 10 up into the end wall stops it turning.
+module shoe_r() {
+  x = cliff_x;  zt = pcb_z0 - tcrt_gap;   // strip top = board underside (TCRT seated)
+  difference() {
+    union() {
+      rbox(pcb_x0 + pcb_hole_in - 5, cliff_y - 5, zt - 3, wall_x1, cliff_y + 5, zt);            // strip
+      rbox(x - tcrt_w / 2 - 1.6, cliff_y - tcrt_l / 2 - 1.6, cliff_face_z, x + tcrt_w / 2 + 1.6, cliff_y + tcrt_l / 2 + 1.6, zt);   // socket
+      for (sx = [-1, 1]) hull() {                                                               // skids, slope at the front
+        rbox(x + sx * skid_off - 1.2, cliff_y - 4, cliff_face_z - skid_drop + 2, x + sx * skid_off + 1.2, cliff_y + 8, zt - 0.5);
+        rbox(x + sx * skid_off - 1.2, cliff_y - 2, cliff_face_z - skid_drop, x + sx * skid_off + 1.2, cliff_y + 4, cliff_face_z - skid_drop + 1);
+      }
+      rbox(x - skid_off - 1.2, cliff_y - 4, zt - 3, x + skid_off + 1.2, cliff_y + 4, zt);      // ties the skids to the strip
+    }
+    rbox(x - tcrt_w / 2 - 0.2, cliff_y - tcrt_l / 2 - 0.2, cliff_face_z - 1, x + tcrt_w / 2 + 0.2, cliff_y + tcrt_l / 2 + 0.2, zt + 1);   // TCRT pocket
+    // relief over the board's underside between the pads (solder tails)
+    rbox(pcb_x0 + pcb_hole_in + 4, cliff_y - 6, zt - 1.2, x - tcrt_w / 2 - 1.6, cliff_y + 6, zt + 1);
+    translate([pcb_x0 + pcb_hole_in, cliff_y, zt - 5]) cylinder(d = 3.3, h = 10);              // M3
+    translate([shoe_m2_x, cliff_y, zt - 5]) cylinder(d = 2.4, h = 10);                        // M2 clearance
+  }
+}
+module shoe(s) { if (s > 0) shoe_r(); else mirror([1, 0, 0]) shoe_r(); }
+
 module cliff_wing(s) { if (s > 0) cliff_wing_r(); else mirror([1, 0, 0]) cliff_wing_r(); }
 
 module bumper() {
@@ -342,7 +359,7 @@ if (part == "all") {
   ghosts();
 }
 // assembly drawing: one STL per item, coloured by scripts/nose_assembly_views.py
-if (part == "asm_arms")   { bump_bar(); for (s = [-1, 1]) mirror([s < 0 ? 1 : 0, 0, 0]) { arm(); pad(); } }
+if (part == "asm_arms")   { bump_bar(); for (s = [-1, 1]) shoe(s); for (s = [-1, 1]) mirror([s < 0 ? 1 : 0, 0, 0]) { arm(); pad(); } }
 if (part == "asm_ms")     for (s = [-1, 1]) ms_dummy(s);
 if (part == "asm_tfmini") tfmini_dummy();
 if (part == "asm_cliff")  for (s = [-1, 1]) cliff_dummy(s);
@@ -395,11 +412,24 @@ if (part == "ctx_grover") ctx_grover();
 if (part == "ctx_dock")   ctx_dock();
 // as installed (frame as above: bench at z=0), for viewing: printed parts only, or with
 // the TFMini, cliff boards and servos as plain blocks
-if (part == "installed") { body(); bump_bar(); for (s = [-1, 1]) mirror([s < 0 ? 1 : 0, 0, 0]) { arm(); pad(); } }
-if (part == "installed_parts") { body(); bump_bar(); for (s = [-1, 1]) { mirror([s < 0 ? 1 : 0, 0, 0]) { arm(); pad(); } cliff_dummy(s); servo_dummy(s); ms_dummy(s); } tfmini_dummy(); }
+if (part == "installed") { body(); bump_bar(); for (s = [-1, 1]) shoe(s); for (s = [-1, 1]) mirror([s < 0 ? 1 : 0, 0, 0]) { arm(); pad(); } }
+if (part == "installed_parts") { body(); bump_bar(); for (s = [-1, 1]) shoe(s); for (s = [-1, 1]) { mirror([s < 0 ? 1 : 0, 0, 0]) { arm(); pad(); } cliff_dummy(s); servo_dummy(s); ms_dummy(s); } tfmini_dummy(); }
 if (part == "bump_bar") bump_bar();
 if (part == "print_bump_bar") translate([0, 0, ms_y1 + bar_gap + bar_t]) rotate([-90, 0, 0]) bump_bar();   // front face down
 module ms_dummy(s) { mirror([s < 0 ? 1 : 0, 0, 0]) {
   translate([ms_x0, ms_y1 - ms_w, ms_plat_z]) cube([ms_l, ms_w, ms_t]);
   translate([ms_x0 + 2, ms_y1, ms_plat_z + 1]) rotate([0, 0, 12]) cube([ms_l - 3, 0.8, ms_t - 2]);   // lever
 } }
+if (part == "shoes") for (s = [-1, 1]) shoe(s);
+// shoes flipped (strip top on the bed); a ROTATION, so the right one stays a right one
+if (part == "print_shoes") for (s = [-1, 1]) translate([s * 22, 0, 0]) rotate([180, 0, 0])
+  translate([-s * (cliff_x + 2), -cliff_y, -(pcb_z0 - tcrt_gap)]) shoe(s);
+// exploded right cliff mount for the drawing: wing (body), board, shoe, screws
+explode = 0;
+if (part == "x_body")  intersection() { body(); translate([38, 30, 0]) cube([45, 45, 40]); }
+if (part == "x_board") translate([0, 0, -explode]) cliff_dummy(1);
+if (part == "x_shoe")  translate([0, 0, -2 * explode]) shoe(1);
+if (part == "x_screws") {
+  translate([pcb_x0 + pcb_hole_in, cliff_y, pcb_z0 - 3 - 2 * explode - 2]) cylinder(d = 3, h = 16 + 2 * explode);   // M3 x 14 path
+  translate([shoe_m2_x, cliff_y, pcb_z0 - 3 - 2 * explode - 2]) cylinder(d = 2, h = 12 + 2 * explode);             // M2 x 10 path
+}
