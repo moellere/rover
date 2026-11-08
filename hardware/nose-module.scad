@@ -149,7 +149,12 @@ module tfmini_mount() {
 module crossbeam() {
   rbox(-cliff_x - 8, 34, 18, cliff_x + 8, 46, 26);
   // ties from the crossbeam up to the TFMini cheeks / foot
-  for (s = [-1, 1]) rbox(s > 0 ? 17 : -22, 6, 18, s > 0 ? 22 : -17, 46, acr_z0 - foot_t + 0.1);   // under the TFMini ears, inboard of the servo leads
+  // ties under the TFMini ears, inboard of the servo leads; lowered for 8 mm either side of the
+  // TFMini plate so the ears (front) and their M2 nuts (behind) clear them (11-08: they clashed)
+  for (s = [-1, 1]) difference() {
+    rbox(s > 0 ? 17 : -22, 6, 18, s > 0 ? 22 : -17, 46, acr_z0 - foot_t + 0.1);
+    rbox(s > 0 ? 16 : -23, tf_face_y - tf_depth - 4 - 8, tf_zc - 3.5, s > 0 ? 23 : -16, tf_face_y - tf_depth + 8, acr_z0);
+  }
 }
 
 // Wing, RIGHT side (mirrored for the left): a shelf over the board (which also carries the
