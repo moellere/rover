@@ -10,11 +10,11 @@
 //   - a bumper crossbar, the front-most hard stop;
 //   - two SG90 servos, one per side, swinging contact arms: Grover stops with
 //     the bumper at the dock's tip and the arms lower sprung pads onto the
-//     rollers 50 mm further on (90 mm apart c-c, 5 mm wide fore-aft, 19 mm dia,
-//     ~7 mm proud - Enoch). No climbing, no dock mode, retry on a miss.
-//   Pads: copper runs FORE-AFT, 8 mm apart (a 19 mm roller's crown reaches a
-//   wire ~4 mm off-centre with the wire 1 mm proud), ~24 mm long - so about
-//   +/-12 mm of tolerance both ways.
+//     rollers 50 mm further on (90 mm apart c-c, 5 mm wide, 19 mm dia and rounded
+//     fore-aft, ~7 mm proud - Enoch). No climbing, no dock mode, retry on a miss.
+//   Pads (v2, 11-08): copper runs SIDE TO SIDE, 8 mm apart fore-aft (the 19 mm roller's
+//   rounded top reaches a run ~4 mm either side of its crown with the wire 1 mm proud),
+//   32 mm long - about +/-12 mm fore-aft and +/-16 side to side. v1 had them fore-aft.
 //
 // Mounting: under the acrylic through the front row's holes 1, 3, 7, 9 (8 mm
 // pitch, hole 5 on the centreline -> x = +/-16, +/-32), the foot running back
@@ -110,7 +110,12 @@ horn_hub_d = 7.4;  horn_len = 17;  horn_w0 = 5.6;  horn_w1 = 4.0;  horn_t = 1.6;
 leaf_t   = 2.2;       // flexure: thinned arm section, gives the pad a few mm of spring
 leaf_at  = [26, 44];  // along the arm from the pivot
 arm_up   = 70;        // folded, degrees above horizontal
-pad_x = 26;  pad_y = 24;  pad_t = 4;  run_dx = 8;  wire_d = 2.05;
+// Pad v2 (11-08): the rollers turn ACROSS Grover - 19 mm diameter fore-aft, 5 mm wide (Enoch
+// corrected v1, which had the runs fore-aft: a 5 mm roller could land between them). Runs go
+// SIDE TO SIDE, 8 mm apart fore-aft: with the wire 1 mm proud the 19 mm roller reaches a run up
+// to ~4 mm either side of its crown, so the runs cover +/-12 mm fore-aft; a run is 32 long, so
+// side to side is ~+/-16. Wire: the thinner Romex Enoch threaded (14 AWG assumed).
+pad_x = 36;  pad_y = 24;  pad_t = 4;  run_dy = 8;  wire_d = 1.63;  wire_proud = 1;
 
 $fn = 40;
 
@@ -273,11 +278,12 @@ module arm(ang = arm_down) {
 }
 
 // pad: two lugs straddle the arm's tip boss on an M3 pin, so the pad pitches to sit
-// flat on the roller; three fore-aft copper runs underneath, all one 12 AWG wire laced
-// through end holes and soldered to the lead at the rear.
+// flat on the roller; three side-to-side copper runs underneath, one wire laced through
+// the end holes in a zig-zag and soldered to the lead.
 pad_cx = arm_x;       // pad centred over the roller
 module pad() {
   hz = roller_z + hinge_h;  hy = roller_y;  lx = horn_x + arm_t / 2;
+  hx = pad_x / 2 - 2;   // end holes, either side of the lugs
   difference() {
     union() {
       rbox(pad_cx - pad_x / 2, roller_y - pad_y / 2, roller_z, pad_cx + pad_x / 2, roller_y + pad_y / 2, roller_z + pad_t);
@@ -287,13 +293,14 @@ module pad() {
       }
     }
     translate([lx - 8, hy, hz]) rotate([0, 90, 0]) cylinder(d = 3.2, h = 16);
-    for (dx = [-run_dx, 0, run_dx]) {
-      translate([pad_cx + dx - 1.15, roller_y - pad_y / 2 + 2, roller_z - 0.01]) cube([2.3, pad_y - 4, 1.0]);   // groove, wire 1 mm proud
-      for (dy = [-1, 1]) translate([pad_cx + dx, roller_y + dy * (pad_y / 2 - 2), roller_z - 1]) cylinder(d = 2.5, h = pad_t + 2);
+    for (dy = [-run_dy, 0, run_dy]) {
+      translate([pad_cx - hx, roller_y + dy - (wire_d + 0.3) / 2, roller_z - 0.01]) cube([2 * hx, wire_d + 0.3, wire_d - wire_proud]);   // groove
+      for (sx = [-1, 1]) translate([pad_cx + sx * hx, roller_y + dy, roller_z - 1]) cylinder(d = wire_d + 0.4, h = pad_t + 2);
     }
-    for (dx = [-run_dx / 2, run_dx / 2]) {      // top-side lacing grooves between runs
-      dy = dx < 0 ? 1 : -1;
-      translate([pad_cx + dx - run_dx / 2, roller_y + dy * (pad_y / 2 - 2) - 1.15, roller_z + pad_t - 1]) cube([run_dx, 2.3, 1.1]);
+    // top grooves joining the runs into one zig-zag: rear->middle at the +x end, middle->front at -x
+    for (k = [0, 1]) {
+      sx = k == 0 ? 1 : -1;  y0 = roller_y + (k == 0 ? -run_dy : 0);
+      translate([pad_cx + sx * hx - (wire_d + 0.3) / 2, y0, roller_z + pad_t - wire_d * 0.7]) cube([wire_d + 0.3, run_dy, wire_d]);
     }
   }
 }

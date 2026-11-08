@@ -675,7 +675,12 @@ distance, spacing, chamfer size.
   the board from below (M3 x 14 through shoe, board, boss and shelf; M2 x
   10 into the end wall). Pads printed first (warden `492a823994`, Enoch's
   OK); staples were too fiddly in 12 AWG for him, so he is researching
-  copper foil/pads for a pad v2. Staged on his "proceed with the other
+  copper foil/pads for a pad v2. **Pad v1 had the runs the wrong way:**
+  Enoch threaded thinner Romex through it and pointed out the rollers are
+  19 mm diameter and rounded FORE-AFT and only 5 mm wide (the 11-07 notes
+  had that swapped) - fore-aft runs 8 mm apart could straddle a 5 mm
+  roller. Pad v2: three runs SIDE TO SIDE, 8 mm apart fore-aft, 32 mm
+  long (~+/-12 fore-aft, ~+/-16 side to side), grooves for 14 AWG. Staged on his "proceed with the other
   prints": body `2b2230bea9` (3 h 33 m, 74 g, tree supports), shoes
   `1612440e33`, arms `c07117f144`, bumper bar `922b288756`.
 
