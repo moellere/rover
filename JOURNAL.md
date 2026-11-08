@@ -670,6 +670,14 @@ distance, spacing, chamfer size.
   size, seller drawing) on platforms, slides on two M3 x 16, stops after
   2.2 mm; switches on GPIO12/13 (pull-up, pressed low), firmware refuses
   and stops forward while pressed - flashed, both read released.
+  11-08: Enoch found the cliff board couldn't go in under the one-piece
+  socket/skids - they moved to a separate **shoe** per side that clamps
+  the board from below (M3 x 14 through shoe, board, boss and shelf; M2 x
+  10 into the end wall). Pads printed first (warden `492a823994`, Enoch's
+  OK); staples were too fiddly in 12 AWG for him, so he is researching
+  copper foil/pads for a pad v2. Staged on his "proceed with the other
+  prints": body `2b2230bea9` (3 h 33 m, 74 g, tree supports), shoes
+  `1612440e33`, arms `c07117f144`, bumper bar `922b288756`.
 
 **Claude-driven:** the S3 pin map and port; dock sense design and values;
 dock mode and its limits; `dock()`'s undock, climb, square-up and centring;
