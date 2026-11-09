@@ -693,6 +693,12 @@ distance, spacing, chamfer size.
   on). Firmware: tunable `Left/Right arm up/down position` numbers (kept
   across reboots), `Arms up` / `Arms down` buttons, 1 s servo transitions.
   Bumper switches wiring deferred (Enoch).
+  Brain (11-09): contact-arm docking - `teach_dock` records the arms-down
+  pose (`dock_pose_arms.json`); `dock()` then approaches with the arms up,
+  stops at that pose (no climb, no dock mode), lowers the arms, checks pad
+  voltage, nudges ~8 mm and retries (4 tries) and releases the servos on
+  contact; `arms` tool; status shows bumpers and arm commands. Untested on
+  the rover until the pads are fitted.
 
 **Claude-driven:** the S3 pin map and port; dock sense design and values;
 dock mode and its limits; `dock()`'s undock, climb, square-up and centring;
