@@ -452,3 +452,13 @@ if (part == "x_screws") {
 // TFMini mount close-up for the drawing
 if (part == "t_body")   intersection() { body(); translate([-35, -20, 35]) cube([70, 70, 25]); }
 if (part == "t_tfmini") tfmini_dummy();
+// exploded bumper for the drawing: back plate + switch platforms (body), switches, bar, screws
+if (part == "b_body")  intersection() { body(); translate([-90, 58, 10]) cube([180, 20, 30]); }
+if (part == "b_ms")    for (s = [-1, 1]) ms_dummy(s);
+if (part == "b_bar")   translate([0, explode, 0]) bump_bar();
+if (part == "b_screws") for (s = [-1, 1]) {
+  translate([s * guide_x, bump_y - 8, guide_z]) rotate([-90, 0, 0]) cylinder(d = 3, h = 16 + explode);        // M3 x 16 path, head behind
+  translate([s * guide_x, bump_y - 10, guide_z]) rotate([-90, 0, 0]) cylinder(d = 5.5, h = 2);               // head
+  for (dx = [-ms_hole_cc / 2, ms_hole_cc / 2]) mirror([s < 0 ? 1 : 0, 0, 0])
+    translate([ms_x0 + ms_l / 2 + dx, ms_y1 - ms_w + ms_hole_from_back, ms_plat_z]) cylinder(d = 2, h = ms_t + 8);  // M2 x 10 paths
+}
