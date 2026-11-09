@@ -569,10 +569,10 @@ servo:
   # are mirror images, so the same arm motion is opposite signs on each side.
   - id: servo_left
     output: servo_left_out
-    transition_length: 0s
+    transition_length: 1s
   - id: servo_right
     output: servo_right_out
-    transition_length: 0s
+    transition_length: 1s
 
 # Downward-facing IR reflectance ("cliff") sensors on the free MCP23008 pins.
 # Wiring: VCC/GND + digital OUT of each IR module -> MCP4 (front-left), MCP5 (front-right).
@@ -895,6 +895,48 @@ sensor:
             ESP_LOGI("battery", "Battery recovered (%.2f V), drive enabled", x);
           }
 number:
+  # Arm end positions (calibrated by Enoch 2026-11-08 with the arms fitted, via the web UI):
+  # up = folded for driving, down = pads on the dock rollers. Tunable here, kept across reboots.
+  - platform: template
+    name: "Left arm up position"
+    id: left_arm_up
+    entity_category: config
+    min_value: -100
+    max_value: 100
+    step: 1
+    optimistic: true
+    restore_value: true
+    initial_value: -77
+  - platform: template
+    name: "Left arm down position"
+    id: left_arm_down
+    entity_category: config
+    min_value: -100
+    max_value: 100
+    step: 1
+    optimistic: true
+    restore_value: true
+    initial_value: 87
+  - platform: template
+    name: "Right arm up position"
+    id: right_arm_up
+    entity_category: config
+    min_value: -100
+    max_value: 100
+    step: 1
+    optimistic: true
+    restore_value: true
+    initial_value: 68
+  - platform: template
+    name: "Right arm down position"
+    id: right_arm_down
+    entity_category: config
+    min_value: -100
+    max_value: 100
+    step: 1
+    optimistic: true
+    restore_value: true
+    initial_value: -91
   - platform: template
     name: "Left arm servo"
     id: left_arm_servo
@@ -1059,6 +1101,18 @@ button:
     on_press:
       - number.set: {id: left_arm_servo, value: 0}
       - number.set: {id: right_arm_servo, value: 0}
+  - platform: template
+    name: "Arms up"
+    id: arms_up
+    on_press:
+      - number.set: {id: left_arm_servo, value: !lambda 'return id(left_arm_up).state;'}
+      - number.set: {id: right_arm_servo, value: !lambda 'return id(right_arm_up).state;'}
+  - platform: template
+    name: "Arms down"
+    id: arms_down
+    on_press:
+      - number.set: {id: left_arm_servo, value: !lambda 'return id(left_arm_down).state;'}
+      - number.set: {id: right_arm_servo, value: !lambda 'return id(right_arm_down).state;'}
   - platform: template
     name: "Arms off"
     id: arms_off
