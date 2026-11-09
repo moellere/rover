@@ -292,8 +292,107 @@ DOCK_CONTACT_V = 9.0        # pad voltage that counts as contact; On dock alone 
 DOCK_MAX_CLIMBS = 2         # climbs in dock mode (firmware ignores the cliff guard for forward, 3 s max)
 
 
+# Contact arms (nose module v1, 2026-11-08): Grover stops short of the base and two
+# servo arms lower sprung pads onto the rollers - no climb, no dock mode. The taught pose
+# is Grover's pose with the arms DOWN and the pads on the rollers (brain/dock_pose_arms.json,
+# written by teach_dock()); while that file exists, dock() uses the arms.
+DOCK_ARMS_POSE_FILE = Path(__file__).with_name("dock_pose_arms.json")
+DOCK_ARMS_MOVE_S = 1.6      # firmware servo transition is 1 s; settle on top
+DOCK_ARMS_RETRY_MM = 8.0    # on a miss: arms up, nudge this far, arms down (pads cover ~+/-12 mm)
+DOCK_ARMS_MAX_TRIES = 4     # first lower + 3 nudges (on target, then short, then over)
+DOCK_ARMS_TOL_MM = 4.0      # 'at the pose' along the axis for the first lower
+
+
+def arms_mode() -> bool:
+    return DOCK_ARMS_POSE_FILE.exists()
+
+
 def load_dock_pose() -> dict:
-    return json.loads(DOCK_POSE_FILE.read_text())
+    return json.loads((DOCK_ARMS_POSE_FILE if arms_mode() else DOCK_POSE_FILE).read_text())
+
+
+async def teach_dock(camera: str = "bench") -> dict:
+    """Record the arms docking pose: Grover placed by hand, arms DOWN, pads on the
+    rollers. Writes brain/dock_pose_arms.json (the old climb pose stays in dock_pose.json)."""
+    rover, _ = _rover(camera)
+    if rover is None:
+        return {"ok": False, "reason": "rover marker not seen"}
+    pose = {"x_px": round(rover.x_px, 1), "y_px": round(rover.y_px, 1),
+            "heading_deg": round(rover.heading_deg, 1), "mm_per_px": rover.mm_per_px}
+    DOCK_ARMS_POSE_FILE.write_text(json.dumps(pose) + "\n")
+    st = await RoverClient().state(timeout=3.0)
+    return {"ok": True, "pose": pose, "dock_voltage": st.dock_voltage, "on_dock": st.on_dock}
+
+
+async def _contact(client: RoverClient, reads: int = 2, tries: int = 5) -> tuple[bool, float | None]:
+    """Pad voltage >= DOCK_CONTACT_V on `reads` reads 1.5 s apart (a momentary touch
+    latched On dock at 0.05 V on 11-07)."""
+    good, v = 0, None
+    for _ in range(tries):
+        st = await client.state(timeout=3.0)
+        v = st.dock_voltage
+        good = good + 1 if (st.on_dock and (v or 0.0) >= DOCK_CONTACT_V) else 0
+        if good >= reads:
+            return True, v
+        await asyncio.sleep(1.5)
+    return False, v
+
+
+def _along(rover, pose) -> float:
+    h = math.radians(pose["heading_deg"])
+    return ((rover.x_px - pose["x_px"]) * (-math.cos(h)) + (rover.y_px - pose["y_px"]) * math.sin(h)) * pose["mm_per_px"]
+
+
+async def _arms_lower_and_check(client: RoverClient, log: list, tag: str) -> tuple[bool, float | None]:
+    await client.press("arms_down")
+    await asyncio.sleep(DOCK_ARMS_MOVE_S)
+    ok, v = await _contact(client)
+    log.append({"arms": tag, "contact": ok, "dock_voltage": v})
+    return ok, v
+
+
+async def _dock_arms_finish(client: RoverClient, pose: dict, camera: str, log: list, r: dict) -> dict:
+    """After the creep reached the taught pose: lower the arms, check for contact; on a
+    miss raise them, nudge ~8 mm (short first if short, else over) and try again. On contact
+    the servos are released (a stalled SG90 pressing the pad draws current); if the pad
+    voltage drops without them, they go back down and hold."""
+    tries = 0
+    plan = [0.0, DOCK_ARMS_RETRY_MM, -DOCK_ARMS_RETRY_MM, 2 * DOCK_ARMS_RETRY_MM]
+    while tries < DOCK_ARMS_MAX_TRIES:
+        if tries:
+            await client.press("arms_up")
+            await asyncio.sleep(DOCK_ARMS_MOVE_S)
+            rover, _ = _rover(camera)
+            if rover is None:
+                break
+            target = plan[tries]                       # + = drive further on (toward the rollers)
+            err = _along(rover, pose) - (-target)      # mm still to go to reach `target` past the pose
+            log.append({"arms": f"nudge {target:+.0f} mm", "short_mm": round(_along(rover, pose)), "err_mm": round(err)})
+            if abs(err) > 2.0:
+                await client.drive("forward" if err > 0 else "backward", DOCK_CREEP_S)
+                await asyncio.sleep(POST_MOVE_S)
+        ok, v = await _arms_lower_and_check(client, log, f"lower {tries + 1}")
+        tries += 1
+        if ok:
+            await client.press("arms_off")
+            await asyncio.sleep(1.0)
+            held, v2 = await _contact(client)
+            if not held:
+                await client.press("arms_down")      # keep pressing
+                await asyncio.sleep(DOCK_ARMS_MOVE_S)
+                held, v2 = await _contact(client)
+                log.append({"arms": "released lost contact - holding down", "contact": held, "dock_voltage": v2})
+            else:
+                log.append({"arms": "released, contact held", "dock_voltage": v2})
+            rover, _ = _rover(camera)
+            return {**r, "ok": held, "charging": held, "volts": {"dock": v2}, "arm_tries": tries,
+                    "pose": _pose_dict(rover) if rover else r.get("pose"),
+                    "reason": (f"docked with the arms (try {tries}), charging at {v2:.2f} V" if held
+                               else f"contact on try {tries} lost when settling ({v2} V)")}
+    await client.press("arms_up")
+    await asyncio.sleep(DOCK_ARMS_MOVE_S)
+    return {**r, "ok": False, "charging": False, "arm_tries": tries,
+            "reason": f"arms lowered {tries} times, no contact (dock {v} V)"}
 
 
 def _axis_point(pose: dict, back_mm: float) -> tuple[float, float]:
@@ -314,6 +413,13 @@ async def dock(camera: str = "bench", max_steps: int = 8) -> dict:
     guard = st.obstacle_stop_cm or 0.0
     v_before = st.battery_voltage
     try:
+        if arms_mode():
+            await client.press("arms_up")               # never drive (or reverse) with the pads down
+            await asyncio.sleep(DOCK_ARMS_MOVE_S)
+            r = await _dock_legs(client, pose, camera, max_steps, log, guard, arms=True)
+            if not r.get("ok"):
+                return r
+            return await _dock_arms_finish(client, pose, camera, log, r)
         r = await _dock_legs(client, pose, camera, max_steps, log, guard)
         if r.get("ok") or r.get("contact"):
             # contact settles a moment after the last move (11-01: read 6.2 V
@@ -364,6 +470,12 @@ async def _undock(client: RoverClient, pose: dict, camera: str, log: list) -> di
     # starting on (or near) the dock: reverse straight out along the axis to the
     # first waypoint instead of pivoting on the base (11-02: go_to tried to turn
     # 180 deg on the ramp and ran out of steps)
+    if arms_mode():
+        try:
+            await client.press("arms_up")           # pads off the rollers before reversing
+            await asyncio.sleep(DOCK_ARMS_MOVE_S)
+        except ValueError:
+            pass
     h = math.radians(pose["heading_deg"])
     prev = None
     for i in range(DOCK_UNDOCK_MAX + 1):
@@ -401,7 +513,7 @@ async def _undock(client: RoverClient, pose: dict, camera: str, log: list) -> di
 
 
 async def _dock_legs(client: RoverClient, pose: dict, camera: str, max_steps: int, log: list,
-                     guard: float) -> dict:
+                     guard: float, arms: bool = False) -> dict:
     r = await _undock(client, pose, camera, log)
     if r is not None:
         return r
@@ -439,6 +551,10 @@ async def _dock_legs(client: RoverClient, pose: dict, camera: str, max_steps: in
         along = ((rover.x_px - pose["x_px"]) * (-math.cos(h)) + (rover.y_px - pose["y_px"]) * math.sin(h)) * pose["mm_per_px"]
         entry = {"creep": i, "x": round(rover.x_px), "y": round(rover.y_px), "heading": rover.heading_deg,
                  "dist_mm": round(dist_mm), "short_mm": round(along)}
+        if arms and along <= DOCK_ARMS_TOL_MM:
+            log.append({**entry, "action": "at the arms pose"})
+            return {"ok": True, "reason": f"at the arms pose ({along:.0f} mm short)", "log": log,
+                    "pose": _pose_dict(rover)}
         if along <= DOCK_ARRIVE_MM:
             log.append({**entry, "action": "docked"})
             return {"ok": True, "reason": f"docked: {dist_mm:.0f} mm from the taught pose", "log": log,
@@ -452,8 +568,8 @@ async def _dock_legs(client: RoverClient, pose: dict, camera: str, max_steps: in
         if ko:
             log.append({**entry, "action": "keep-out"})
             return {"ok": False, "reason": ko, "log": log, "pose": _pose_dict(rover)}
-        at_lip = along <= DOCK_CLIMB_MM and abs(lateral) <= DOCK_CLIMB_LATERAL_MM
-        if along <= DOCK_CLIMB_MM and not at_lip and along > 0:
+        at_lip = (not arms) and along <= DOCK_CLIMB_MM and abs(lateral) <= DOCK_CLIMB_LATERAL_MM
+        if (not arms) and along <= DOCK_CLIMB_MM and not at_lip and along > 0:
             # too close to steer and too far off-axis to climb: back up and re-centre
             if backoffs >= DOCK_MAX_BACKOFFS:
                 log.append({**entry, "action": "off-axis at the lip, back-offs used up"})

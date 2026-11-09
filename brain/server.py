@@ -24,6 +24,7 @@ Run (stdio, for Claude Code):  brain/.venv/bin/python -m brain.server
 All hosts and credentials come from environment variables - see
 rover_client.py and cameras.py.
 """
+import asyncio
 import os
 import time
 from typing import Optional
@@ -59,7 +60,8 @@ async def status() -> dict:
     once that firmware is flashed - None before), uptime, WiFi,
     whether stops brake, and the TFMini forward range (cm; valid=False under
     30 cm or with no return) plus the firmware obstacle-stop threshold, and
-    dock sense (on_dock, dock_voltage: pad voltage present = on the dock)."""
+    dock sense (on_dock, dock_voltage: pad voltage present = on the dock), the
+    nose bumper switches (True = pressed) and the contact-arm servo commands."""
     st = await RoverClient().state()
     return {
         "motion": st.motion,
@@ -79,6 +81,9 @@ async def status() -> dict:
         "yaw_rate_dps": st.yaw_rate_dps,
         "on_dock": st.on_dock,
         "dock_voltage": st.dock_voltage,
+        "bumper_left": st.bumper_left,
+        "bumper_right": st.bumper_right,
+        "arms": {"left": st.left_arm, "right": st.right_arm},
     }
 
 
@@ -263,12 +268,42 @@ async def dock() -> dict:
     to within 4 mm, and climbs the approach ramp with one firm pulse in
     firmware Dock mode (forward ignores the cliff guard, 3 s max). Stops the
     moment dock sense reports contact. Refuses to move within 130 mm of the
-    open bench edge (brain/keepout.py). Check the lane first."""
+    open bench edge (brain/keepout.py). Check the lane first.
+
+    With the contact arms taught (brain/dock_pose_arms.json, `teach_dock`): arms up
+    first, the same approach to the arms pose with no climb, then the arms lower and
+    pad voltage is checked; on a miss they lift, Grover nudges ~8 mm and tries again
+    (4 tries). On contact the servos are released (held down again if contact drops)."""
     global _last_drive_end
     from brain.steer import dock as _dock
     r = await _dock()
     _last_drive_end = time.monotonic()
     return r
+
+
+@mcp.tool()
+async def arms(position: str) -> dict:
+    """Contact arms: "up" (folded, for driving), "down" (pads onto the dock rollers),
+    "off" (servos released) or "centre" (1.5 ms, for fitting the arms). End positions
+    are firmware settings (Left/Right arm up/down position)."""
+    btn = {"up": "arms_up", "down": "arms_down", "off": "arms_off", "centre": "centre_arms"}.get(position)
+    if btn is None:
+        return {"ok": False, "reason": "position must be up, down, off or centre"}
+    c = RoverClient()
+    await c.press(btn)
+    await asyncio.sleep(1.3)
+    st = await c.state(timeout=3.0)
+    return {"ok": True, "arms": {"left": st.left_arm, "right": st.right_arm},
+            "on_dock": st.on_dock, "dock_voltage": st.dock_voltage}
+
+
+@mcp.tool()
+async def teach_dock() -> dict:
+    """Record the arms docking pose from the overhead camera: place Grover by hand with
+    the arms DOWN and the pads on the dock rollers first. From then on `dock` uses the
+    contact arms (brain/dock_pose_arms.json; delete it to go back to the climb)."""
+    from brain.steer import teach_dock as _teach
+    return await _teach()
 
 
 @mcp.tool()

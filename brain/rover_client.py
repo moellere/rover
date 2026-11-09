@@ -42,6 +42,10 @@ class RoverState:
     yaw_rate_dps: Optional[float] = None
     on_dock: Optional[bool] = None             # dock sense (firmware 2026-11-01): pad voltage present
     dock_voltage: Optional[float] = None
+    bumper_left: Optional[bool] = None         # nose bumper bar (firmware 2026-11-07); None on older firmware
+    bumper_right: Optional[bool] = None
+    left_arm: Optional[float] = None           # contact-arm servo commands, -100..100 (firmware 2026-11-07)
+    right_arm: Optional[float] = None
     raw: dict = field(default_factory=dict)
 
 
@@ -122,6 +126,14 @@ class RoverClient:
                     out.on_dock = bool(val)
                 elif oid == "dock_voltage":
                     out.dock_voltage = None if val is None or val != val else float(val)
+                elif oid == "bumper_left":
+                    out.bumper_left = bool(val)
+                elif oid == "bumper_right":
+                    out.bumper_right = bool(val)
+                elif oid == "left_arm_servo":
+                    out.left_arm = None if val is None or val != val else float(val)
+                elif oid == "right_arm_servo":
+                    out.right_arm = None if val is None or val != val else float(val)
             return out
         finally:
             await client.disconnect()
@@ -225,6 +237,19 @@ class RoverClient:
             if not match:
                 raise ValueError(f"no entity {object_id!r} on the rover")
             client.number_command(match[0].key, value)
+            await asyncio.sleep(0.3)
+        finally:
+            await client.disconnect()
+
+    async def press(self, object_id: str) -> None:
+        """Press a firmware button entity (e.g. arms_up, arms_down, arms_off)."""
+        client = await self._connect()
+        try:
+            entities, _ = await client.list_entities_services()
+            match = [e for e in entities if e.object_id == object_id]
+            if not match:
+                raise ValueError(f"no entity {object_id!r} on the rover")
+            client.button_command(match[0].key)
             await asyncio.sleep(0.3)
         finally:
             await client.disconnect()
