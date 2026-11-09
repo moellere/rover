@@ -699,6 +699,10 @@ distance, spacing, chamfer size.
   voltage, nudges ~8 mm and retries (4 tries) and releases the servos on
   contact; `arms` tool; status shows bumpers and arm commands. Untested on
   the rover until the pads are fitted.
+  11-09: pads fitted and wired; first hand-placed charge on the arms
+  (bench PSU 12.64 V, 0.21 A). Dock sense read 0 V until Enoch moved the
+  pad + lead to the dock side of D1 (then 12.51 V, On dock). Enoch fitted
+  the 10k pull-downs on the driver inputs GPIO38-41 (power-on twitch).
 
 **Claude-driven:** the S3 pin map and port; dock sense design and values;
 dock mode and its limits; `dock()`'s undock, climb, square-up and centring;

@@ -61,8 +61,8 @@ instructions, and readable as plain English by anyone.
   Grover's dock.
 - Known hazards: rear cliff sensors live since 11-07;
   the cliff guard trips late enough that edge tests need a soft landing
-  or a tether; the left track twitches at power-on until the driver
-  inputs get pull-downs (see `CLAUDE.md` and the journal).
+  or a tether. The power-on track twitch should be gone: 10k pull-downs
+  on the driver inputs (GPIO38-41) fitted 11-09.
 
 ## Architecture
 
