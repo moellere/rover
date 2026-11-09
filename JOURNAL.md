@@ -683,6 +683,16 @@ distance, spacing, chamfer size.
   long (~+/-12 fore-aft, ~+/-16 side to side), grooves for 14 AWG. Staged on his "proceed with the other
   prints": body `2b2230bea9` (3 h 33 m, 74 g, tree supports), shoes
   `1612440e33`, arms `c07117f144`, bumper bar `922b288756`.
+  Later 11-08: all nose parts printed (the shoes printed fused once - my
+  print layout overlapped them - reprinted separated; pad v2 `5840034d90`).
+  The TFMini's ears sat on the crossbeam ties; Enoch notched them so the
+  ears lie on the plate (model fixed). Arms calibrated by Enoch through the
+  web UI: **up** L -77 / R +68 (about 110 deg - past vertical, leaning back),
+  **down** L +87 / R -91 (about 15-20 deg below horizontal, a little below
+  the 12 deg where the rollers stop the pads, so the servos press the pads
+  on). Firmware: tunable `Left/Right arm up/down position` numbers (kept
+  across reboots), `Arms up` / `Arms down` buttons, 1 s servo transitions.
+  Bumper switches wiring deferred (Enoch).
 
 **Claude-driven:** the S3 pin map and port; dock sense design and values;
 dock mode and its limits; `dock()`'s undock, climb, square-up and centring;
