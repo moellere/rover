@@ -703,6 +703,13 @@ distance, spacing, chamfer size.
   (bench PSU 12.64 V, 0.21 A). Dock sense read 0 V until Enoch moved the
   pad + lead to the dock side of D1 (then 12.51 V, On dock). Enoch fitted
   the 10k pull-downs on the driver inputs GPIO38-41 (power-on twitch).
+  11-11: Enoch mounted the bumper switches (the printed body had no guide or
+  switch holes - the servo floors and wing ties filled them back in; model
+  fixed to cut them from the whole body) but the levers don't swing far
+  enough to catch an impact reliably at the stop-boss height: bumper v2
+  needed. Grover was left on the dock while Enoch travels; at his request
+  `Arms up` lifted the pads off the rollers (dock 12.55 V -> 0.0 V, checked
+  on the overhead). Servos holding at L -72 / R +68.
 
 **Claude-driven:** the S3 pin map and port; dock sense design and values;
 dock mode and its limits; `dock()`'s undock, climb, square-up and centring;
