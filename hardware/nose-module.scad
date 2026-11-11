@@ -203,12 +203,14 @@ module shoe(s) { if (s > 0) shoe_r(); else mirror([1, 0, 0]) shoe_r(); }
 module cliff_wing(s) { if (s > 0) cliff_wing_r(); else mirror([1, 0, 0]) cliff_wing_r(); }
 
 module bumper() {
-  difference() {
-    union() {
-      rbox(-bump_x, bump_y, bump_z[0], bump_x, bump_y + bump_t, bump_z[1]);   // tied up to the wings and the servo floors
-      for (s = [-1, 1]) mirror([s < 0 ? 1 : 0, 0, 0])                          // switch platforms
-        rbox(ms_x0, ms_y1 - ms_w, bump_z[1] - 0.1, ms_x0 + ms_l, ms_y1, ms_plat_z);
-    }
+  rbox(-bump_x, bump_y, bump_z[0], bump_x, bump_y + bump_t, bump_z[1]);   // tied up to the wings and the servo floors
+  for (s = [-1, 1]) mirror([s < 0 ? 1 : 0, 0, 0])                          // switch platforms
+    rbox(ms_x0, ms_y1 - ms_w, bump_z[1] - 0.1, ms_x0 + ms_l, ms_y1, ms_plat_z);
+}
+// cut from the whole body, not inside bumper(): the servo floors and the wings' bumper ties
+// overlap the plate and filled these holes back in (printed body 11-08 has none - drilled by hand)
+module bumper_holes() {
+  {
     for (s = [-1, 1]) mirror([s < 0 ? 1 : 0, 0, 0]) {
       for (dx = [-ms_hole_cc / 2, ms_hole_cc / 2])                           // M2 self-tap pilots
         translate([ms_x0 + ms_l / 2 + dx, ms_y1 - ms_w + ms_hole_from_back, ms_plat_z - 8]) cylinder(d = 1.6, h = 9);   // M2 x 10 self-tappers (Enoch): 3.6 mm into the platform
@@ -257,8 +259,13 @@ module servo_mount_r() {
 module servo_mount(s) { if (s > 0) servo_mount_r(); else mirror([1, 0, 0]) servo_mount_r(); }
 
 module body() {
-  foot(); tfmini_mount(); crossbeam(); bumper();
-  for (s = [-1, 1]) { cliff_wing(s); servo_mount(s); }
+  difference() {
+    union() {
+      foot(); tfmini_mount(); crossbeam(); bumper();
+      for (s = [-1, 1]) { cliff_wing(s); servo_mount(s); }
+    }
+    bumper_holes();
+  }
 }
 
 // one arm (RIGHT shown; print one as modelled and one mirrored): horn pocket at the
