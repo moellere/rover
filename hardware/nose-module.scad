@@ -89,7 +89,7 @@ bar_gap = ms_lever + 0.5;                // bar's back face at rest, ahead of th
 bar_t = 6;  bar_x = 82;  bar_z = [14, 26];  bar_z_ms = ms_plat_z + ms_t + 1;   // taller over the switches
 bar_travel = 3.5;     // v2 (11-16): to the stops. v1's 2.2 was inside the switch's click-to-bottom window
                       // (~1.5..3 at the tip) and did not click reliably (Enoch, 11-11)
-leaf_gap = 0.2;  bar_leaf_t = 0.9;  leaf_slot = 1.2;   // v2: each lever is pressed by a leaf, not the rigid bar -
+leaf_gap = 0.2;  bar_leaf_t = 1.2;  leaf_slot = 1.2;  leaf_web = 0.5;   // v2: each lever is pressed by a leaf, not the rigid bar -
                       // touching at rest, clicks early in the travel, and gives up to leaf_slot once the lever bottoms
 bar_stop_x = [20, 50];   // rear stops (the leaf now sits where v1's outer stop was)
 guide_x = 28;  guide_z = 21;   // M3 x 16, head behind the back plate
@@ -225,22 +225,25 @@ module bumper_holes() {
 
 // floating bumper bar v2 (separate print): M3 x 16 screws come from behind the back plate and
 // self-tap into its guide pads; their heads are the forward stop, four ribs the rear stop.
-// Each end carries a leaf (a 0.9 mm wall behind a slot, rooted inboard, free outboard where
-// the lever tip is). Pads, ribs and leaves all run down to the bar's underside: it prints
-// standing on its underside, no supports, and the leaves bend along the layers.
+// Each end carries a leaf (a 1.2 mm wall behind a slot, rooted inboard, free outboard where
+// the lever tip is). Prints FRONT FACE DOWN like v1 (11-16: standing on its 6 mm underside it
+// came off the bed): each leaf then bridges the slot from its root to a 0.5 mm web closing the
+// slot's outboard end - snip that web after printing to free the leaf.
 module bump_bar() {
   y0 = ms_y1 + bar_gap;  yl = ms_y1 + ms_lever + leaf_gap;   // bar back face; leaf back face
   difference() {
     union() {
       rbox(-bar_x, y0, bar_z[0], bar_x, y0 + bar_t, bar_z[1]);
       for (s = [-1, 1]) mirror([s < 0 ? 1 : 0, 0, 0]) {
-        rbox(ms_x0 - 1, yl, bar_z[0], bar_x, y0 + bar_t, bar_z_ms);                 // end block: leaf + slot + front wall
+        rbox(ms_x0 - 1, yl, bar_z[1] - 0.1, bar_x, y0 + bar_t, bar_z_ms);           // end block over the switch: leaf + slot + front wall
         rbox(guide_x - 4, y0 - 1.5, bar_z[0], guide_x + 4, y0 + 0.1, guide_z + 4);  // guide pad
         for (x = bar_stop_x) rbox(x - 2.5, y0 - (bar_gap - bar_travel), bar_z[0], x + 2.5, y0 + 0.1, bar_z[1]);   // rear stops
       }
     }
-    for (s = [-1, 1]) mirror([s < 0 ? 1 : 0, 0, 0])                                 // slot: open at the outboard end, top and bottom
-      translate([ms_x0 + 2, yl + bar_leaf_t, bar_z[0] - 1]) cube([bar_x - ms_x0, leaf_slot, bar_z_ms - bar_z[0] + 2]);
+    for (s = [-1, 1]) mirror([s < 0 ? 1 : 0, 0, 0]) {                               // slot, open top and bottom; web at the outboard end
+      translate([ms_x0 + 2, yl + bar_leaf_t, bar_z[1] - 0.1]) cube([bar_x - leaf_web - ms_x0 - 2, leaf_slot, bar_z_ms - bar_z[1] + 2]);
+      translate([ms_x0 + 2, yl - 1, bar_z[1] - 0.1]) cube([bar_x - ms_x0, bar_leaf_t + 1.01, 1.6]);   // leaf's lower edge freed from the bar
+    }
     for (s = [-1, 1]) translate([s * guide_x, y0 - 3, guide_z]) rotate([-90, 0, 0]) cylinder(d = 2.6, h = bar_t + 1);  // M3 pilot
   }
 }
@@ -442,7 +445,7 @@ if (part == "ctx_dock")   ctx_dock();
 if (part == "installed") { body(); bump_bar(); for (s = [-1, 1]) shoe(s); for (s = [-1, 1]) mirror([s < 0 ? 1 : 0, 0, 0]) { arm(); pad(); } }
 if (part == "installed_parts") { body(); bump_bar(); for (s = [-1, 1]) shoe(s); for (s = [-1, 1]) { mirror([s < 0 ? 1 : 0, 0, 0]) { arm(); pad(); } cliff_dummy(s); servo_dummy(s); ms_dummy(s); } tfmini_dummy(); }
 if (part == "bump_bar") bump_bar();
-if (part == "print_bump_bar") translate([0, -(ms_y1 + bar_gap), -bar_z[0]]) bump_bar();   // v2: on its underside (v1 was front face down)
+if (part == "print_bump_bar") translate([0, 0, ms_y1 + bar_gap + bar_t]) rotate([-90, 0, 0]) bump_bar();   // front face down
 module ms_dummy(s) { mirror([s < 0 ? 1 : 0, 0, 0]) {
   translate([ms_x0, ms_y1 - ms_w, ms_plat_z]) cube([ms_l, ms_w, ms_t]);
   translate([ms_x0 + 2, ms_y1, ms_plat_z + 1]) rotate([0, 0, 12]) cube([ms_l - 3, 0.8, ms_t - 2]);   // lever

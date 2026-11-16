@@ -721,6 +721,12 @@ distance, spacing, chamfer size.
   standing on its underside, no supports. Drawing regenerated
   (`nose-module-bumper-exploded.png`). Awaiting Enoch's review; leaf
   stiffness (~2 N/mm) is calculated, not measured.
+  Later 11-16: Enoch OK'd it with blue loaded; warden `1bf966d0e1` started
+  on his phone tap and **failed** - the bar came off the bed and Obico
+  paused it at 84 % (spaghetti). My orientation was the likely cause: it
+  stood on a 164 x 6 mm underside with no brim. Reworked to print front
+  face down like v1: the leaf (now 1.2 mm, only over the switch) bridges
+  its slot to a 0.5 mm web at the outboard end that Enoch snips to free it.
 
 **Claude-driven:** the S3 pin map and port; dock sense design and values;
 dock mode and its limits; `dock()`'s undock, climb, square-up and centring;
