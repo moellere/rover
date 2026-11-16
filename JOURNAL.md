@@ -710,6 +710,17 @@ distance, spacing, chamfer size.
   needed. Grover was left on the dock while Enoch travels; at his request
   `Arms up` lifted the pads off the rollers (dock 12.55 V -> 0.0 V, checked
   on the overhead). Servos holding at L -72 / R +68.
+  11-16 (Fable 5, Enoch back, Grover off overnight; "please draft the
+  bumper"): **bumper bar v2 drafted, not sliced.** v1's 2.2 mm of travel
+  sat inside the switch's click-to-bottom window (~1.5..3 mm at the lever
+  tip, seller's figures), so any tolerance lost the click. v2 changes only
+  the bar: travel 3.5 mm to four stop ribs (x +/-20, +/-50), and each lever
+  is pressed by a 0.9 mm leaf behind a 1.2 mm slot (rooted inboard, free at
+  the lever tip) that touches the lever at rest and gives once the lever
+  bottoms. Same guide screws, rest gap and front face as v1; prints
+  standing on its underside, no supports. Drawing regenerated
+  (`nose-module-bumper-exploded.png`). Awaiting Enoch's review; leaf
+  stiffness (~2 N/mm) is calculated, not measured.
 
 **Claude-driven:** the S3 pin map and port; dock sense design and values;
 dock mode and its limits; `dock()`'s undock, climb, square-up and centring;
