@@ -87,7 +87,11 @@ ms_plat_z = shelf_z0 + shelf_t;          // platform top = shelf top
 ms_y1 = bump_y + bump_t;                 // body's front (lever) edge flush with the back plate's face
 bar_gap = ms_lever + 0.5;                // bar's back face at rest, ahead of the plate
 bar_t = 6;  bar_x = 82;  bar_z = [14, 26];  bar_z_ms = ms_plat_z + ms_t + 1;   // taller over the switches
-bar_travel = 2.2;     // to the stops: past the click (~1.5 at the tip), short of bottoming (~3)
+bar_travel = 3.5;     // v2 (11-16): to the stops. v1's 2.2 was inside the switch's click-to-bottom window
+                      // (~1.5..3 at the tip) and did not click reliably (Enoch, 11-11)
+leaf_gap = 0.2;  bar_leaf_t = 1.2;  leaf_slot = 1.2;  leaf_web = 0.5;   // v2: each lever is pressed by a leaf, not the rigid bar -
+                      // touching at rest, clicks early in the travel, and gives up to leaf_slot once the lever bottoms
+bar_stop_x = [20, 50];   // rear stops (the leaf now sits where v1's outer stop was)
 guide_x = 28;  guide_z = 21;   // M3 x 16, head behind the back plate
 
 // ---- servo arms (SG90; Enoch's are Smraza S51 9 g, same body) -------------------------------------------------------
@@ -219,19 +223,26 @@ module bumper_holes() {
   }
 }
 
-// floating bumper bar (separate print): M3 x 16 screws come from behind the back plate and
-// self-tap into its bosses; their heads are the forward stop, the two end bosses the rear stop
+// floating bumper bar v2 (separate print): M3 x 16 screws come from behind the back plate and
+// self-tap into its guide pads; their heads are the forward stop, four ribs the rear stop.
+// Each end carries a leaf (a 1.2 mm wall behind a slot, rooted inboard, free outboard where
+// the lever tip is). Prints FRONT FACE DOWN like v1 (11-16: standing on its 6 mm underside it
+// came off the bed): each leaf then bridges the slot from its root to a 0.5 mm web closing the
+// slot's outboard end - snip that web after printing to free the leaf.
 module bump_bar() {
-  y0 = ms_y1 + bar_gap;
+  y0 = ms_y1 + bar_gap;  yl = ms_y1 + ms_lever + leaf_gap;   // bar back face; leaf back face
   difference() {
     union() {
       rbox(-bar_x, y0, bar_z[0], bar_x, y0 + bar_t, bar_z[1]);
       for (s = [-1, 1]) mirror([s < 0 ? 1 : 0, 0, 0]) {
-        rbox(ms_x0 - 1, y0, bar_z[1] - 0.1, bar_x, y0 + bar_t, bar_z_ms);           // over the switch levers
-        translate([guide_x, y0 + 0.1, guide_z]) rotate([90, 0, 0]) cylinder(d = 8, h = 2);   // guide boss
-        for (x = [20, 74]) translate([x, y0 + 0.1, (bar_z[0] + bar_z[1]) / 2])               // rear stops
-          rotate([90, 0, 0]) cylinder(d = 5, h = bar_gap - bar_travel + 0.1);
+        rbox(ms_x0 - 1, yl, bar_z[1] - 0.1, bar_x, y0 + bar_t, bar_z_ms);           // end block over the switch: leaf + slot + front wall
+        rbox(guide_x - 4, y0 - 1.5, bar_z[0], guide_x + 4, y0 + 0.1, guide_z + 4);  // guide pad
+        for (x = bar_stop_x) rbox(x - 2.5, y0 - (bar_gap - bar_travel), bar_z[0], x + 2.5, y0 + 0.1, bar_z[1]);   // rear stops
       }
+    }
+    for (s = [-1, 1]) mirror([s < 0 ? 1 : 0, 0, 0]) {                               // slot, open top and bottom; web at the outboard end
+      translate([ms_x0 + 2, yl + bar_leaf_t, bar_z[1] - 0.1]) cube([bar_x - leaf_web - ms_x0 - 2, leaf_slot, bar_z_ms - bar_z[1] + 2]);
+      translate([ms_x0 + 2, yl - 1, bar_z[1] - 0.1]) cube([bar_x - ms_x0, bar_leaf_t + 1.01, 1.6]);   // leaf's lower edge freed from the bar
     }
     for (s = [-1, 1]) translate([s * guide_x, y0 - 3, guide_z]) rotate([-90, 0, 0]) cylinder(d = 2.6, h = bar_t + 1);  // M3 pilot
   }
