@@ -727,6 +727,12 @@ distance, spacing, chamfer size.
   stood on a 164 x 6 mm underside with no brim. Reworked to print front
   face down like v1: the leaf (now 1.2 mm, only over the switch) bridges
   its slot to a 0.5 mm web at the outboard end that Enoch snips to free it.
+  11-16..17 (Opus 5.5): v2b (`9d987fe619`, blue, 31 min) printed on
+  Enoch's chat go once the bed was clear, and he fitted it on the nose
+  (11-17). **Bumper switches not wired yet** - the click and the GPIO12/13
+  readings are still untested. Warden loose end: the failed v2 job still
+  reads "printing" there (it was cancelled through Moonraker), so it can't
+  be labelled failed.
 
 **Claude-driven:** the S3 pin map and port; dock sense design and values;
 dock mode and its limits; `dock()`'s undock, climb, square-up and centring;
